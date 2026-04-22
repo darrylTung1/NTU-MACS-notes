@@ -1,0 +1,3056 @@
+\documentclass[11pt, a4paper, notitlepage]{report}
+
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{microtype}           % microtypography: prevents most overfull hboxes
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue!60!black, urlcolor=blue!60!black,
+            breaklinks=true}     % allow URLs to break across lines
+\usepackage{xurl}                % aggressive URL line-breaking (load AFTER hyperref)
+\usepackage{enumitem}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{theorems}
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}           % auto-width columns that wrap text
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, shapes.geometric, positioning, fit, calc}
+\setcounter{secnumdepth}{3}
+
+% ── Overflow prevention ───────────────────────────────────────────────────────
+\sloppy
+\setlength{\emergencystretch}{3em}
+
+% ── Highlight boxes ───────────────────────────────────────────────────────────
+\newtcolorbox{keyresult}[1][]{
+  enhanced, colback=blue!5!white, colframe=blue!60!black,
+  fonttitle=\bfseries, title={Key Result}, #1
+}
+\newtcolorbox{examtip}[1][]{
+  enhanced, colback=green!5!white, colframe=green!50!black,
+  fonttitle=\bfseries, title={Exam Tip}, #1
+}
+\newtcolorbox{warning}[1][]{
+  enhanced, colback=red!5!white, colframe=red!60!black,
+  fonttitle=\bfseries, title={Warning}, #1
+}
+
+% ── Theorem environments ──────────────────────────────────────────────────────
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% ── Example environment (amsthm) ─────────────────────────────────────────────
+% Plain amsthm theorem style. Usage:
+%   \begin{example}[Title]   -> "Example 1.3 (Title)"
+%   \begin{example}          -> "Example 1.4"
+%   \label{ex:...} / \ref{ex:...} for cross-references (place \label inside)
+\theoremstyle{definition}
+\newtheorem{example}[theorem]{Example}
+
+% ── Code listings ─────────────────────────────────────────────────────────────
+\definecolor{codebg}{RGB}{245,247,250}
+\definecolor{codeborder}{RGB}{180,190,210}
+\definecolor{codekw}{RGB}{0,80,180}
+\definecolor{codecomment}{RGB}{100,110,130}
+\definecolor{codestring}{RGB}{160,40,40}
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{codekw}\bfseries,
+  commentstyle=\color{codecomment}\itshape,
+  stringstyle=\color{codestring},
+  breaklines=true,
+  breakatwhitespace=false,
+  breakautoindent=true,
+  postbreak=\mbox{\textcolor{codecomment}{$\hookrightarrow$}\space},
+  columns=flexible,
+  backgroundcolor=\color{codebg},
+  frame=single,
+  frameround=ffff,
+  framesep=5pt,
+  rulecolor=\color{codeborder},
+  aboveskip=6pt,
+  belowskip=6pt,
+  xleftmargin=6pt,
+  xrightmargin=6pt,
+  numbers=left,
+  numberstyle=\ttfamily\tiny\color{codecomment},
+  numbersep=8pt,
+  showstringspaces=false,
+  tabsize=4
+}
+
+% ── Suppress "Listing N:" caption prefix ─────────────────────────────────────
+\renewcommand\lstlistingname{}
+\renewcommand\thelstlisting{}
+
+% ── Suppress forced page break in \tableofcontents ────────────────────────────
+\makeatletter
+\renewcommand\tableofcontents{%
+  \section*{\contentsname}%
+  \@starttoc{toc}%
+}
+\makeatother
+
+% ── Chapter title formatting ──────────────────────────────────────────────────
+\titleformat{\chapter}[display]
+  {\normalfont\LARGE\bfseries}
+  {\chaptertitlename\ \thechapter}{12pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{20pt}{30pt}
+
+% ── Title block (filled in by generation script) ──────────────────────────────
+% \title{\textbf{<Course Code>: <Course Name>}\\[0.5em]
+%        \large <Subtitle>}
+% \author{}
+% \date{}
+
+\title{\textbf{SC1006: Introduction to Computer Organisation}\\[0.5em]
+       \large Lecture Notes --- Chapters 1--8}
+\author{}
+\date{2020}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+
+\chapter{Introduction}
+
+\section{What is a Computer?}
+
+A computer is any device that contains some form of computational elements. The range of such devices is enormous --- from room-sized supercomputers all the way down to wristwatches. There is no single definitive classification scheme, but three broad categories are commonly recognised: supercomputers, microcomputers, and embedded systems.
+
+\section{Classes of Computers}
+
+\subsection{Supercomputers}
+
+Supercomputers are very large, powerful, and expensive machines designed for tasks that demand extremely high computational throughput and the ability to operate on very large datasets (e.g.\ high-precision calculations). They are generally scalable by adding more processors.
+
+\begin{example}[Titan Supercomputer]
+The Titan supercomputer at Oak Ridge National Laboratory, USA, achieved a computational peak performance of approximately 17--27 petaFLOPS. It comprised more than 18,000 Nvidia Tesla K20 GPUs and 700 terabytes of memory.
+\end{example}
+
+Typical application domains include weather forecasting, simulation of complex physical systems, and modelling of sub-atomic structures (e.g.\ assessing the structural health of nuclear weapons).
+
+\subsection{Microcomputers}
+
+Microcomputers use a microprocessor as their central processing unit and rely on external memory and peripheral chip support. They range from high-end server workstations down to desktop PCs and notebooks used for everyday home-office computing.
+
+\subsection{Embedded Systems}
+
+Embedded systems are compact devices that typically employ a single-chip microcontroller containing the processing unit, memory, and all relevant peripheral support on one integrated circuit. They are called ``embedded'' because the presence of a microprocessor inside the device is non-obvious to the user. Examples include digital cameras, thermometers, portable music players, and computer mice.
+
+\begin{keyresult}[title={Three Classes of Computers}]
+\begin{itemize}
+  \item \textbf{Supercomputer} --- massively parallel, petaFLOP-scale performance, used for scientific simulation.
+  \item \textbf{Microcomputer} --- microprocessor + external memory; covers servers, desktops, and laptops.
+  \item \textbf{Embedded system} --- single-chip microcontroller; the processor is hidden inside the product.
+\end{itemize}
+\end{keyresult}
+
+\section{Early Days of the Digital Computer}
+
+Major advances in computing occurred during World War II (the 1940s), when computer research was funded primarily by the War Department to solve problems related to ballistics. Early fire-control systems were analog, gear-based computers: operators dialled in parameters such as target speed and course, range to target, wind speed and direction, and own vessel speed and course, and the mechanical outputs then drove the motors of the gun.
+
+\subsection{Harvard and Von Neumann Architectures}
+
+From this era, two major computer architecture designs emerged.
+
+\begin{definition}[Harvard Architecture]
+\label{def:harvard}
+The Harvard architecture, named after the Harvard series of relay calculators developed by Howard Aiken at Harvard University (commercialised as IBM's ASCC, also known as the Harvard Mark 1), uses two separate memory spaces: one for program code and one for data. The CPU can therefore fetch an instruction and read/write data simultaneously.
+\end{definition}
+
+\begin{definition}[Von Neumann Architecture]
+\label{def:vonneumann}
+The Von Neumann architecture, developed by John von Neumann at Princeton University, uses a single shared memory for both program code and data. The CPU reads instructions and data from the same memory bus.
+\end{definition}
+
+A high-level comparison of the two architectures is given below:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Property} & \textbf{Harvard} & \textbf{Von Neumann} \\
+\midrule
+Memory spaces & Two (code + data) & One (shared) \\
+Simultaneous fetch & Yes & No (von Neumann bottleneck) \\
+Hardware cost & Higher & Lower \\
+Prevalence today & Microcontrollers, DSPs & General-purpose CPUs \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{examtip}[title={Identifying the Architectures}]
+Remember: Harvard $\Rightarrow$ Hard to confuse --- it has two Halves of memory. Von Neumann has one shared memory space, which introduces the ``von Neumann bottleneck'' (CPU waits for memory access). In practice, most modern CPUs use a modified Harvard design internally (separate instruction and data caches) but present a von Neumann interface to software.
+\end{examtip}
+
+\subsection{ENIAC --- The First Digital Computer}
+
+In 1943 the US Army funded Presper Eckert and John Mauchly at the University of Pennsylvania to construct ENIAC (Electronic Numerical Integrator And Calculator), based on von Neumann's architecture. ENIAC's physical specifications illustrate how far hardware has come:
+
+\begin{itemize}
+  \item Weight: 30 tons
+  \item Vacuum tubes: 19,000
+  \item Relays: 1,500
+  \item Power consumption: 200 kW
+  \item Main memory: only 1.5 kbits
+\end{itemize}
+
+The high cost of memory in the early days of computing made the shared-memory approach of the von Neumann design preferable, and it has remained the dominant architecture for general-purpose computers ever since.
+
+\section{Basic Components of a Microcomputer}
+
+\subsection{Core Components and the Bus}
+
+A microcomputer consists of three main components:
+
+\begin{enumerate}
+  \item \textbf{Processor (CPU)} --- executes instructions.
+  \item \textbf{Main Memory} --- stores both data and the running program (von Neumann model).
+  \item \textbf{I/O Interfaces} --- connect input devices (keyboard, sensors) and output devices (display, actuators) to the system.
+\end{enumerate}
+
+These components are interconnected by a \emph{bus}, which is a collection of parallel wires over which binary information is transferred simultaneously. The bus is logically divided into three sub-buses:
+
+\begin{itemize}
+  \item \textbf{Data bus} --- carries the actual data values being transferred.
+  \item \textbf{Address bus} --- specifies the memory location or I/O port being accessed.
+  \item \textbf{Control bus} --- carries timing and control signals (read, write, interrupt, etc.).
+\end{itemize}
+
+Other important support components include a power supply unit, a CPU clock circuit, and reset circuitry.
+
+\subsection{The CPU Clock}
+
+Most computers are synchronous: all operations are coordinated by a master (system) clock signal. Key points:
+
+\begin{itemize}
+  \item The speed performance of the computer is governed by the frequency of the clock.
+  \item The CPU requires a fixed number of clock ticks (cycles) to execute each instruction.
+  \item Many different clock frequencies are derived from the one master clock oscillator.
+  \item Operations close to the CPU core (registers, ALU) are clocked faster; operations involving external components (main memory, peripheral access) are clocked slower.
+\end{itemize}
+
+\begin{warning}[title={Clock Speed $\neq$ Performance}]
+A fast processor clock does not guarantee fast execution if memory is slow. A CPU with a fast clock coupled to slow main memory will still execute instructions slowly, because it must stall waiting for data from memory. Memory access speed is often the true performance bottleneck.
+\end{warning}
+
+\subsection{Reset Circuitry}
+
+The reset circuit ensures the CPU starts in a well-defined, known state. On power-up, the reset circuitry asserts an active-low signal on the CPU's RESET pin for several clock cycles, after which the CPU begins executing its boot-up code from a fixed address. Most systems also provide a manual reset button that can re-assert the reset signal without cutting power.
+
+\section{Desktop PC and Tablet PC --- Hardware Composition}
+
+Despite differences in form factor, both a desktop PC and a tablet computer instantiate the same abstract model: CPU, memory, and I/O interfaces. The difference lies in physical packaging and power constraints.
+
+\subsection{Inside a Desktop PC}
+
+The major hardware components of a typical desktop PC are:
+
+\begin{itemize}
+  \item \textbf{Motherboard with CPU} --- the main circuit board integrating the processor socket, chipset, and peripheral connectors.
+  \item \textbf{DRAM Main Memory} --- typically 4--8 GiB of dynamic RAM.
+  \item \textbf{Hard Disk Drive (HDD)} --- secondary (non-volatile) storage, e.g.\ 1 TiB.
+  \item \textbf{Graphics Processing Unit (GPU)} --- a co-processor dedicated to graphics rendering and, increasingly, general parallel computation.
+  \item \textbf{Power Supply Unit (PSU)} --- converts mains AC to the DC voltages required by the components.
+  \item \textbf{I/O Peripherals} --- display, keyboard, mouse, etc.
+\end{itemize}
+
+\subsection{Inside a Tablet Computer --- iPad 2 Case Study}
+
+The iPad 2 illustrates how a tablet consolidates these same building blocks into a compact, battery-powered form:
+
+\begin{itemize}
+  \item LCD display + front glass panel (touchscreen).
+  \item Circuit board hosting all silicon.
+  \item 3-cell Li-Ion polymer battery (25Wh, providing $\approx$ 10 hours of operation).
+  \item Back chassis (structural enclosure).
+\end{itemize}
+
+On the circuit board itself:
+
+\begin{itemize}
+  \item A5 processor (CPU + GPU SoC).
+  \item Flash NAND --- 16 GiB secondary (non-volatile) memory.
+  \item Touchscreen controller and driver ICs.
+  \item LCD timing controller.
+  \item Power Management IC.
+\end{itemize}
+
+\subsection{Apple A5 --- A System-on-a-Chip (SoC)}
+
+The A5 is a Package-on-Package (PoP) System-on-a-Chip (SoC) designed by Apple and manufactured by Samsung. Its specifications:
+
+\begin{itemize}
+  \item \textbf{CPU}: Dual-core ARM Cortex-A9 at 1 GHz (clock speed can be dynamically reduced to save battery), with 4.5 MiB cache.
+  \item \textbf{GPU}: Dual-core PowerVR SGX543MP2 (accelerates graphics).
+  \item \textbf{RAM}: 512 MiB low-power DDR SDRAM at 533 MHz.
+\end{itemize}
+
+\begin{definition}[Package-on-Package (PoP)]
+\label{def:pop}
+Package-on-Package is an IC packaging technique that vertically stacks and interconnects separate packages (e.g.\ a CPU package and a memory package) via Ball Grid Array (BGA) solder connections.
+\end{definition}
+
+The advantages of PoP packaging are:
+
+\begin{enumerate}
+  \item \textbf{Space saving} --- stacking reduces the motherboard footprint, enabling thinner/smaller products.
+  \item \textbf{Minimised track length between CPU and memory} --- faster signal propagation and reduced electrical noise.
+  \item \textbf{Independent testability} --- memory and CPU packages can be tested separately, improving manufacturing yield and allowing multiple memory suppliers.
+  \item \textbf{Flexible memory sizing} --- different memory capacities can be paired with the same CPU die, simplifying inventory management.
+\end{enumerate}
+
+\begin{keyresult}[title={Same Abstraction, Different Packaging}]
+Whether it is a desktop tower, a tablet, or a wristwatch, the fundamental architecture is identical: CPU + Memory + I/O\@. Form factor, power budget, and packaging technology (e.g.\ PoP SoC vs.\ discrete motherboard components) differ, but the logical model does not.
+\end{keyresult}
+
+\chapter{Data Organisation in Memory}
+
+\section{Role of Memory in Computing}
+
+\subsection{Programming in Hardware vs.\ Software}
+
+There are two fundamental approaches to making a processor perform a computation.
+
+\textbf{Programming in hardware} wires up a fixed sequence of arithmetic and logic functions tailored to a specific task. For example, computing $A = (B+C)\times D$ with hardware programming would require a dedicated adder feeding into a dedicated multiplier. This approach is extremely fast because there is no decoding overhead, but it is entirely inflexible --- changing the algorithm means redesigning the circuit.
+
+\textbf{Programming in software} uses a single general-purpose arithmetic and logic unit (ALU) controlled by an instruction decoder. Instruction codes fetched from memory tell the decoder which operation to activate on the ALU\@. Although slower and more complex than pure hardware, this approach allows any computation to be specified by writing a different sequence of instructions, with no changes to the physical hardware.
+
+\begin{keyresult}[title={Why Software Wins}]
+Software programming trades a small speed penalty for enormous flexibility. The instruction decoder is the key component: it interprets bit patterns (opcodes) and activates the corresponding function in a general-purpose ALU, enabling any algorithm to run on the same physical hardware.
+\end{keyresult}
+
+\subsection{Code, Data, and Memory}
+
+Two fundamental concepts underlie every program:
+
+\begin{definition}[Code and Data]
+\label{def:code-data}
+Code is a sequence of instructions. Data are the values those instructions operate on (inputs and intermediate results). In a stored-program computer both reside in the same memory.
+\end{definition}
+
+\begin{definition}[Memory]
+\label{def:memory}
+Memory is a sequential list of addressable storage locations. Each location holds a fixed-width binary value. A processor selects a location by driving its binary address onto the address bus; the contents of that location then appear on the data bus.
+\end{definition}
+
+\subsection{The Von Neumann Stored-Program Concept}
+
+Recalling Definition~\ref{def:vonneumann} from Chapter 1, most modern computers follow von Neumann's stored-program concept, which rests on three principles:
+
+\begin{enumerate}
+  \item Both data and instructions are stored in the same memory.
+  \item Memory contents are addressable by location, without regard to the type of data stored there.
+  \item Execution proceeds sequentially (one instruction after another) unless explicitly altered by a branch or jump instruction.
+\end{enumerate}
+
+\subsection{The Memory Hierarchy}
+
+Real systems cannot be built with a single memory technology that is simultaneously fast, large, and cheap. Instead, memories are organised in a hierarchy of levels, ordered from fastest/most expensive to slowest/cheapest:
+
+\begin{center}
+\begin{tabular}{llll}
+\toprule
+\textbf{Level} & \textbf{Technology} & \textbf{Access Time} & \textbf{Typical Size} \\
+\midrule
+Registers & Flip-flops (in CPU) & 1 clock cycle & 2--128 registers \\
+Cache memory & Static RAM (SRAM) & 3--20 ns & up to 512 kB \\
+Main memory & Dynamic RAM / ROM & 30--70 ns & up to 16 GB \\
+Secondary memory & Magnetic / Flash & 0.03--100 ms & up to 4 TB \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+As one moves down the hierarchy, cost per bit decreases, capacity increases, and access time increases. The CPU accesses levels in order --- if data is not found in a fast level, it fetches it from the next level down (a cache miss).
+
+\subsection{Characteristics of Main Memory}
+
+Main memory is organised as a flat array of byte-sized (8-bit) locations, each with a unique address:
+
+\begin{itemize}
+  \item Each address is specified as a binary pattern driven onto the address bus.
+  \item Memory size $= 2^n$ bytes, where $n$ is the number of address-bus lines.
+  \item Both data and instructions are stored in consecutive locations.
+  \item Access is random: any location can be read or written in the same time, regardless of its address.
+\end{itemize}
+
+\begin{examtip}[title={Memory Size Formula}]
+If an address bus has $n$ lines, the maximum addressable memory is $2^n$ bytes. For example, a 16-bit address bus can address $2^{16} = 65{,}536$ bytes (64 kB); a 32-bit bus can address $2^{32} \approx 4$ GB\@.
+\end{examtip}
+
+\section{Number Representation}
+
+\subsection{Basic Numeric Types in C}
+
+Programming languages expose the hardware representation of numbers through data types. In ANSI C, numbers come in two basic varieties:
+
+\begin{itemize}
+  \item \textbf{Integers} (\texttt{int}) --- whole numbers, e.g.\ 32,676.
+  \item \textbf{Floating-point numbers} (\texttt{float}) --- numbers with a fractional part, e.g.\ $3.2676 \times 10^4$. Useful for scientific calculation; always signed. Floating-point arithmetic will be covered in detail in the Computer Arithmetic chapter.
+\end{itemize}
+
+Some processors handle only integer arithmetic natively and use a separate Floating-Point Unit (FPU) co-processor for float operations.
+
+\subsection{Signed and Unsigned Integers}
+
+Integers can be either signed (positive and negative) or unsigned (non-negative only):
+
+\begin{itemize}
+  \item \texttt{int} --- signed integer, e.g.\ $-1$.
+  \item \texttt{unsigned int} --- unsigned integer, e.g.\ 255.
+\end{itemize}
+
+Most processors represent signed integers using the \emph{two's complement} scheme. For an $n$-bit value, the range is $-2^{n-1}$ to $2^{n-1}-1$ (signed) vs.\ $0$ to $2^n - 1$ (unsigned). For example, with 8 bits:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Bit Pattern} & \textbf{Two's Complement (signed)} & \textbf{Unsigned} \\
+\midrule
+\texttt{0111 1111} & $+127$ & 127 \\
+\texttt{1111 1111} & $-1$ & 255 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{warning}[title={Signed vs.\ Unsigned Interpretation}]
+The same bit pattern in memory has a different numeric meaning depending on whether it is interpreted as signed or unsigned. \texttt{1111 1111} is $-1$ in two's complement but 255 as an unsigned byte. Always declare variables with the correct signedness to avoid subtle bugs. Use \texttt{unsigned} where only non-negative values are needed (e.g.\ counting a population) to extend the positive range.
+\end{warning}
+
+\subsection{ANSI C Numeric Data Types}
+
+The range of a numeric type is determined by its size in bits. The table below summarises the standard ANSI C numeric types (sizes may vary with processor and compiler):
+
+\begin{center}
+\begin{tabularx}{\textwidth}{lllX}
+\toprule
+\textbf{Type} & \textbf{Bytes} & \textbf{Bits} & \textbf{Range} \\
+\midrule
+\texttt{signed char} & 1 & 8 & $-128$ to $+127$ \\
+\texttt{unsigned char} & 1 & 8 & 0 to $+255$ \\
+\texttt{short int} & 2 & 16 & $-32{,}768$ to $+32{,}767$ \\
+\texttt{unsigned short int} & 2 & 16 & 0 to $+65{,}535$ \\
+\texttt{int} & 4 & 32 & $-2{,}147{,}483{,}648$ to $+2{,}147{,}483{,}647$ \\
+\texttt{unsigned int} & 4 & 32 & 0 to $+4{,}294{,}967{,}295$ \\
+\texttt{long long int} & 8 & 64 & $-(2^{63})$ to $2^{63}-1$ \\
+\texttt{float} & 4 & 32 & (IEEE 754 single precision) \\
+\texttt{double} & 8 & 64 & (IEEE 754 double precision) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Use the smallest type whose range covers the required values in order to minimise memory usage.
+
+\subsection{Multi-byte Storage and Endianness}
+
+When a multi-byte integer (e.g.\ a 32-bit \texttt{int}) is stored in memory, the four individual bytes must be laid out in consecutive addresses. There are two conventions:
+
+\begin{definition}[Big-Endian]
+\label{def:big-endian}
+In big-endian byte ordering the most significant byte is stored at the lowest address. Used by, e.g., Motorola 68k, Sun SPARC, Mac PowerPC\@.
+\end{definition}
+
+\begin{definition}[Little-Endian]
+\label{def:little-endian}
+In little-endian byte ordering the least significant byte is stored at the lowest address. Used by, e.g., Intel x86, DEC Alpha, Intel 8051.
+\end{definition}
+
+For a 32-bit value stored at address $N$:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Address} & \textbf{Big-Endian} & \textbf{Little-Endian} \\
+\midrule
+$N$ & MSB & LSB \\
+$N+1$ & $\cdots$ & $\cdots$ \\
+$N+2$ & $\cdots$ & $\cdots$ \\
+$N+3$ & LSB & MSB \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{examtip}[title={Endianness Quick Check}]
+To determine the endianness: look at the lowest address in memory. If it holds the most significant byte, it is big-endian (big end first). If it holds the least significant byte, it is little-endian. The Intel x86 family (and most modern PCs) is little-endian.
+\end{examtip}
+
+\section{Character and Boolean Representation}
+
+\subsection{Character Representation}
+
+Computers do not only process numbers; many applications manipulate text. In ANSI C a single character is declared as \texttt{char} and occupies exactly one byte of memory.
+
+Raw bytes in memory are transformed into human-readable characters via an encoding standard that maps each integer code to a symbol.
+
+\textbf{ASCII.} The American Standard Code for Information Interchange (ASCII) is the most widely used 7-bit character encoding. Key properties:
+
+\begin{itemize}
+  \item Codes 0--31 and 127 are control characters (non-printable), e.g.\ \texttt{0x0A} = Line Feed, \texttt{0x0D} = Carriage Return.
+  \item Codes 32--126 are printable characters.
+  \item Uppercase letters (A--Z): \texttt{0x41}--\texttt{0x5A}.
+  \item Lowercase letters (a--z): \texttt{0x61}--\texttt{0x7A}.
+  \item Decimal digits (0--9): \texttt{0x30}--\texttt{0x39}.
+\end{itemize}
+
+The fact that all uppercase letters, lowercase letters, and digits occupy contiguous ranges makes it easy to check a character's category or convert between upper and lower case using simple arithmetic.
+
+A byte can store an ASCII character in its lower 7 bits; the most significant bit (MSB) can be used for parity error checking.
+
+\textbf{SIXBIT.} DEC's SIXBIT encoding, popular with PDP-8 and PDP-10 computers in the 1960s--70s, encodes 64 symbols in 6 bits. It lacks control characters (no CR/LF) and is therefore unsuitable for general text processing, but it allowed three characters to be packed into an 18-bit PDP word.
+
+\textbf{Unicode.} To represent all major living languages, the Unicode standard uses 8-, 16-, or 32-bit code points and is downward compatible with ASCII\@. Unicode 13.0 (released March 2020) contains 143,859 characters, including CJK ideographs, emoji, and historical scripts. It is the encoding underlying XML, Java, C\#/.NET, and most modern operating systems.
+
+\subsection{Boolean Representation}
+
+A Boolean variable has exactly two states: \texttt{true} and \texttt{false}. In ANSI C (C99 and later) the Boolean type is \texttt{\_Bool}, accessible via \texttt{\#include <stdbool.h>}. Semantics:
+
+\begin{itemize}
+  \item \texttt{false} = 0
+  \item \texttt{true} = any non-zero value (conventionally 1)
+\end{itemize}
+
+Memory storage for Boolean variables is inefficient: although a Boolean requires only 1 bit of information, most implementations allocate a full byte (the minimum addressable unit) per variable.
+
+\begin{example}[Bit-Addressable Memory --- Intel 8051]
+The Intel 8051 microcontroller partially addresses this inefficiency by providing 128 bit-addressable memory locations (bytes \texttt{0x20}--\texttt{0x2F} of internal RAM). Each of these 16 bytes can be accessed either as a full byte or as 8 individually addressable bits, giving 128 independently addressable flags. This is ideal for embedded applications where many Boolean status signals (switch states, LED flags) must be tracked efficiently.
+\end{example}
+
+\section{Array, String, and Structure Representations}
+
+\subsection{Arrays}
+
+\begin{definition}[Array]
+\label{def:array}
+A linear array is a contiguous block of memory storing a sequence of values of the same data type. Elements are accessed via an offset from the base address (BA) of the array.
+\end{definition}
+
+For an array \texttt{a} of elements of type $T$ (each of size $s$ bytes), the address of element \texttt{a[n]} is:
+\[
+  \text{Address}(\texttt{a[n]}) = \text{BA} + n \times s
+\]
+
+\begin{example}[Char and Short-Int Arrays]
+Consider the C declarations:
+\begin{lstlisting}[language=C]
+char c[2];       // 1-byte elements: c[0] at BA_c, c[1] at BA_c + 1
+short int i[3];  // 2-byte elements: i[n] at BA_i + 2*n
+i[0] = 5; i[1] = 6; i[2] = 7;
+\end{lstlisting}
+Element \texttt{i[2]} is stored at $\text{BA}_i + 4$, occupying two consecutive bytes \texttt{0x00}, \texttt{0x07} (big-endian) or \texttt{0x07}, \texttt{0x00} (little-endian).
+\end{example}
+
+\textbf{Nested (multi-dimensional) arrays.} Each element of an array may itself be an array. For a 2-D array \texttt{int k[R][C]}, the offset of element \texttt{k[a][b]} from the base address is:
+\[
+  \text{Offset}(\texttt{k[a][b]}) = \texttt{sizeof(int)} \times (C \cdot a + b)
+\]
+For example, \texttt{k[2][1]} in a \texttt{k[3][2]} array of ints (4 bytes each) has offset $4 \times (2 \times 2 + 1) = 20$ bytes.
+
+\subsection{Strings}
+
+A string in C is an array of \texttt{char} values. Two storage conventions exist:
+
+\begin{definition}[C String]
+\label{def:cstring}
+A C string is a character array terminated by a null character (\texttt{0x00}). The end of the string is found by scanning forward until the null terminator is encountered. The string \texttt{"123"} requires 4 bytes: three character bytes (\texttt{0x31}, \texttt{0x32}, \texttt{0x33}) plus the null byte.
+\end{definition}
+
+\begin{definition}[Pascal String]
+\label{def:pascal-string}
+A Pascal string stores the length of the string in the first byte, followed by the character bytes (no null terminator). The string \texttt{"123"} requires 4 bytes: \texttt{0x03} (length) then \texttt{0x31}, \texttt{0x32}, \texttt{0x33}.
+\end{definition}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Property} & \textbf{C string} & \textbf{Pascal string} \\
+\midrule
+Length retrieval & $O(n)$ scan & $O(1)$ read first byte \\
+Maximum length & Unlimited & 255 characters (1-byte length) \\
+Language support & C, C++ & Pascal, older Mac APIs \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Structures}
+
+\begin{definition}[Structure]
+\label{def:struct}
+A structure (\texttt{struct} in C) is a composite data type that groups fields of different types into a single named unit. When a structure variable is declared, the compiler allocates consecutive memory for all its fields in declaration order.
+\end{definition}
+
+\begin{example}[Structure Memory Layout]
+\leavevmode
+\begin{lstlisting}[language=C]
+struct Man {
+    char race;       // 1 byte at BA_m
+    int age;         // 4 bytes at BA_m + 1 (without padding)
+    char name[20];   // 20 bytes at BA_m + 5
+};
+struct Man m;
+\end{lstlisting}
+Field \texttt{m.age} is at offset 1; field \texttt{m.name} is at offset 5 (immediately after the 4-byte int).
+\end{example}
+
+The key difference between arrays and structures: arrays hold homogeneous data; structures hold heterogeneous data. Memory space is allocated only when a variable of the structure type is declared (not when the type itself is defined).
+
+\section{Pointer Representation}
+
+\begin{definition}[Pointer]
+\label{def:pointer}
+A pointer is a variable whose value is a memory address. In C, a pointer is declared by prefixing the base type with \texttt{*}, e.g.\ \texttt{char *ptr} declares a pointer to a \texttt{char}.
+\end{definition}
+
+Key properties of pointers:
+
+\begin{itemize}
+  \item The size of a pointer is determined by the processor's address space, not by the data type it points to. On a processor with 16-bit addresses, all pointers are 2 bytes; on a 64-bit system, all pointers are 8 bytes.
+  \item The value of a pointer is obtained using the \emph{address-of} operator \texttt{\&}: e.g.\ \texttt{ptr = \&c} stores the address of variable \texttt{c} in \texttt{ptr}.
+  \item The \emph{dereferencing} operator \texttt{*} reads or writes the memory location the pointer points to: \texttt{*ptr = 'Z'} writes \texttt{'Z'} to the address held in \texttt{ptr}.
+\end{itemize}
+
+\begin{example}[Pointer in Memory (16-bit address space)]
+\leavevmode
+\begin{lstlisting}[language=C]
+char c;       // 1 byte at 0x0100
+char *ptr;    // 2 bytes (16-bit address)
+c = 'A';
+ptr = &c;     // ptr contains 0x0100
+*ptr = 'Z';   // c is now 'Z'
+\end{lstlisting}
+After execution: address \texttt{0x0100} holds \texttt{0x5A} (\texttt{'Z'}); the pointer variable \texttt{ptr} itself holds the 16-bit value \texttt{0x0100}.
+\end{example}
+
+Pointers are especially powerful for navigating arrays and structures: knowing the base address of an array or struct, one can access any element by adding the appropriate byte offset.
+
+\section{Data Alignment}
+
+\subsection{Alignment Requirements}
+
+Most modern processors impose restrictions on the allowable starting address for multi-byte data types: the address must be a \emph{multiple of the data type's size}. This is called \emph{data alignment}.
+
+For programs compiled with Visual C++ or GCC targeting a 64-bit Intel processor:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Type} & \textbf{Size (bytes)} & \textbf{Allowable start addresses} \\
+\midrule
+\texttt{char} & 1 & any address \\
+\texttt{short} & 2 & multiples of 2: \texttt{0x0000}, \texttt{0x0002}, \ldots \\
+\texttt{int} & 4 & multiples of 4: \texttt{0x0000}, \texttt{0x0004}, \ldots \\
+\texttt{float} & 4 & multiples of 4 \\
+\texttt{double} & 8 & multiples of 8: \texttt{0x0000}, \texttt{0x0008}, \ldots \\
+\texttt{pointer} & 8 & multiples of 8 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Why Alignment Matters: Intel Pentium 4 Case Study}
+
+The Pentium 4 has a 64-bit (8-byte) data bus backed by eight 8-bit memory modules. Only one address can exist on the address bus at a time. An 8-byte value that spans two 8-byte boundaries therefore requires two memory cycles to fetch, halving throughput for that access. An aligned value crosses no boundary and requires only one cycle.
+
+The three lowest address bits (A2--A0) are replaced by byte-enable lines BE0--BE7 that select which of the eight byte lanes are active; the actual byte address is thus determined by A35--A3 together with the byte-enables. A misaligned transfer would require A3 to be in two different states simultaneously --- which is impossible in one cycle.
+
+\begin{warning}[title={Misaligned Access is Slow}]
+On processors that permit misaligned accesses (e.g.\ x86), the hardware silently issues two memory transactions. This can halve memory throughput for that datum. Some processors (e.g.\ early MIPS, SPARC) raise a hardware exception on misaligned access. Always align data to the natural boundary of its type.
+\end{warning}
+
+\textbf{Effect of bus width.} An 8-bit-bus processor (e.g.\ Intel 8080) transfers one byte per cycle regardless of address, so it has no alignment requirements. A 16-bit-bus processor requires 2- and larger data types to start at even addresses.
+
+\subsection{Data Padding in Structures}
+
+When fields of different sizes are packed into a \texttt{struct}, the compiler inserts \emph{padding bytes} between fields (and at the end of the struct) to satisfy alignment constraints.
+
+\begin{example}[Structure Padding]
+\leavevmode
+\begin{lstlisting}[language=C]
+struct rec1 {
+    char c;       // 1 byte at offset 0
+    int i;        // needs 4-byte alignment
+                  // -> 3 padding bytes at offsets 1-3
+                  // i starts at offset 4
+    char d[2];    // 2 bytes at offsets 8-9
+                  // 2 padding bytes at offsets 10-11
+};
+// sizeof(struct rec1) = 12 bytes (with padding)
+\end{lstlisting}
+\end{example}
+
+\textbf{Minimising padding by reordering fields.} Declaring fields in decreasing size order reduces wasted padding:
+
+\begin{example}[Reordered Structure]
+\leavevmode
+\begin{lstlisting}[language=C]
+struct rec2 {
+    int i;        // 4 bytes at offset 0
+    char c;       // 1 byte at offset 4
+    char d[2];    // 2 bytes at offsets 5-6
+                  // 1 padding byte at offset 7
+};
+// sizeof(struct rec2) = 8 bytes -- saves 4 bytes vs rec1
+\end{lstlisting}
+\end{example}
+
+\begin{examtip}[title={Minimising Structure Size}]
+Declare structure members in descending size order (largest type first, smallest last). This reduces the amount of padding the compiler inserts and can significantly shrink the struct, especially in large arrays of structures.
+\end{examtip}
+
+\begin{keyresult}[title={Data Alignment Summary}]
+\begin{itemize}
+  \item A datum of size $s$ bytes must start at an address that is a multiple of $s$.
+  \item Compilers insert padding bytes to enforce alignment within structures.
+  \item Reorder fields from largest to smallest to minimise padding.
+  \item The strictness of alignment depends on the width of the processor's data bus.
+\end{itemize}
+\end{keyresult}
+
+\chapter{Instruction Organisation in Memory}
+
+\section{Characteristics of Instructions and the ARM Programmer's Model}
+
+\subsection{Code and Data in Memory}
+
+Recall from Chapter 2 that both program code and data are stored together in the same memory (Definition~\ref{def:code-data}). Instructions are stored as binary patterns called \emph{machine codes}; they are also represented in human-readable \emph{mnemonics}. Memory is partitioned into separate code and data segments.
+
+As a concrete example, the ARM processor is a 32-bit CPU in which every instruction is exactly 32 bits (4 bytes) long. The two-instruction sequence
+\begin{lstlisting}
+MOV R1, R0
+MOV R2, R1
+\end{lstlisting}
+is stored in code memory as four consecutive bytes per instruction (e.g.\ \texttt{0xE1A00100} for \texttt{MOV R2,R1}), while data values are stored in a separate region at a higher address range.
+
+\subsection{Instruction Format: Opcode and Operands}
+
+\begin{definition}[Instruction Format]
+\label{def:instruction-format}
+Most instruction formats consist of two parts:
+\begin{itemize}
+  \item \textbf{Op-code} --- a bit field at the start of the instruction word that specifies the operation to be carried out (e.g.\ move, add, subtract).
+  \item \textbf{Operands} --- the remaining bit fields that specify the data itself, or the location of the data, and where the result is to be stored.
+\end{itemize}
+\end{definition}
+
+Some operations produce no storable result but instead alter the program sequence or influence the processor status flags (e.g.\ the flags N, Z, V, C).
+
+\textbf{Encoding the opcode.} The number of bits required for the opcode is determined by the number of distinct operations the instruction set must encode. If there are $k$ different operations, the opcode field must be at least $\lceil \log_2 k \rceil$ bits wide. For example, with 80 different operations, since $2^6 = 64 < 80 \le 128 = 2^7$, a minimum of 7 bits is required. The greater the variety of operations the instruction set supports, the longer the instruction word must be.
+
+\begin{keyresult}[title={Instruction = Opcode + Operands}]
+Every instruction word encodes two things: \emph{what to do} (opcode) and \emph{what to do it to} (operands). The minimum opcode width for $k$ operations is $\lceil \log_2 k \rceil$ bits.
+\end{keyresult}
+
+\subsection{Addressing Modes}
+
+An \emph{addressing mode} is the method by which an operand's location is specified within an instruction (see Definition~\ref{def:addressing-mode} in Chapter 4 for a full treatment). Common modes include immediate, register direct, register indirect, and variants that add a constant offset or index register to a base address.
+
+The table below summarises the principal addressing modes with examples from both the ARM and Intel instruction sets:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Mode} & \textbf{ARM example} & \textbf{Intel example} \\
+\midrule
+Absolute (Direct) & (none in ARM) & \texttt{MOV AX,[1000h]} \\
+Register Direct & \texttt{MOV R1,R0} & \texttt{MOV AX,DX} \\
+Immediate & \texttt{MOV R1,\#3} & \texttt{MOV AX,0003h} \\
+Register Indirect & \texttt{LDR R1,[R0]} & \texttt{MOV AX,[BX]} \\
+Register Indirect with Offset & \texttt{LDR R1,[R0,\#4]} & \texttt{MOV AX,[BX+4]} \\
+Register Indirect with Index & \texttt{LDR R1,[R0,R2]} & \texttt{MOV AH,[BX+DI]} \\
+Implied & \texttt{BNE LOOP} & \texttt{JMP -8} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{examtip}[title={ARM Has No Absolute Addressing}]
+The ARM instruction set does not support absolute (direct) addressing, where the operand address is embedded as a literal in the instruction. All memory accesses on ARM use a register to hold the base address (register indirect and its variants). This distinguishes ARM from Intel architectures.
+\end{examtip}
+
+\subsection{Role and Categories of Instructions}
+
+The role of an instruction is to make purposeful changes to the current state of the processor. The visible state of a processor is defined by its programmer's model together with the contents of memory. There are three broad categories of instructions available in a typical processor:
+
+\begin{description}
+  \item[Data Processing] Arithmetic and logical operations that compute new values from existing register contents. ARM examples: \texttt{ADD R0,R1,R2}; \texttt{SUB R1,R2,\#3}; \texttt{EOR R3,R3,R2}.
+  \item[Data Transfer] Move data between registers, or between registers and memory. ARM examples: \texttt{MOV R1,R0}; \texttt{STR R0,[R2,\#4]}; \texttt{LDR R1,[R2]}.
+  \item[Program Control] Alter the flow of execution by modifying the Program Counter. ARM examples: \texttt{B Back} (unconditional branch); \texttt{BNE Loop} (branch if not equal); \texttt{BL Routine} (branch with link, i.e.\ subroutine call).
+\end{description}
+
+\subsection{The ARM MOV Instruction}
+
+\begin{definition}[MOV Instruction]
+\label{def:mov}
+The ARM \texttt{MOV} instruction is a two-operand, register-to-register data transfer. It copies the value of the source operand (right) into the destination register (left):
+\[
+  \texttt{MOV Rd, Rs} \quad\Longrightarrow\quad \texttt{Rd} \leftarrow \texttt{Rs}
+\]
+The source register is unchanged. For example, after \texttt{MOV R1,R0}, both \texttt{R0} and \texttt{R1} hold the value that was originally in \texttt{R0}.
+\end{definition}
+
+\begin{warning}[title={ARM Operand Order}]
+In ARM assembly, the destination is always the \emph{leftmost} operand and the source is the \emph{rightmost}. This is the opposite of the Intel convention for some instructions, and mixing up the order is a common mistake.
+\end{warning}
+
+\subsection{The ARM Programmer's Model}
+
+\begin{definition}[Programmer's Model]
+\label{def:programmer-model}
+The programmer's model is the set of registers visible to software. It defines the state that instructions can read and modify. In the ARM architecture, the programmer's model in User mode consists of 16 general-purpose 32-bit registers (R0--R15) plus the Current Processor Status Register (CPSR).
+\end{definition}
+
+The registers have the following roles:
+
+\begin{itemize}
+  \item \textbf{R0--R12} --- general-purpose registers, freely usable by the programmer for data and addresses.
+  \item \textbf{R13 (Stack Pointer, SP)} --- by convention, holds the address of the current top of the hardware stack.
+  \item \textbf{R14 (Link Register, LR)} --- holds the return address when a subroutine is called via a Branch-with-Link (\texttt{BL}) instruction.
+  \item \textbf{R15 (Program Counter, PC)} --- holds the address of the next instruction to be fetched.
+  \item \textbf{CPSR (Current Processor Status Register)} --- holds the condition code flags N, Z, V, C and various processor control bits.
+\end{itemize}
+
+\subsection{Program Counter (PC / R15)}
+
+R15 is the Program Counter. Its value at any moment is the address of the next instruction to be fetched from code memory. The PC is updated automatically after each instruction fetch: for the ARM's 32-bit (4-byte) instructions it increments by 4, so that instructions are executed sequentially by default.
+
+Sequential execution can be broken by a branch or jump instruction, which loads a new address into the PC, transferring control to a non-sequential location.
+
+\begin{remark}[ARM Pipeline Offset]
+\label{rem:pipeline-offset}
+Due to the ARM's three-stage pipeline (Fetch --- Decode --- Execute), the value read from the PC during execution of an instruction is the address of that instruction plus 8 bytes (i.e.\ two instructions ahead). This is a known peculiarity of the ARM that must be accounted for when computing PC-relative addresses manually.
+\end{remark}
+
+\subsection{Stack Pointer (SP / R13) and Link Register (LR / R14)}
+
+\textbf{Stack Pointer.} By convention, R13 is designated the Stack Pointer (SP). The SP holds the address of the top of the stack --- a region of main memory used to temporarily save register values, pass function arguments, and store local variables. Typical stack operations push data to the stack (decrement SP, then write) or pop data from it (read, then increment SP).
+
+\textbf{Link Register.} R14 is the Link Register (LR). When a \texttt{BL} (Branch with Link) instruction is executed to call a subroutine, the processor automatically copies the current PC (R15) into R14. On return from the subroutine, the saved address is moved back into the PC (typically via \texttt{MOV PC,LR}), resuming execution after the call site. At all other times R14 may be used as a general-purpose register.
+
+\subsection{CPSR Condition Code Flags}
+
+The four condition code flags occupy the most-significant bits of the CPSR:
+
+\begin{center}
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Bit} & \textbf{Flag} & \textbf{Set when \ldots} \\
+\midrule
+31 & N (Negative) & The result of the last flag-setting operation was negative (MSB of result = 1). \\
+30 & Z (Zero) & The result of the last flag-setting operation was zero. \\
+29 & C (Carry) & The last flag-setting operation produced a carry-out of the most significant bit (unsigned overflow). \\
+28 & V (Overflow) & The last flag-setting operation produced a signed arithmetic overflow. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The flags are only updated when the instruction mnemonic includes an \texttt{S} suffix (e.g.\ \texttt{ADDS}, \texttt{SUBS}) or for comparison instructions (\texttt{CMP}, \texttt{TST}). They are used by conditional branch instructions (e.g.\ \texttt{BNE} checks $Z = 0$, \texttt{BMI} checks $N = 1$) to implement loops and if-statements.
+
+\begin{keyresult}[title={NZVC Flags}]
+N = Negative, Z = Zero, C = Carry (unsigned overflow), V = oVerflow (signed overflow). These four bits in the CPSR are set by arithmetic/logic instructions with the \texttt{S} suffix and tested by all conditional branch instructions.
+\end{keyresult}
+
+\section{Basic Execution Cycle}
+
+\subsection{The LDR Instruction}
+
+\begin{definition}[LDR Instruction]
+\label{def:ldr}
+The ARM \texttt{LDR} (Load Register) instruction copies a 32-bit word from memory into a register. The left operand is always the destination register; the right operand (in square brackets) is the source memory address, held indirectly in a register (register-indirect addressing):
+\[
+  \texttt{LDR Rd, [Ra]} \quad\Longrightarrow\quad \texttt{Rd} \leftarrow \texttt{Mem[Ra]}
+\]
+For example, if $\texttt{R0} = \texttt{0x00000100}$ and memory at address \texttt{0x100} contains the four bytes \texttt{0xDD}, \texttt{0xCC}, \texttt{0xBB}, \texttt{0xAA} (little-endian), then after \texttt{LDR R1,[R0]}, register \texttt{R1} holds \texttt{0xAABBCCDD}.
+\end{definition}
+
+\begin{examtip}[title={LDR vs.\ MOV}]
+\texttt{MOV} copies data between registers; \texttt{LDR} copies data from memory into a register. On ARM, you cannot directly read a memory location into a register using \texttt{MOV} --- \texttt{LDR} (or a variant with an offset) is required.
+\end{examtip}
+
+\subsection{The Role of the Processor and the Fetch--Decode--Execute Cycle}
+
+The fundamental job of the CPU is to repeatedly execute the \emph{fetch--decode--execute} (FDE) cycle:
+
+\begin{enumerate}
+  \item \textbf{Fetch instruction} --- the CPU places the address in the PC onto the address bus and reads the instruction word from code memory into the Instruction Register (IR). The PC is then incremented by 4.
+  \item \textbf{Decode instruction} --- the Control Unit (CU) decodes the opcode in the IR to determine what action is required.
+  \item \textbf{Fetch data (optional)} --- if the decoded instruction requires a memory operand (e.g.\ an \texttt{LDR}), the CPU places the data address on the address bus and reads the operand into a Buffer Register (BF).
+  \item \textbf{Execute} --- the CPU performs the required operation (arithmetic, logic, or data move), writing the result to the destination register or memory location.
+\end{enumerate}
+
+This cycle repeats continuously from power-on until the CPU is halted or reset.
+
+\subsection{A Simple Processor: Internal Structure}
+
+The basic components of a simple CPU and its interface to main memory are:
+
+\begin{itemize}
+  \item \textbf{General-purpose registers} --- fast on-chip storage (e.g.\ R0--R12 on ARM).
+  \item \textbf{Arithmetic Logic Unit (ALU)} --- performs arithmetic and logical operations.
+  \item \textbf{Buffer Register (BF)} --- a staging register used to hold operands fetched from memory before they are transferred to a destination register.
+  \item \textbf{Instruction Register (IR)} --- holds the currently-executing instruction word after it is fetched from memory.
+  \item \textbf{Data Address Register (DAR)} --- holds the effective memory address of a data operand during the operand-fetch phase.
+  \item \textbf{Program Counter (PC)} --- holds the address of the next instruction; drives the address bus during the instruction-fetch phase.
+  \item \textbf{Control Unit (CU)} --- decodes the opcode in the IR and generates the internal control signals and external bus control signals (Read/Write) needed to execute the instruction.
+  \item \textbf{Address Buffer (AB) / Data Buffer (DB)} --- interface latches that connect the internal address and data buses to the external bus driving main memory.
+\end{itemize}
+
+\subsection{Execution of \texttt{LDR R1,[R0]}: Step-by-Step}
+
+Consider the instruction \texttt{LDR R1,[R0]} stored at code address \texttt{0x000} (machine code \texttt{0xE5901000}), with $\texttt{R0} = \texttt{0x00000100}$ and the data value \texttt{0xAABBCCDD} stored at data address \texttt{0x100}.
+
+\textbf{Phase 1 --- Instruction Fetch.}
+\begin{enumerate}
+  \item The PC (\texttt{0x000}) is placed on the internal address bus and driven onto the external address bus via AB\@.
+  \item The CU asserts a Read signal on the control bus.
+  \item The memory responds by placing the four bytes of the instruction on the data bus; they are clocked into the IR via DB\@. The CU decodes the opcode.
+\end{enumerate}
+
+\textbf{Phase 2 --- Operand Fetch.}
+\begin{enumerate}[resume]
+  \item Decoding reveals that \texttt{LDR R1,[R0]} requires a memory operand. The content of R0 (\texttt{0x00000100}) is transferred to the DAR and placed on the address bus.
+  \item The CU asserts another Read signal.
+  \item The data value \texttt{0xAABBCCDD} is read from memory and loaded into the Buffer Register BF\@.
+\end{enumerate}
+
+\textbf{Phase 3 --- Execute (Load).}
+\begin{enumerate}[resume]
+  \item The CU generates an internal control signal to transfer the contents of BF into the destination register R1.
+  \item After execution, $\texttt{R1} = \texttt{0xAABBCCDD}$.
+\end{enumerate}
+
+\subsection{Performance Considerations}
+
+Execution of a single instruction may involve multiple memory accesses. In a von Neumann (single-memory) CPU, different instructions take different numbers of clock cycles because some require an extra operand-fetch phase.
+
+The \emph{von Neumann bottleneck} (introduced in Definition~\ref{def:vonneumann}) directly limits performance here: data transfers on the external bus are significantly slower than operations on the CPU's internal bus. System throughput is therefore bounded by the memory access bandwidth, not by the raw speed of the ALU\@.
+
+Two architectural strategies address this limitation:
+
+\begin{itemize}
+  \item \textbf{Keeping operands in registers} --- data already in R0--R12 can be used immediately without a memory access, eliminating the operand-fetch phase. This is why register allocation is a key optimisation in compilers.
+  \item \textbf{Harvard architecture} (see Definition~\ref{def:harvard}) --- separating code and data into two independent memories allows the CPU to fetch the next instruction and the current data operand in parallel, making the instruction execution time more uniform and increasing throughput.
+\end{itemize}
+
+\begin{keyresult}[title={Execution Speed Factors}]
+The number of clock cycles an instruction takes depends primarily on how many memory accesses are required. Instructions that operate only on registers (e.g.\ \texttt{MOV R1,R0}) are faster than instructions that require a memory operand (e.g.\ \texttt{LDR R1,[R0]}), because the latter needs an additional bus cycle. The memory-access bottleneck is a direct consequence of the von Neumann architecture.
+\end{keyresult}
+
+\chapter{Addressing Modes}
+
+\section{Introduction to Assembly Programming}
+
+Unlike high-level programming languages, assembly language statements operate at the level of the processor's instruction set architecture (ISA) directly. Such statements are known as \emph{mnemonics}: each mnemonic has a one-to-one correspondence with a binary pattern (machine code) that is directly understood by the CPU\@. Because mnemonics are hardware-dependent, they reference CPU registers by name and are converted to machine code by a program called an \emph{assembler}.
+
+\subsection{Why Use Assembly Language?}
+
+Although high-level languages such as C are sufficient for most tasks, there are situations where assembly-level coding provides decisive advantages:
+
+\begin{itemize}
+  \item \textbf{Faster execution speed} --- Algorithms for real-time signal processing in handheld devices can be computationally demanding, and hand-crafted assembly may exploit processor features that a compiler misses.
+  \item \textbf{More compact program size} --- Low-cost embedded devices may have small memory capacity but require many functionalities.
+  \item \textbf{Exploitation of optimised ISA features} --- High-level language compiled code may not exploit optimised instructions, addressing modes, and features available in the processor ISA to produce efficient run-time code.
+  \item \textbf{Cybersecurity} --- Many cybersecurity roles require good knowledge of assembly programming for reverse engineering, vulnerability analysis, and exploit development.
+\end{itemize}
+
+\subsection{When to Use Assembly Language?}
+
+Assembly is particularly beneficial for:
+
+\begin{itemize}
+  \item \textbf{Critical parts of the operating system} --- Especially parts of the system kernel that are constantly executed, such as the scheduler and interrupt handlers.
+  \item \textbf{Input/Output intensive code} --- Device drivers and ``loopy'' segments of code that process streaming data (e.g.\ video decoders).
+  \item \textbf{Time-critical code} --- Code that detects incoming sensor signals and responds rapidly, e.g.\ the Anti-lock Brake System (ABS) in cars.
+\end{itemize}
+
+\begin{example}[C to ARM Assembly]
+The following C fragment and its ARM assembly equivalent illustrate the one-to-one nature of assembly mnemonics:
+\begin{lstlisting}[language=C]
+if (a > c)
+    b = a;
+else
+    b = c;
+\end{lstlisting}
+\begin{lstlisting}
+CMP  R0, R2
+BLE  Else
+MOV  R1, R0     ; b = a
+B    Skip
+Else MOV  R1, R2     ; b = c
+Skip:
+\end{lstlisting}
+\end{example}
+
+\section{Addressing Modes --- Overview}
+
+\begin{definition}[Addressing Mode]
+\label{def:addressing-mode}
+An addressing mode (AM) is concerned with \emph{how data is accessed}, not the way data is processed. The correct AM allows the CPU to identify the actual operand, or the address location where the operand is stored.
+\end{definition}
+
+The ARM processor ISA supports the following addressing modes:
+
+\begin{enumerate}
+  \item Register direct
+  \item Immediate data
+  \item Register indirect
+  \item Register indirect with offset
+  \item Register indirect with index register
+  \item Pre- and post-autoindexing
+\end{enumerate}
+
+The table below gives a side-by-side comparison of ARM and Intel addressing mode syntax.
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Addressing Mode} & \textbf{ARM example} & \textbf{Intel example} \\
+\midrule
+Absolute (Direct) & (none) & \texttt{MOV AX,[1000h]} \\
+Register Direct & \texttt{MOV R1,R0} & \texttt{MOV AX,DX} \\
+Immediate & \texttt{MOV R1,\#3} & \texttt{MOV AX,0003h} \\
+Register Indirect & \texttt{LDR R1,[R0]} & \texttt{MOV AX,[BX]} \\
+Register Indirect + Offset & \texttt{LDR R1,[R0,\#4]} & \texttt{MOV AX,[BX+4]} \\
+Register Indirect + Index & \texttt{LDR R1,[R0,R2]} & \texttt{MOV AH,[BX+DI]} \\
+Implied & \texttt{BNE LOOP} & \texttt{JMP -8} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Register Direct Addressing}
+
+In register direct addressing, the operand is the content of the specified register. Register direct may be used for both the destination and the source operand.
+
+\begin{lstlisting}
+MOV R1, R0       ; R1 <- R0
+\end{lstlisting}
+
+In the \texttt{MOV} instruction the right operand is the source and the left operand is the destination. This is a fast addressing mode since no further memory access is involved during execution --- it should therefore be preferred whenever possible to optimise execution speed.
+
+All 16 ARM registers (R0--R12, SP/R13, LR/R14, PC/R15) may serve as either source or destination:
+
+\begin{lstlisting}
+MOV PC, R1       ; jump to address stored in R1
+MOV R3, LR       ; save link register in R3
+MOVS R0, R0      ; test N or Z condition of R0
+\end{lstlisting}
+
+\begin{keyresult}[title={Register Direct is Fastest}]
+Register direct involves no memory access during execution, making it the fastest addressing mode. Use it to hold frequently accessed variables in registers rather than memory.
+\end{keyresult}
+
+\section{Immediate Addressing}
+
+In immediate addressing, the operand is directly specified within the instruction itself. The ``\texttt{\#}'' symbol precedes the immediate value. Immediate addressing can only be used as a source operand.
+
+\begin{lstlisting}
+MOV R1, #3       ; R1 <- 3
+\end{lstlisting}
+
+Immediate addressing is used to load constant values known at the time of coding (e.g.\ loading a loop counter).
+
+\subsection{Encoding of the 12-bit Immediate Field}
+
+In a 32-bit ARM instruction, only 12 bits are available for the immediate operand. These 12 bits encode a value as an 8-bit base (range 0--255) rotated right by $2n$ bits, where $n$ is a 4-bit field ($0 \le n \le 15$). Consequently only a subset of all $2^{32}$ possible values can be represented directly.
+
+\begin{itemize}
+  \item Any value whose bits fit within 8 bits (i.e.\ 0--255) is always valid: \texttt{MOV R3,\#0xFF}.
+  \item Values expressible as an 8-bit quantity rotated right by an even number of bits are valid: e.g.\ \texttt{0x100} = 1 rotated right by 24 ($n = 12$) is valid.
+  \item Values that cannot be expressed in this form are invalid as a single immediate: \texttt{0x102} is invalid because $\texttt{0x102} = \texttt{0b1\,0000\,0010}$ requires two non-contiguous bit groups.
+\end{itemize}
+
+\begin{warning}[title={Not All Constants Are Valid Immediates}]
+The assembler will warn if a requested immediate value cannot be encoded. A combination of instructions must then be used:
+\begin{lstlisting}
+MOV R1, #0x100   ; load 0x100 into R1
+ADD R1, R1, #2   ; add 2 to get 0x102
+\end{lstlisting}
+\end{warning}
+
+\begin{keyresult}[title={Immediate Addressing Efficiency}]
+Like register direct, immediate addressing in the ARM incurs no extra memory access during execution (the operand is fetched as part of the instruction fetch). However, because the data is encoded within a fixed-length 32-bit instruction, only a subset of all possible 32-bit values are available as immediate operands.
+\end{keyresult}
+
+\section{Register Indirect Addressing}
+
+\subsection{Motivation}
+
+Neither register direct nor immediate addressing allows the CPU to access operands stored in memory. Because a 32-bit ARM instruction cannot itself contain a full 32-bit memory address alongside an opcode, the ARM ISA instead stores the 32-bit address in a register. This register then \emph{points} to the memory location where the operand resides --- the standard register indirect pattern. The ARM uses the \texttt{LDR} and \texttt{STR} mnemonics for memory access.
+
+\subsection{The LDR Instruction}
+
+\begin{definition}[LDR --- Load Register]
+\label{def:ldr-ch4}
+\texttt{LDR Rd, [Rn]} copies a 32-bit word from the memory address contained in register \texttt{Rn} into the destination register \texttt{Rd}.
+\end{definition}
+
+\begin{lstlisting}
+LDR R1, [R0]     ; R1 <- mem[R0]
+\end{lstlisting}
+
+\subsection{The STR Instruction}
+
+\begin{definition}[STR --- Store Register]
+\label{def:str}
+\texttt{STR Rs, [Rn]} copies the 32-bit content of source register \texttt{Rs} to the memory address contained in \texttt{Rn}.
+\end{definition}
+
+\begin{lstlisting}
+STR R1, [R0]     ; mem[R0] <- R1
+\end{lstlisting}
+
+\subsection{Data Alignment Constraint}
+
+A 32-bit memory access must follow the data alignment constraint: the four-byte word must start at an address that is a multiple of 4. An unaligned access results in undefined behaviour or a performance penalty depending on the ARM variant.
+
+\begin{warning}[title={Unaligned Memory Access}]
+Always ensure that the base address in the indirect register is a multiple of 4 when performing 32-bit \texttt{LDR}/\texttt{STR} operations. Unaligned accesses invariably result in performance degradation (and may cause a hardware fault on some ARM cores).
+\end{warning}
+
+\subsection{Register Indirect with Offset (Base + Offset)}
+
+A fixed offset can be added to the base register to compute the effective address (EA) without modifying the base register itself:
+\[
+  \text{EA} = R_{\text{base}} + \text{offset}
+\]
+
+\begin{lstlisting}
+LDR R1, [R0, #4] ; R1 <- mem[R0 + 4], R0 unchanged
+\end{lstlisting}
+
+This is useful when the array element's index is known at coding time.
+
+\begin{example}[Accessing First and Last Array Elements]
+The following ARM code assigns the value 7 to \texttt{i[0]} and \texttt{i[4]} of an integer array whose base address is \texttt{0x100}:
+\begin{lstlisting}
+MOV R2, #0x100   ; base address of array i
+MOV R1, #7       ; value to store
+STR R1, [R2, #0] ; i[0] = 7
+STR R1, [R2, #16]; i[4] = 7 (offset = 4*4 = 16 bytes)
+\end{lstlisting}
+Note that each \texttt{int} occupies 4 bytes, so element $k$ has byte offset $4k$.
+\end{example}
+
+\subsection{Register Indirect with Index Register (Base + Index)}
+
+When the array element's position is computed at run time, the index is held in a register and added to the base register:
+\[
+  \text{EA} = R_{\text{base}} + R_{\text{index}}
+\]
+
+\begin{lstlisting}
+LDR R1, [R0, R2] ; R1 <- mem[R0 + R2], R0 unchanged
+\end{lstlisting}
+
+\begin{example}[Clearing All Elements of a 400-element Array]
+\leavevmode
+\begin{lstlisting}
+MOV R2, #0x100   ; base address of i
+MOV R0, #0       ; value 0 to store
+MOV R1, #0       ; index register (byte offset)
+loop STR R0, [R2, R1] ; i[n] = 0
+ADD R1, R1, #4   ; advance index by 4 bytes
+; (loop back 399 times)
+\end{lstlisting}
+This loop executes $3 \text{ instructions} \times 400 \text{ iterations} = 1200$ cycles.
+\end{example}
+
+\begin{keyresult}[title={Base + Offset vs.\ Base + Index}]
+\begin{itemize}
+  \item Use \textbf{base + offset} when the array element position is known at coding time (fixed offset compiled into the instruction).
+  \item Use \textbf{base + index register} when the element position is computed during execution (variable index stored in a register).
+  \item In both cases, the base register is \emph{not} modified after execution.
+\end{itemize}
+\end{keyresult}
+
+\section{Register Indirect with Autoindexing}
+
+\subsection{Concept}
+
+In the addressing modes covered so far, the base register is never modified. Autoindexing extends register indirect by allowing the indirect register's content to be updated during execution, providing an efficient way to traverse consecutive array elements without a separate \texttt{ADD} instruction.
+
+The ``\texttt{!}'' suffix on an ARM instruction signals that the autoindex register should be updated with the computed effective address.
+
+\subsection{Pre-index vs.\ Post-index}
+
+\begin{definition}[Pre-index]
+\label{def:pre-index}
+In pre-index mode the indirect register is updated \emph{before} being used to compute the effective address:
+\[
+  \texttt{R0} \leftarrow \texttt{R0} + \text{offset},\quad\text{then}\quad \texttt{R1} \leftarrow \texttt{mem[R0]}
+\]
+ARM syntax: \texttt{LDR R1, [R0, \#4]!}
+\end{definition}
+
+\begin{definition}[Post-index]
+\label{def:post-index}
+In post-index mode the current register value is used to compute the effective address first, then the register is updated:
+\[
+  \texttt{R1} \leftarrow \texttt{mem[R0]},\quad\text{then}\quad \texttt{R0} \leftarrow \texttt{R0} + \text{offset}
+\]
+ARM syntax: \texttt{LDR R1, [R0], \#4}
+\end{definition}
+
+The four autoindexing variants are summarised below:
+
+\begin{center}
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Variant} & \textbf{ARM syntax} & \textbf{Semantics} \\
+\midrule
+Offset, pre-index & \texttt{LDR R1,[R0,\#4]!} & R0=R0+4; R1=mem[R0] \\
+Index reg, pre-index & \texttt{LDR R1,[R0,R2]!} & R0=R0+R2; R1=mem[R0] \\
+Offset, post-index & \texttt{LDR R1,[R0],\#4} & R1=mem[R0]; R0=R0+4 \\
+Index reg, post-index & \texttt{LDR R1,[R0],R2} & R1=mem[R0]; R0=R0+R2 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{example}[Optimised Array Clear with Pre-index Autoindexing]
+Using pre-index autoindexing reduces the loop to 2 instructions:
+\begin{lstlisting}
+MOV R2, #0x100   ; base address
+MOV R1, #0       ; value to store
+STR R1, [R2]     ; i[0] = 0
+loop STR R1, [R2,#4]! ; R2 += 4; i[n] = 0
+; (loop back 398 times)
+\end{lstlisting}
+Total: $2 \times 400 = 800$ cycles (vs.\ 1200 using base + index).
+\end{example}
+
+\begin{example}[Alternative Clear with Post-index Autoindexing]
+Post-index keeps all array stores inside the loop:
+\begin{lstlisting}
+MOV R2, #0x100   ; base address
+MOV R1, #0       ; value to store
+loop STR R1, [R2], #4 ; i[n] = 0; R2 += 4
+; (loop back 399 times)
+\end{lstlisting}
+Total: $2 \times 400 = 800$ cycles.
+\end{example}
+
+\begin{examtip}[title={Pre- vs.\ Post-index Side Effects}]
+In pre-index (\texttt{!}), the base register is updated \emph{before} the memory access, so the first iteration accesses base + offset. In post-index, the current base is accessed first; the update happens after. Confusing these leads to an off-by-one error in the first or last array element.
+\end{examtip}
+
+\section{The System Stack and Stack Implementations}
+
+\begin{definition}[Stack]
+\label{def:stack}
+A stack is a first-in, last-out (FILO) linear data structure maintained in the memory's data area. The ARM system stack is managed by the dedicated stack pointer SP (alias R13).
+\end{definition}
+
+The ARM ISA supports four stack implementations based on two orthogonal properties:
+
+\begin{itemize}
+  \item \textbf{Full (F) vs.\ Empty (E):} ``Full'' means SP points to the last occupied slot; ``Empty'' means SP points to the next free slot.
+  \item \textbf{Descending (D) vs.\ Ascending (A):} The stack grows towards lower memory addresses (descending) or higher memory addresses (ascending).
+\end{itemize}
+
+This gives four combinations: FD, FA, ED, EA\@.
+
+\subsection{Full Descending (FD) Stack --- Default ARM Stack}
+
+The FD stack is the default ARM convention. SP starts at a high address (e.g.\ \texttt{0xFF000000} in the VisUAL simulator) and grows downward. SP always points to the top-most valid (full) item. Push/pop code for the FD stack is covered in detail in Section~\ref{sec:push-pop}.
+
+\subsection{Empty Ascending (EA) Stack --- Alternative Implementation}
+
+In the EA stack, SP points to the next free slot and the stack grows toward higher addresses. Push uses post-index autoindexing (store then increment); pop uses pre-index autoindexing (decrement then load) --- the opposite sequence to FD\@.
+
+\begin{warning}[title={Push and Pop Must Be Complementary}]
+For a given stack implementation, the Push and Pop operations must always be complementary so that the stack grows and collapses correctly. Mixing conventions (e.g.\ using an FD push with an EA pop) will corrupt the stack pointer.
+\end{warning}
+
+\section{PC-related Addressing Modes}
+
+\subsection{Absolute vs.\ Relative Jumps}
+
+The program counter PC (R15) holds the address of the next instruction to be fetched. Non-sequential execution is achieved by modifying PC\@.
+
+\textbf{Absolute jump.} Loading a fixed address directly into the PC causes an absolute jump:
+
+\begin{lstlisting}
+MOV PC, #0x060   ; jump unconditionally to address 0x060
+\end{lstlisting}
+
+Absolute jumps are \emph{not} position-independent: the code can only execute correctly if loaded at a specific memory location.
+
+\textbf{Relative jump.} The \texttt{B} (Branch) instruction adds a signed offset to the current PC value:
+
+\begin{lstlisting}
+B CodeB           ; PC <- PC + signed_offset
+\end{lstlisting}
+
+The offset range in ARM is $\pm 32$ MiB\@. Because of the ARM pipeline, PC points 8 bytes ahead of the currently executing instruction when the branch is evaluated --- this must be accounted for when computing offsets manually.
+
+\begin{remark}[ARM Pipeline PC Offset]
+Recall from Remark~\ref{rem:pipeline-offset} that in the ARM pipeline PC always reads as the address of the current instruction plus 8. This applies equally to branch offset calculations and to PC-relative data addressing.
+\end{remark}
+
+\subsection{Position-Independent Code}
+
+\begin{definition}[Position-Independent Code]
+\label{def:pic}
+Position-independent (P-I) code can be loaded anywhere in memory and execute correctly, because all addresses are expressed as offsets relative to the current PC rather than as absolute values.
+\end{definition}
+
+Relative jumps (using \texttt{B}) produce position-independent code because the offset between the branch instruction and its target is preserved regardless of where the code is loaded.
+
+\subsection{PC-Relative Data Addressing}
+
+To access variables in the data segment in a position-independent manner, the \texttt{ADD} instruction is used to compute the variable's address relative to the PC:
+
+\begin{lstlisting}
+ADD R0, PC, #0x0F8 ; R0 <- PC + 8 + 0x0F8 = address of Var1
+LDR R1, [R0]      ; R1 <- mem[Var1]
+\end{lstlisting}
+
+The PC-relative offset is calculated as:
+\[
+  \text{offset} = \text{Var address} - (\text{current PC value} + 8)
+\]
+
+\begin{examtip}[title={PC-Relative Offset Calculation}]
+Always add 8 to the current instruction's address when computing a PC-relative offset, because of the ARM pipeline's fetch-ahead. Forgetting the +8 is the most common mistake when hand-assembling PC-relative load/store instructions.
+\end{examtip}
+
+\begin{keyresult}[title={Position-Independent Code Summary}]
+\begin{itemize}
+  \item Use relative branch (\texttt{B}/\texttt{BL}) instead of loading a fixed address into PC for jumps.
+  \item Use PC-relative addressing (\texttt{ADD Rd,PC,\#offset} followed by \texttt{LDR}/\texttt{STR}) instead of absolute addresses to access data.
+  \item Both techniques produce code that remains correct when relocated to a different memory region.
+\end{itemize}
+\end{keyresult}
+
+\chapter{Instruction Set}
+
+Non-system-level instructions in a processor fall into three categories:
+
+\begin{itemize}
+  \item \textbf{Data transfer} --- instructions that move data between registers and/or memory.
+  \item \textbf{Data processing} --- instructions that modify register contents through arithmetic, logical, or shift operations.
+  \item \textbf{Program control} --- instructions that alter the normal sequential execution flow by modifying the Program Counter (PC).
+\end{itemize}
+
+Chapters 5 onwards treat each category in turn, focusing on the ARM instruction set.
+
+\section{Data Transfer Instructions}
+
+Data transfer instructions move data between registers or between a register and memory.
+
+\subsection{Register Data Transfer: MOV and MVN}
+
+The \texttt{MOV} instruction copies a source operand into a destination register. The source may use register direct or immediate addressing:
+
+\begin{lstlisting}
+MOV  R1, R0      ; copy R0 into R1 (register direct)
+MOVS R0, #0      ; move 0 into R0 and set Z flag
+MVN  R1, R0      ; R1 = NOT(R0) (bitwise complement)
+MVN  R0, #0      ; R0 = 0xFFFFFFFF (i.e. -1 in 2's complement)
+\end{lstlisting}
+
+Appending the \texttt{S} suffix causes the instruction to update the N and Z condition code flags. \texttt{MVN} (Move Negative / complement) performs a bitwise NOT on the source before storing the result.
+
+\begin{keyresult}[title={MOV vs.\ MVN}]
+\texttt{MOV Rd, src} copies \texttt{src} unmodified into \texttt{Rd}.\\
+\texttt{MVN Rd, src} stores \texttt{\~{}src} (bitwise complement) into \texttt{Rd}.\\
+Both support register-direct and immediate addressing; only the rightmost operand may be an immediate.
+\end{keyresult}
+
+\subsection{Memory Data Transfer: LDR and STR}
+
+Data in memory is transferred via \texttt{LDR} (load) and \texttt{STR} (store), which use various register indirect addressing modes (see Section~\ref{def:ldr-ch4}). Memory data transfer instructions require two clock cycles to execute.
+
+\begin{lstlisting}
+LDR  R1, [R0]       ; load 32-bit word at address in R0 into R1
+LDRB R2, [R0]       ; load byte at address in R0 into R2 (zero-extended)
+STR  R1, [R0]       ; store 4 bytes from R1 to address in R0
+STRB R2, [R0, #1]!  ; store byte in R2 to [R0+1], then R0 = R0+1
+\end{lstlisting}
+
+Key points about byte access:
+
+\begin{itemize}
+  \item A byte loaded with \texttt{LDRB} is zero-extended to fill the 32-bit register.
+  \item Byte access (\texttt{LDRB}/\texttt{STRB}) has no data alignment restrictions.
+  \item Word access (\texttt{LDR}/\texttt{STR}) is subject to 4-byte alignment.
+\end{itemize}
+
+\begin{examtip}[title={Byte vs.\ Word Transfer}]
+Use \texttt{LDRB}/\texttt{STRB} when operating on individual bytes (e.g.\ ASCII characters). The loaded byte is always zero-extended --- there is no sign-extension variant on ARMv4.
+\end{examtip}
+
+\subsection{Program Example: Copying a Block of Memory}
+
+Block copy replicates a contiguous memory segment from one location to another using \texttt{MOV}, \texttt{LDR}, and \texttt{STR}.
+
+\textbf{Basic version} (30 cycles for 5 words):
+
+\begin{lstlisting}
+MOV R0, #0x100   ; source pointer
+MOV R1, #0x200   ; destination pointer
+; loop (repeat 5 times):
+LDR R2, [R0]     ; memory -> register
+STR R2, [R1]     ; register -> memory
+ADD R0, R0, #4   ; advance source pointer
+ADD R1, R1, #4   ; advance destination pointer
+\end{lstlisting}
+
+\textbf{Optimised with post-index autoindexing} (20 cycles for 5 words):
+
+\begin{lstlisting}
+MOV R0, #0x100
+MOV R1, #0x200
+; loop (repeat 5 times):
+LDR R2, [R0], #4 ; load word, then R0 = R0 + 4
+STR R2, [R1], #4 ; store word, then R1 = R1 + 4
+\end{lstlisting}
+
+\textbf{Further optimisation --- single pointer register} (20 cycles, one register fewer):
+
+\begin{lstlisting}
+MOV R0, #0x100
+; loop (repeat 5 times):
+LDR R2, [R0], #4     ; load from source, auto-increment R0
+STR R2, [R0, #0xFC]  ; store to destination via offset
+\end{lstlisting}
+
+\begin{warning}[title={Offset Range Limit}]
+The immediate offset for register indirect addressing is limited to $\pm 4096$ bytes. When source and destination arrays are more than 4096 bytes apart, this single-pointer technique cannot be used.
+\end{warning}
+
+\section{Arithmetic Instructions}
+
+Arithmetic instructions are three-operand instructions that modify register contents through addition or subtraction. The rightmost operand (second source) may be a register or an immediate value; all other operands must be registers.
+
+The ARM arithmetic instruction set includes: \texttt{ADD} (addition), \texttt{SUB} (subtraction), \texttt{RSB} (reverse subtraction), \texttt{ADC} (add with carry), \texttt{SBC} (subtract with carry), and \texttt{RSC} (reverse subtract with carry).
+
+Appending the \texttt{S} suffix to any arithmetic instruction causes it to update all four condition code flags: N, Z, V, C\@.
+
+\subsection{ADD Instruction}
+
+Addition is a commutative operation --- operand order does not affect the result. Only the rightmost operand may take an immediate value.
+
+\begin{lstlisting}
+ADD  R2, R0, R1  ; R2 = R0 + R1
+ADD  R2, R0, #4  ; R2 = R0 + 4
+ADDS R2, R0, #8  ; R2 = R0 + 8; update N,Z,V,C
+\end{lstlisting}
+
+\textbf{Condition code flags and ADD.} \texttt{ADD} can affect all four flags:
+
+\begin{itemize}
+  \item \textbf{V flag (overflow):} set when two operands with the same sign produce a result with the opposite sign --- indicating a signed overflow. For example (8-bit): $\texttt{0x01} + \texttt{0x7F} = \texttt{0x80}$ ($+1 + 127 = -128$), so $N=1, V=1$.
+  \item \textbf{C flag (carry):} set when an unsigned overflow occurs, i.e.\ a carry out of bit 31. For example (8-bit): $\texttt{0x01} + \texttt{0xFF} = \texttt{0x00}$ with carry, so $Z=1, C=1$.
+\end{itemize}
+
+\begin{keyresult}[title={V flag vs.\ C flag for ADD}]
+$V = 1$ $\Rightarrow$ signed overflow (result wrong for signed arithmetic).\\
+$C = 1$ $\Rightarrow$ unsigned overflow (result wrong for unsigned arithmetic, i.e.\ carry out of the 32-bit word).
+\end{keyresult}
+
+\subsection{SUB and RSB Instructions}
+
+\texttt{SUB} is non-commutative: \texttt{SUB R2,R0,R1} computes $\texttt{R2} = \texttt{R0} - \texttt{R1}$. Internally, subtraction is performed as addition of the two's complement:
+\[
+  A - B = A + (-B) = A + \overline{B} + 1
+\]
+
+\begin{lstlisting}
+SUB  R2, R0, R1  ; R2 = R0 - R1
+SUBS R2, R0, #4  ; R2 = R0 - 4; update N,Z,V,C
+RSB  R2, R0, #4  ; R2 = 4 - R0 (immediate as minuend)
+RSBS R2, R0, #0  ; R2 = 0 - R0 (negate R0); update flags
+\end{lstlisting}
+
+\texttt{RSB} (Reverse Subtract) is useful when an immediate value must serve as the minuend --- something \texttt{SUB} cannot achieve directly.
+
+\textbf{Condition code flags and SUB.}
+
+\begin{itemize}
+  \item \textbf{C flag (borrow indicator):} In ARM's \texttt{SUB}, $C = 0$ indicates a borrow (unsigned underflow: $\text{unsigned}(A) < \text{unsigned}(B)$); $C = 1$ means no borrow.
+  \item \textbf{V flag:} Set ($V = 1$) when the signed result is outside $[-2^{31}, 2^{31})$.
+\end{itemize}
+
+\begin{warning}[title={C flag polarity differs for SUB vs.\ ADD}]
+For \texttt{ADD}, $C = 1$ means unsigned overflow. For \texttt{SUB}, $C = 0$ means unsigned underflow (borrow) --- the polarity is inverted. Always consult the ARM Architecture Reference Manual for exact flag semantics.
+\end{warning}
+
+\textbf{Program Example: Convert Negative to Positive.} The following code negates 10 signed integers stored at \texttt{0x100}:
+
+\begin{lstlisting}
+MOV R0, #0x100   ; source pointer
+; loop (repeat 10 times):
+LDR R1, [R0]     ; load next negative integer
+RSB R1, R1, #0   ; R1 = 0 - R1 (negate)
+STR R1, [R0], #4 ; store result, advance pointer
+\end{lstlisting}
+
+\subsection{Carry-Based Arithmetic: ADC, SBC, RSC}
+
+The carry-based variants extend \texttt{ADD}, \texttt{SUB}, and \texttt{RSB} to support \emph{multi-precision arithmetic} --- computations on values wider than 32 bits by chaining multiple instructions through the carry flag:
+
+\begin{lstlisting}
+ADC R2, R0, R1   ; R2 = R0 + R1 + C (ADD with carry)
+SBC R2, R0, R1   ; R2 = R0 - R1 + NOT(C) (SUB with carry)
+RSC R2, R0, R1   ; R2 = R1 - R0 + NOT(C) (RSB with carry)
+\end{lstlisting}
+
+Like all arithmetic instructions, the \texttt{S} suffix can be appended to update the N, Z, V, C flags.
+
+\section{Logical, Shift, and Rotate Instructions}
+
+\subsection{Logical Instructions: AND, ORR, EOR, MVN}
+
+ARM provides Boolean operations as three-operand instructions (except \texttt{MVN}, which is two-operand):
+
+\begin{lstlisting}
+MVNS R2, R2              ; R2 = NOT(R2); set N, Z flags
+ORRS R1, R1, #0x0000FFFF ; R1 |= 0x0000FFFF; set N, Z
+AND  R1, R0, #0xF0       ; clear bits 0-3 of R0, store in R1
+ORR  R0, R0, #0xF0       ; set bits 4-7 of R0
+EOR  R2, R0, #0xF0       ; complement bits 4-7 of R0
+\end{lstlisting}
+
+The three principal uses are:
+
+\begin{itemize}
+  \item \textbf{AND with a 0 mask} --- clears specific bits (mask bit $= 0 \Rightarrow$ output $= 0$).
+  \item \textbf{ORR with a 1 mask} --- sets specific bits (mask bit $= 1 \Rightarrow$ output $= 1$).
+  \item \textbf{EOR with a 1 mask} --- complements (toggles) specific bits.
+\end{itemize}
+
+The \texttt{S} suffix on logical instructions influences only the N and Z flags.
+
+\begin{examtip}[title={Bit-Manipulation Masks}]
+To clear bit $n$: \texttt{AND Rd, Rs, \#\~{}(1 << n)} (all ones except bit $n$).\\
+To set bit $n$: \texttt{ORR Rd, Rs, \#(1 << n)}.\\
+To toggle bit $n$: \texttt{EOR Rd, Rs, \#(1 << n)}.
+\end{examtip}
+
+\textbf{Program Example: Alternate LED Flashing.} Green and Red LEDs are mapped to bits 3 and 2 of R0 (active low). Once the initial pattern is established, \texttt{EOR} can toggle both bits every cycle:
+
+\begin{lstlisting}
+AND R0, R0, #0xFFFFFFFB ; turn on Red (clear bit 2)
+ORR R0, R0, #0x00000008 ; turn off Green (set bit 3)
+; output pattern and delay
+Loop:
+EOR R0, R0, #0x0000000C ; flip bits 3 and 2 simultaneously
+; output pattern and delay
+; loop back
+\end{lstlisting}
+
+\subsection{Shift and Rotate Operations}
+
+ARM provides five shift/rotate modes, all applied to the rightmost operand of a data transfer or processing instruction via the Barrel Shifter:
+
+\begin{itemize}
+  \item \textbf{LSL} --- Logical Shift Left: zeros enter from the right; MSB exits to C\@.
+  \item \textbf{LSR} --- Logical Shift Right: zeros enter from the left; LSB exits to C\@.
+  \item \textbf{ASR} --- Arithmetic Shift Right: sign bit replicates from the left; LSB exits to C\@. Used for signed division.
+  \item \textbf{ROR} --- Rotate Right: the bit shifted out at LSB re-enters at MSB and also updates C\@.
+  \item \textbf{RRX} --- Rotate Right Extended (1-bit only): C enters at MSB; LSB exits to C\@.
+\end{itemize}
+
+Shift amount is specified as an immediate or a register (dynamic shift):
+
+\begin{lstlisting}
+MOV  R0, R0, LSL #1    ; R0 = R0 << 1 (multiply by 2)
+ADD  R2, R1, R0, LSR #2; R2 = R1 + (R0 >> 2)
+ADDS R2, R1, R0, LSL R4; R2 = R1 + (R0 << R4); update flags
+ORRS R0, R0, R0, ROR #1; R0 |= (R0 ROR 1); update C
+\end{lstlisting}
+
+\textbf{Arithmetic with shifts.} A left shift by $N$ bits multiplies by $2^N$; a right shift by $N$ bits divides by $2^N$:
+\[
+  \underbrace{00000100}_{4}\;\xrightarrow{\text{LSL \#2}}\;\underbrace{00010000}_{16}
+  \qquad
+  \underbrace{00000100}_{4}\;\xrightarrow{\text{LSR \#1}}\;\underbrace{00000010}_{2}
+\]
+
+Use \texttt{ASR} for signed division to preserve the sign bit.
+
+\begin{keyresult}[title={Shift as Fast Multiplication/Division}]
+\texttt{LSL \#N} $\equiv$ multiply by $2^N$ (signed and unsigned).\\
+\texttt{LSR \#N} $\equiv$ divide by $2^N$ (unsigned only --- zeros fill from left).\\
+\texttt{ASR \#N} $\equiv$ divide by $2^N$ (signed --- sign bit fills from left).
+\end{keyresult}
+
+\textbf{Program Example: Count Number of 1s (Optimised).} \texttt{LSR} shifts each bit of R0 into the carry flag one at a time; \texttt{ADC} accumulates the carry into a counter. The loop terminates naturally when R0 becomes zero (Z flag set by \texttt{MOVS}):
+
+\begin{lstlisting}
+MOV  R2, #0            ; clear 1-counter
+Loop:
+MOVS R0, R0, LSR #1   ; right-shift R0 one bit into C; set Z if R0=0
+ADC  R2, R2, #0        ; R2 = R2 + 0 + C (add carry to counter)
+BNE  Loop              ; loop while R0 != 0
+\end{lstlisting}
+
+\section{Program Control Instructions}
+
+Program control instructions alter the normal sequential execution flow by modifying the Program Counter (PC) directly or through a branch instruction.
+
+\subsection{Conditional Branch: Bcc}
+
+ARM's \texttt{Bcc} (Branch if condition cc) adds a signed displacement to the PC when the specified condition is true; otherwise execution continues at the next instruction.
+
+\begin{lstlisting}
+BEQ Skip     ; branch to Skip if Z = 1 (result was zero / equal)
+BNE Loop     ; branch to Loop if Z = 0 (result was non-zero)
+BGT Else     ; branch to Else if result > 0 (signed)
+B   Back     ; unconditional branch (always)
+\end{lstlisting}
+
+Key implementation details:
+
+\begin{itemize}
+  \item \texttt{Bcc} uses PC-relative addressing with a displacement range of $\pm 32$ MB\@.
+  \item The PC value used to compute the displacement is 8 bytes ahead of the current \texttt{Bcc} instruction (ARM pipeline effect --- recall Remark~\ref{rem:pipeline-offset}).
+  \item Branch targets are specified as address labels; the assembler computes the displacement.
+\end{itemize}
+
+\textbf{Complete list of condition suffixes.}
+
+\begin{center}
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Suffix} & \textbf{Flag condition} & \textbf{Meaning} \\
+\midrule
+EQ & $Z = 1$ & Equal (zero) \\
+NE & $Z = 0$ & Not equal \\
+CS/HS & $C = 1$ & Higher or same (unsigned $\ge$) \\
+CC/LO & $C = 0$ & Lower (unsigned $<$) \\
+MI & $N = 1$ & Negative \\
+PL & $N = 0$ & Positive or zero \\
+VS & $V = 1$ & Overflow \\
+VC & $V = 0$ & No overflow \\
+HI & $C = 1$ and $Z = 0$ & Higher (unsigned $>$) \\
+LS & $C = 0$ or $Z = 1$ & Lower or same (unsigned $\le$) \\
+GE & $N = V$ & Greater than or equal (signed $\ge$) \\
+LT & $N \ne V$ & Less than (signed $<$) \\
+GT & $Z = 0$ and $N = V$ & Greater than (signed $>$) \\
+LE & $Z = 1$ or $N \ne V$ & Less than or equal (signed $\le$) \\
+AL & (any) & Always (default) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{examtip}[title={Signed vs.\ Unsigned Branches}]
+For signed comparisons use \texttt{GT}, \texttt{LT}, \texttt{GE}, \texttt{LE}.\\
+For unsigned comparisons use \texttt{HI}, \texttt{LO}, \texttt{HS}, \texttt{LS}.\\
+Mixing them up (e.g.\ using \texttt{BGT} on unsigned values) gives incorrect results when the MSB of one operand is set.
+\end{examtip}
+
+\subsection{Conditional Test Instructions: CMP, CMN, TST, TEQ}
+
+\texttt{CMP} (Compare) subtracts its source operand from the destination register and updates the condition flags --- \emph{without} modifying the destination register:
+
+\begin{lstlisting}
+CMP R1, R2       ; set flags based on (R1 - R2); R1 unchanged
+BGE R1geR2       ; branch if R1 >= R2 (signed)
+
+CMP R1, #4       ; compare R1 with immediate 4
+BEQ Found        ; branch if R1 == 4
+\end{lstlisting}
+
+Three related conditional test instructions (no \texttt{S} suffix required --- they always update flags):
+
+\begin{itemize}
+  \item \texttt{CMN R0, R1} --- sets flags based on $\texttt{R0} + \texttt{R1}$ (Compare Negative).
+  \item \texttt{TST R0, R1} --- sets N, Z, C flags based on $\texttt{R0} \mathbin{\&} \texttt{R1}$ (Test Bits).
+  \item \texttt{TEQ R0, R1} --- sets N, Z, C flags based on $\texttt{R0} \oplus \texttt{R1}$ (Test Equivalence).
+\end{itemize}
+
+\subsection{Conditional Execution}
+
+In ARM, \emph{any} instruction can be made conditionally executable by appending a condition suffix to its mnemonic. This avoids short forward branches and can reduce code size and pipeline stalls:
+
+\begin{lstlisting}
+; C equivalent: if (R0 == 1) { R1 = 3; } else { R1 = 5; }
+CMP   R0, #1     ; set Z = 1 if R0 == 1
+MOVEQ R1, #3     ; executed only if Z = 1
+MOVNE R1, #5     ; executed only if Z = 0
+\end{lstlisting}
+
+The conditional execution feature makes the execution of each instruction dependent on the current state of the N, Z, V, C flags, saving the two branch instructions that would otherwise be required.
+
+\begin{keyresult}[title={Conditional Execution Syntax}]
+Append any condition code (e.g.\ \texttt{EQ}, \texttt{NE}, \texttt{GT}) to the mnemonic.\\
+Example: \texttt{ADDEQ}, \texttt{MOVHI}, \texttt{STRNE}.\\
+The \texttt{S} suffix and condition code may be combined: \texttt{ADDEQS}, \texttt{MOVNES}.
+\end{keyresult}
+
+\section{Program Example: Finding the Largest Number (FindMax)}
+
+This example integrates data transfer, arithmetic, logical, and program control instructions to find the largest unsigned value in a 10-element integer array starting at address \texttt{0x100}.
+
+Register allocation: R0 = address pointer, R1 = loop counter, R2 = temporary (current element value), R3 = current maximum value (result).
+
+\begin{lstlisting}
+MOV  R0, #0x100  ; pointer to first element
+MOV  R1, #9      ; loop counter (9 more elements after first)
+LDR  R3, [R0]    ; assume first element is the current max
+
+Loop:
+ADD  R0, R0, #4  ; advance pointer to next element
+LDR  R2, [R0]    ; load next element
+CMP  R2, R3      ; compare R2 with current max R3 (R2 - R3)
+BLS  Skip        ; branch if R2 <= R3 (unsigned: lower or same)
+MOV  R3, R2      ; new maximum found: update R3
+
+Skip:
+SUBS R1, R1, #1  ; decrement counter; set Z when R1 = 0
+BNE  Loop        ; loop back while counter != 0
+\end{lstlisting}
+
+Note that \texttt{BLS} (Branch if Lower or Same) is used because the array contains unsigned numbers. For a signed array, \texttt{BLE} (Branch if Less than or Equal) would be required instead.
+
+\chapter{Modular Programming}
+
+\section{Motivation: Modular Program Design}
+
+Real-world software systems are extremely large and complex. Google Chrome contains roughly 6.7 million lines of code, Android OS between 12--15 million, and the Boeing 787 avionics around 6.5 million. No single monolithic function can feasibly represent a program of this scale. Instead, large programs are decomposed into several smaller, less complex modules, each of which can be designed, tested, and verified independently.
+
+The key advantages of modular design are:
+
+\begin{itemize}
+  \item Modules can be designed and tested independently, reducing complexity.
+  \item The same module may be called from multiple places, reducing overall program size.
+  \item General-purpose modules can be reused across different projects.
+\end{itemize}
+
+\begin{definition}[Good Software Module]
+\label{def:good-module}
+A well-designed module exhibits two properties:
+\begin{enumerate}
+  \item \textbf{Loose coupling} --- data within the module is entirely independent of other modules (i.e.\ it uses local variables).
+  \item \textbf{Strong modularity} --- it performs a single, logically coherent task.
+\end{enumerate}
+\end{definition}
+
+\begin{example}[Standard Deviation --- Monolithic vs.\ Modular]
+Consider computing the standard deviation $\sigma$ of an array $x$ of $N$ values:
+\[
+  \sigma = \sqrt{\frac{\sum_i (x_i - \mu)^2}{N}}
+\]
+\textbf{Case 1} (monolithic): Everything lives in \texttt{main()}, mixing the mean computation and the variance computation in one block.
+
+\textbf{Case 2} (modular): Two helper functions are defined:
+\begin{lstlisting}[language=C]
+float sum(int* x, int N) {
+    float tot = 0.0;
+    for (int i = 0; i < N; i++) tot += x[i];
+    return tot;
+}
+
+float Sigma_f(int* x, float avg, int N) {
+    float sigma = 0.0;
+    for (int i = 0; i < N; i++)
+        sigma += pow(x[i] - avg, 2);
+    sigma /= N;
+    sigma = sqrt(sigma);
+    return sigma;
+}
+
+int main() {
+    float avg = sum(x, N) / N;
+    float sigma = Sigma_f(x, avg, N);
+    return 0;
+}
+\end{lstlisting}
+The modular version is cleaner, individually testable, and each function can be reused.
+\end{example}
+
+\section{Subroutines}
+
+In assembly, modules (C functions) are implemented as \emph{subroutines}. A subroutine can be called from multiple locations in a program. The two parties involved are the \emph{caller} (the program that invokes the subroutine) and the \emph{callee} (the subroutine itself). Upon completion, a subroutine must return control to the instruction immediately after the call in the caller.
+
+\subsection{Why Not Use Plain B?}
+
+Branching with \texttt{B} simply overwrites the Program Counter (PC), so the return address in the calling program is lost. One could hardcode a branch back to the caller, but this requires knowing the exact memory address at compile time --- impractical in general. The solution is to save the return address automatically before jumping.
+
+\subsection{Branch with Link (BL)}
+
+\begin{definition}[BL --- Branch with Link]
+\label{def:bl}
+\texttt{BL <label>} performs two actions atomically:
+\begin{enumerate}
+  \item Stores the return address (current $\texttt{PC} + 4$) in the Link Register (R14 / LR).
+  \item Loads the subroutine's address into the PC, transferring control to the subroutine.
+\end{enumerate}
+The instruction encoding uses a 1-bit field (bit 24) set to 1 to distinguish \texttt{BL} from plain \texttt{B}, along with a 24-bit signed offset.
+\end{definition}
+
+\textbf{Execution example:} Suppose \texttt{BL SortSub} is at address \texttt{0x0014} and \texttt{SortSub} begins at \texttt{0x0030}. Before execution, $\texttt{PC} = \texttt{0x0018}$ (the fetch-ahead value). After execution: $\texttt{LR} = \texttt{0x0018}$ (return address), $\texttt{PC} = \texttt{0x0030}$ (subroutine start).
+
+\begin{keyresult}[title={BL Saves the Return Address}]
+\texttt{BL SUB1} sets $\texttt{LR} \leftarrow \texttt{PC} + 4$ and jumps to \texttt{SUB1}. The original caller's next-instruction address is preserved in LR so execution can resume there after the subroutine finishes.
+\end{keyresult}
+
+\subsection{Returning: BX LR and MOV PC, LR}
+
+\begin{definition}[BX LR --- Branch and Exchange]
+\label{def:bx-lr}
+\texttt{BX LR} copies the value in LR back into the PC, returning execution to the instruction after the original \texttt{BL} call.
+\end{definition}
+
+\begin{warning}[title={VisUAL Does Not Support BX LR}]
+The VisUAL simulator does not support the \texttt{BX LR} instruction. Use \texttt{MOV PC, LR} as an equivalent substitute when working in VisUAL\@.
+\end{warning}
+
+\section{Parameter Passing}
+
+Calling programs must supply input data to subroutines and retrieve results. Parameters must be set up before the subroutine is called and cleaned up after it returns (depending on the passing method). There are three fundamental methods: via registers, via a memory block, and via the system stack.
+
+\subsection{Parameter Passing via Registers}
+
+Parameters are loaded into registers before \texttt{BL} is called. This is the simplest and fastest method.
+
+\begin{definition}[ARM Calling Convention --- Register Usage]
+\label{def:calling-convention}
+\begin{itemize}
+  \item \textbf{R0--R3}: Used to pass argument values to a subroutine, and to return result values to the caller. The subroutine is free to modify these registers.
+  \item \textbf{R4--R11}: Used to hold local variables within a subroutine. They are not used for argument passing, and must be preserved (saved and restored) by the subroutine.
+  \item \textbf{R12}: Scratchpad register; does not need to be preserved. Can sometimes be used as an additional return register.
+\end{itemize}
+\end{definition}
+
+Pros: Efficient --- parameters are already in registers and can be used immediately. Cons: Limited to the number of available registers; unsuitable for subroutines with many parameters.
+
+\begin{examtip}[title={Register Calling Convention}]
+By convention, R0--R3 are argument/return registers (caller-saved). R4--R11 are callee-saved: if a subroutine uses them, it must push them onto the stack at entry and pop them before returning.
+\end{examtip}
+
+\subsection{Parameter Passing via Memory Block}
+
+A dedicated region of memory acts as a ``mailbox'' shared between the caller and callee. The caller writes all parameters to consecutive memory locations, then passes the start address of this block in an address register (e.g.\ R0) before calling the subroutine. The subroutine reads from (and writes results back to) that memory region.
+
+Pros: Can pass arbitrarily many parameters, including arrays and structs. Cons: Requires additional memory read/write instructions, so it is slower than register passing.
+
+\section{Examples}
+
+\subsection{Bit-Counting Subroutine (Passing via Registers)}
+
+\textbf{Task:} Count the number of 1-bits in a 32-bit word. The word is passed in R1; the result is returned in R0.
+
+\textbf{Key instruction --- RRXS:} Rotate Right Extended sets the Carry flag to the bit shifted out, and updates the status register (\texttt{S} suffix). By rotating R1 through the carry 32 times, each bit is tested once.
+
+\textbf{Solution 1} (using RRXS + ADC):
+
+\begin{lstlisting}
+Count1s MOV R0, #0       ; clear result register
+        MOV R2, #32      ; loop counter = 32 bits
+Loop    RRXS R1, R1      ; rotate R1 right through carry
+        ADC R0, R0, #0   ; R0 += carry (adds 1 if C=1)
+        SUBS R2, R2, #1  ; decrement counter
+        BNE Loop          ; repeat until all 32 bits tested
+        MOV PC, LR        ; return
+\end{lstlisting}
+
+\begin{warning}[title={Carry Flag Corruption}]
+\texttt{SUBS} modifies the Carry flag. On the next loop iteration, \texttt{RRXS} will use this corrupted carry value, destroying R1's rotation. This bug is addressed in Solution 2 by avoiding \texttt{SUBS} and instead using a counter that does not disturb the carry.
+\end{warning}
+
+\textbf{Solution 2} (using ROR inline shift + masking, carry-safe):
+
+\begin{lstlisting}
+Count1s EOR R0, R0, R0   ; R0 = 0
+        ADD R2, R0, #32  ; counter = 32
+        ADD R3, R0, #1   ; mask = 0x00000001
+Loop    AND R4, R3, R1, ROR R2 ; isolate bit (32-R2) of R1
+        ADD R0, R0, R4   ; accumulate
+        SUBS R2, R2, #1  ; decrement counter
+        BNE Loop
+        MOV PC, LR
+\end{lstlisting}
+
+\subsection{Lower-to-Upper-Case Subroutine (Passing via Memory)}
+
+\textbf{Task:} Convert a NULL-terminated ASCII string (stored byte-by-byte in memory) from lower case to upper case in place. The start address of the string is passed in R0.
+
+\textbf{Algorithm:} For each character, check whether its ASCII value is in [\texttt{0x61}, \texttt{0x7A}] (i.e.\ \texttt{'a'} to \texttt{'z'}). If so, subtract 32 to obtain the uppercase equivalent (e.g.\ \texttt{'a'} = \texttt{0x61} $\to$ \texttt{'A'} = \texttt{0x41}). Stop when the NULL byte (\texttt{0x00}) is encountered.
+
+\begin{lstlisting}
+Lo2Up   STMFD SP!, {r0, r1}  ; save R0 and R1 on stack
+
+Loop    LDRB R1, [R0], #1   ; load byte at [R0], then R0 += 1
+        CMP  R1, #0          ; check for NULL terminator
+        BEQ  Done            ; if NULL, we are done
+        CMP  R1, #0x061      ; compare with 'a'
+        BLT  Loop            ; below 'a' -> skip
+        CMP  R1, #0x07A      ; compare with 'z'
+        BGT  Loop            ; above 'z' -> skip
+        SUB  R1, R1, #32     ; convert to uppercase
+        STRB R1, [R0, #-1]   ; write back to original address
+
+        B    Loop            ; next character
+
+Done    LDMFD SP!, {r0, r1}  ; restore R0 and R1
+        MOV  PC, LR          ; return
+\end{lstlisting}
+
+\begin{remark}[Transparent Subroutine]
+\label{rem:transparent}
+The subroutine modifies R0 and R1 internally but restores them via the stack push/pop (\texttt{STMFD}/\texttt{LDMFD}) before returning. This makes it a \emph{transparent subroutine}: the caller's register state is completely preserved, so the subroutine can be inserted anywhere without side-effects.
+\end{remark}
+
+\begin{examtip}[title={Post-Indexed Addressing with LDRB}]
+\texttt{LDRB R1, [R0], \#1} loads the byte at address R0 into R1, then increments R0 by 1. To write back to the original address, use \texttt{STRB R1, [R0, \#-1]} (base + offset $-1$, without updating R0). This pattern --- post-increment on load, negative offset on store --- is idiomatic for in-place string processing.
+\end{examtip}
+
+\section{The System Stack}
+\label{sec:push-pop}
+
+The system stack is a first-in, last-out (FILO) linear data structure maintained in the memory's data area. In the ARM processor it is managed by the dedicated Stack Pointer (SP, also called R13), which always points to the top item on the stack.
+
+The stack can grow towards either lower or higher memory addresses. The preferred convention is to grow towards lower addresses, starting from the highest available address. This way the stack and the heap/code regions grow towards each other, maximising the usable address space before a collision occurs.
+
+The three fundamental stack operations are \emph{push} (write a new item on top), \emph{pop} (remove and read the top item), and \emph{access} (read an item at a given offset from the current SP without changing SP).
+
+\begin{remark}
+After a pop, the data is not erased from memory; it is simply no longer within the ``live'' region of the stack. The bytes remain at their physical address and can still be read with a base+offset load (e.g.\ \texttt{LDR R0, [SP, \#-4]}) as long as SP has not been advanced past them by a subsequent push.
+\end{remark}
+
+\subsection{Push and Pop Instructions}
+
+\textbf{Push (single register).} Pushing a register onto a full-descending stack requires the SP to be pre-decremented before the store:
+
+\begin{lstlisting}
+STR R0, [SP, #-4]! ; SP = SP - 4, then Mem[SP] = R0
+\end{lstlisting}
+
+\textbf{Pop (single register).} Popping restores a register and post-increments SP:
+
+\begin{lstlisting}
+LDR R0, [SP], #4   ; R0 = Mem[SP], then SP = SP + 4
+\end{lstlisting}
+
+\textbf{Push/pop multiple registers.} ARM provides dedicated block-transfer instructions for pushing and popping several registers in a single instruction:
+
+\begin{lstlisting}
+STMFD SP!, {list}   ; push: store list in descending order, update SP
+LDMFD SP!, {list}   ; pop: load list in ascending order, update SP
+\end{lstlisting}
+
+\texttt{STMFD} stands for Store Multiple, Full Descending. Registers in the list are stored highest-numbered first (descending address), so that after an \texttt{LDMFD} with the same list each register is restored to its original value. The \texttt{!} suffix writes the updated SP back.
+
+\begin{example}[Pushing and Popping Two Registers]
+\leavevmode
+\begin{lstlisting}
+STMFD SP!, {R1, R0} ; push R1 then R0 (R1 at higher address)
+; ... subroutine body ...
+LDMFD SP!, {R1, R0} ; pop R1 then R0, restoring both
+\end{lstlisting}
+After \texttt{STMFD SP!, \{R1,R0\}} with SP initially at \texttt{0xF00}: SP moves to \texttt{0xEF8}; the word at \texttt{0xEF8} holds R0's value and the word at \texttt{0xEFC} holds R1's value.
+\end{example}
+
+\section{Parameter Passing via the Stack}
+
+Passing parameters through the system stack is the most general method. It requires no reserved registers, supports an arbitrary number of parameters, and --- crucially --- enables \emph{recursive programming} because each call level gets its own copy of the parameters. The only constraint is that the stack must not overflow.
+
+The protocol is:
+
+\begin{enumerate}
+  \item The calling program pushes the parameters onto the stack.
+  \item \texttt{BL <subroutine>} is issued (SP now points to the pushed parameters, and LR holds the return address).
+  \item The subroutine retrieves its parameters from the stack using SP-indirect with offset addressing.
+  \item On return, the calling program immediately removes the parameters from the stack, typically by adding $4 \times (\text{number of parameters})$ to SP\@.
+\end{enumerate}
+
+\begin{warning}[title={Stack Cleanup is the Caller's Responsibility}]
+Parameters pushed before a \texttt{BL} must be removed by the calling program immediately after returning. Failing to do so causes repeated pushes to eventually exhaust the stack space (stack overflow).
+\end{warning}
+
+\begin{example}[Sum from 1 to N via Stack Parameters]
+Compute $\sum_{k=1}^{N} k$ for $N = 5$ and store the result at the memory variable \texttt{Answer} (address \texttt{0x100}). Both parameters --- the value $N$ and the address of \texttt{Answer} --- are passed via the stack.
+
+\textbf{Calling program:}
+\begin{lstlisting}
+MOV  R1, #5        ; N = 5 (pass by value)
+MOV  R0, #0x100    ; address of Answer (pass by reference)
+STMFD SP!, {R1, R0}; push both parameters
+BL   Sum1N         ; call subroutine
+ADD  SP, SP, #8    ; remove two 4-byte parameters from stack
+\end{lstlisting}
+
+\textbf{Subroutine Sum1N:}
+\begin{lstlisting}
+Sum1N STMFD SP!, {R4, R5, R6} ; save callee-saved registers
+      LDR   R5, [SP, #16]     ; retrieve N (SP+16)
+      LDR   R6, [SP, #12]     ; retrieve &Answer (SP+12)
+      MOV   R4, #0            ; initialise sum = 0
+Loop  ADD   R4, R4, R5        ; sum += current N
+      SUBS  R5, R5, #1        ; N-- (sets flags)
+      BNE   Loop              ; repeat until N = 0
+      STR   R4, [R6]          ; write sum to Answer
+      LDMFD SP!, {R4, R5, R6} ; restore callee-saved registers
+      MOV   PC, LR            ; return
+\end{lstlisting}
+
+Stack layout after \texttt{STMFD SP!, \{R4,R5,R6\}} inside the subroutine:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textbf{Offset} & \textbf{Contents} \\
+\midrule
+SP+0 & Saved R4 \\
+SP+4 & Saved R5 \\
+SP+8 & Saved R6 \\
+SP+12 & Address of Answer \\
+SP+16 & $N = 5$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{example}
+
+\begin{keyresult}[title={SP-Offset Arithmetic for Stack Parameters}]
+When a subroutine saves $k$ callee registers via \texttt{STMFD SP!, \{...\}} on entry, the first caller-pushed parameter is at \texttt{[SP, \#4k]} and subsequent ones at \texttt{[SP, \#4(k-1)]}, \texttt{[SP, \#4(k-2)]}, \ldots\ You must account for every word pushed after the parameters in order to compute the correct offset.
+\end{keyresult}
+
+\section{Transparent Subroutines (Revisited)}
+
+Recall from Remark~\ref{rem:transparent} that a transparent subroutine preserves all CPU registers visible to the caller. The formal mechanism is:
+
+\begin{enumerate}
+  \item On entry, save every callee-saved register the subroutine will modify (R4--R11) onto the stack using \texttt{STMFD}.
+  \item Perform the subroutine's work using those registers freely.
+  \item Before returning, restore all saved registers from the stack using \texttt{LDMFD}.
+\end{enumerate}
+
+\begin{lstlisting}
+SUB1 STMFD SP!, {R4-R7}   ; save R4--R7 on entry
+     ; ... body using R4--R7 ...
+     LDMFD SP!, {R4-R7}   ; restore R4--R7 before return
+     MOV PC, LR            ; return to caller
+\end{lstlisting}
+
+Registers R0--R3 are caller-saved by the ARM calling convention (see Definition~\ref{def:calling-convention}): the caller must save them if their values are needed after the call.
+
+\section{Passing by Value and by Reference}
+
+\begin{definition}[Pass by Value]
+\label{def:pass-by-value}
+The actual data value is copied into the parameter slot (register or stack word). The subroutine operates on its own copy; changes do not propagate back to the caller.
+\end{definition}
+
+\begin{definition}[Pass by Reference]
+\label{def:pass-by-reference}
+The address of the data is passed instead of the data itself. The subroutine dereferences this address to read or write the original variable.
+\end{definition}
+
+Pass by reference is preferred when the subroutine needs to modify the caller's variable, or when a large data structure (e.g.\ an array) must be shared --- copying it entirely would be wasteful.
+
+\begin{example}[C Mean Function: Mixed Passing]
+\leavevmode
+\begin{lstlisting}[language=C]
+// Array: by reference; N: by value
+int Mean(int *Array, int N)
+{
+    int avg, i, sum = 0;    // local variables
+    for (i = 0; i < N; i++)
+        sum += Array[i];
+    avg = sum / N;
+    return avg;  // single return value -> R0 by convention
+}
+\end{lstlisting}
+\texttt{Array} is a pointer (pass by reference) so the subroutine can traverse the array without copying it. \texttt{N} is a plain integer (pass by value). The single return value \texttt{avg} is placed in R0 by the ARM calling convention.
+\end{example}
+
+\section{Local Variables and the Stack Frame}
+
+Subroutines often need \emph{local variables} whose scope and lifetime are confined to a single invocation. Because local variables must be created on entry and destroyed on exit, the system stack is the natural home for them. The reserved stack region allocated for a subroutine's local variables is called its \emph{stack frame}.
+
+\begin{definition}[Stack Frame]
+\label{def:stack-frame}
+A stack frame (or activation record) is a contiguous block of memory allocated on the system stack immediately upon entry into a subroutine. It holds the subroutine's local variables and, optionally, saved registers and incoming parameters. The frame is released when the subroutine returns.
+\end{definition}
+
+A stack frame of $N$ words is created by subtracting $4N$ from SP on entry:
+
+\begin{lstlisting}
+SUB SP, SP, #(4*N) ; allocate N word-sized local variable slots
+\end{lstlisting}
+
+and released by adding $4N$ back to SP before returning.
+
+\subsection{Accessing the Stack Frame via the Frame Pointer}
+
+One approach is to designate a register as a \emph{frame pointer} (FP). By ARM convention, R11 is used as FP\@.
+
+\begin{enumerate}
+  \item Save the caller's R11 on the stack.
+  \item Set $\texttt{R11} = \texttt{SP}$ (FP now points to the saved R11 word).
+  \item Allocate the frame by subtracting $4N$ from SP\@.
+\end{enumerate}
+
+Any local variable at slot $i$ ($i = 1, 2, \ldots, N$) is then accessed as \texttt{[R11, \#-4i]}. For example, with three local variables \texttt{avg}, \texttt{i}, \texttt{sum}:
+\[
+  \texttt{avg} \leftrightarrow \texttt{[R11,\#-4]},\quad
+  \texttt{i} \leftrightarrow \texttt{[R11,\#-8]},\quad
+  \texttt{sum} \leftrightarrow \texttt{[R11,\#-12]}
+\]
+
+On exit, the frame is destroyed by restoring the original SP and R11:
+
+\begin{lstlisting}
+ADD SP, SP, #16      ; for N=3: 3 locals (12 bytes) + saved R11 (4 bytes)
+LDR R11, [R11]       ; restore caller's R11 from saved location
+\end{lstlisting}
+
+\subsection{Accessing the Stack Frame via the Stack Pointer}
+
+A simpler, more efficient alternative is to access local variables directly through SP using positive offsets:
+
+\begin{enumerate}
+  \item Allocate the frame: \texttt{SUB SP, SP, \#(4N)}.
+  \item Access slot $i$ as \texttt{[SP, \#4(i-1)]}.
+\end{enumerate}
+\[
+  \texttt{avg} \leftrightarrow \texttt{[SP,\#0]},\quad
+  \texttt{i} \leftrightarrow \texttt{[SP,\#4]},\quad
+  \texttt{sum} \leftrightarrow \texttt{[SP,\#8]}
+\]
+
+Advantage: No extra register (FP) is needed. Disadvantage: The stack cannot be used for further pushes inside the subroutine without adjusting all offsets, since SP is the reference point.
+
+\section{Nested Subroutines}
+
+A nested subroutine occurs when a subroutine (the callee) itself calls another subroutine. In contrast to simple single-level calls, nested calls introduce a critical problem: the Link Register (LR) is overwritten each time \texttt{BL} executes.
+
+\subsection{The LR Overwrite Problem}
+
+Consider a main program at address \texttt{0x400} that calls \texttt{DotProd} via \texttt{BL Sub1}. At that moment, LR is set to \texttt{0x404} (the return address). \texttt{DotProd} then calls \texttt{Mult} via \texttt{BL Sub2}. This second \texttt{BL} overwrites LR with the new return address (\texttt{0xA44}) --- the original value \texttt{0x404} is lost. When \texttt{Mult} returns, execution correctly arrives back inside \texttt{DotProd}; however, when \texttt{DotProd} later executes \texttt{BX LR}, it branches to \texttt{0xA44} again instead of \texttt{0x404}, causing the program to get stuck inside \texttt{DotProd} forever.
+
+\begin{warning}[title={LR is Overwritten by Every BL}]
+Each \texttt{BL} instruction unconditionally replaces the current value of LR with $\texttt{PC} + 4$. Any subroutine that itself issues a \texttt{BL} must preserve LR before doing so, or the original return address is permanently lost.
+\end{warning}
+
+\subsection{Solution: Saving LR onto the System Stack}
+
+The solution is to push LR onto the system stack at the beginning of every subroutine that makes further \texttt{BL} calls. This is typically done by including LR in the \texttt{STMFD} register list:
+
+\begin{lstlisting}
+MySub STMFD SP!, {R4-R7, LR}  ; push callee-saved regs + LR
+      ; ... body that may call BL SomeOther ...
+      LDMFD SP!, {R4-R7, PC}  ; restore regs; PC <- saved LR (returns)
+\end{lstlisting}
+
+The final \texttt{LDMFD} pops the saved LR value directly into PC, which simultaneously restores the general-purpose registers and performs the return.
+
+\begin{keyresult}[title={Stack Offset Adjustment When Saving LR}]
+When LR is added to the \texttt{STMFD} push list, all stack-relative offsets used to access caller-passed parameters must increase by 4. For example, if 4 registers (R4--R7) were previously saved, parameters at \texttt{[SP, \#16]}, \texttt{[SP, \#20]}, \ldots\ become \texttt{[SP, \#20]}, \texttt{[SP, \#24]}, \ldots\ once LR is also pushed.
+\end{keyresult}
+
+\subsection{Worked Example: Dot-Product with Nested Multiply}
+
+The dot-product $Z = \sum_{i=0}^{N-1} X_i \times Y_i$ is computed by \texttt{DotProd}, which calls a helper subroutine \texttt{Mult}. Parameters (base addresses of $X$ and $Y$, size $N$, and destination address $Z$) are passed via the system stack. \texttt{Mult} receives two operands in R0 and R1, and returns the product in R12.
+
+\textbf{Multiply subroutine} (leaf --- no nested calls):
+
+\begin{lstlisting}
+Mult  MOV  R12, #0        ; Clear accumulator
+Loop  ADD  R12, R12, R0   ; R12 += R0
+      SUBS R1, R1, #1     ; R1-- (set flags)
+      BNE  Loop            ; loop while R1 != 0
+      MOV  PC, LR          ; return (BX LR)
+\end{lstlisting}
+
+\textbf{DotProd subroutine} (nested --- calls Mult):
+
+\begin{lstlisting}
+DotProd STMFD SP!, {R4-R7, LR} ; save regs + LR
+
+        LDR  R4, [SP, #32]    ; R4 = base address of X
+        LDR  R5, [SP, #28]    ; R5 = base address of Y
+        LDR  R6, [SP, #24]    ; R6 = N (loop counter)
+        MOV  R7, #0            ; R7 = accumulator (sum = 0)
+
+Loop1   LDR  R0, [R4], #4     ; R0 = X[i]; post-increment R4
+        LDR  R1, [R5], #4     ; R1 = Y[i]; post-increment R5
+        BL   Mult              ; R12 = X[i] * Y[i]
+        ADD  R7, R7, R12       ; sum += product
+        SUBS R6, R6, #1        ; N--
+        BNE  Loop1             ; repeat until N == 0
+
+        LDR  R4, [SP, #20]    ; R4 = destination address
+        STR  R7, [R4]          ; store final sum
+
+        LDMFD SP!, {R4-R7, PC} ; restore and return
+\end{lstlisting}
+
+\begin{examtip}[title={Tracing Stack Offsets}]
+When computing stack offsets after an \texttt{STMFD}, count the number of registers in the list and multiply by 4 to find the total SP shift. Each caller-pushed parameter is then accessed at that shift plus the parameter's original distance above the pre-\texttt{STMFD} stack top.
+\end{examtip}
+
+\section{Recursive Subroutines}
+
+A \emph{recursive subroutine} is one that calls itself from within its own body. Recursion is a powerful technique for problems with systematic, self-similar structure --- such as computing factorials, Fibonacci numbers, or performing tree traversals.
+
+\subsection{Requirements for Correct Recursion}
+
+Two conditions must both be satisfied:
+
+\begin{enumerate}
+  \item \textbf{Base case (stopping condition):} A condition under which the subroutine does not make a recursive call. Without this, the recursion is infinite and the stack overflows.
+  \item \textbf{Return address preservation:} LR must be saved onto the stack at the entry of every level of the recursion, because each \texttt{BL Recur} overwrites LR with a new return address.
+\end{enumerate}
+
+\begin{warning}[title={Infinite Recursion Without a Base Case}]
+If no stopping condition is present, the subroutine calls itself indefinitely, consuming stack space with each call until a hardware or memory fault occurs.
+\end{warning}
+
+The general template for a recursive ARM subroutine is:
+
+\begin{lstlisting}
+Recur STMFD SP!, {..., LR}  ; save registers including LR
+
+      ; --- base case check ---
+      ; if base case met: set result, branch to Done
+
+      ; --- recursive step ---
+      ; prepare argument for recursive call
+      BL Recur               ; call self
+
+      ; --- post-recursion combination ---
+
+Done  LDMFD SP!, {..., LR}
+      MOV PC, LR             ; return
+\end{lstlisting}
+
+\subsection{Worked Example: Fibonacci Sequence}
+
+The Fibonacci sequence is defined recursively as:
+\[
+  F(n) = \begin{cases}
+    0 & n = 1 \\
+    1 & n = 2 \\
+    F(n-1) + F(n-2) & n > 2
+  \end{cases}
+\]
+producing $0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, \ldots$
+
+The parameter $n$ is passed via the top of the stack; the result is returned in R12.
+
+\textbf{C pseudocode:}
+
+\begin{lstlisting}[language=C]
+int Fibonacci(int n) {
+    if (n == 1) return 0;
+    if (n == 2) return 1;
+    return Fibonacci(n - 1) + Fibonacci(n - 2);
+}
+\end{lstlisting}
+
+\textbf{ARM assembly implementation:}
+
+\begin{lstlisting}
+Fib   STMFD SP!, {R4-R6, LR} ; save R4, R5, R6, LR (SP -= 16)
+
+      LDR   R4, [SP, #16]     ; R4 = n
+
+      ; --- base cases ---
+      CMP   R4, #1
+      MOVEQ R12, #0            ; F(1) = 0
+      CMP   R4, #2
+      MOVEQ R12, #1            ; F(2) = 1
+      BLE   Done               ; n <= 2: result ready
+
+      ; --- compute F(n-1) ---
+      SUB   R5, R4, #1         ; R5 = n-1
+      STMFD SP!, {R5}          ; push n-1 as argument
+      BL    Fib                ; R12 = F(n-1)
+      LDMFD SP!, {R5}          ; pop argument
+
+      MOV   R6, R12            ; R6 = F(n-1) (preserve)
+
+      ; --- compute F(n-2) ---
+      SUB   R5, R4, #2         ; R5 = n-2
+      STMFD SP!, {R5}          ; push n-2 as argument
+      BL    Fib                ; R12 = F(n-2)
+      LDMFD SP!, {R5}          ; pop argument
+
+      ADD   R12, R12, R6       ; R12 = F(n-1) + F(n-2)
+
+Done  LDMFD SP!, {R4-R6, LR}  ; restore registers
+      MOV   PC, LR             ; return
+\end{lstlisting}
+
+Key observations:
+
+\begin{itemize}
+  \item LR is saved in the entry \texttt{STMFD} so that each recursive \texttt{BL Fib} does not corrupt the caller's return address.
+  \item After computing $F(n-1)$, the result in R12 is moved to R6 before the second recursive call, because that call will overwrite R12.
+  \item The argument is pushed onto the stack immediately before each \texttt{BL} and popped immediately after, keeping the stack balanced at each level.
+  \item R4 (holding $n$) survives both recursive calls because it was saved in the initial \texttt{STMFD} and the callee (\texttt{Fib} itself) also saves R4.
+\end{itemize}
+
+\begin{keyresult}[title={Rules for Recursive ARM Subroutines}]
+\begin{enumerate}
+  \item Always include LR in the entry \texttt{STMFD} push list.
+  \item Define a base case that branches past any recursive \texttt{BL}.
+  \item Save intermediate results in a callee-saved register before the next recursive call overwrites R12.
+  \item Push each argument immediately before its \texttt{BL} and pop it immediately after to maintain a balanced stack.
+\end{enumerate}
+\end{keyresult}
+
+\section{Chapter Summary}
+
+\begin{itemize}
+  \item \texttt{BL <label>} calls a subroutine: it saves $\texttt{PC}+4$ into LR and jumps to the label. \texttt{BX LR} (or \texttt{MOV PC, LR} in VisUAL) returns by copying LR back to PC\@.
+  \item \textbf{Register passing} (R0--R3 for arguments and return values) is the simplest and fastest method, but is limited by the number of available registers.
+  \item \textbf{Memory-block passing} and \textbf{stack passing} support large or complex parameter sets; stack passing is the most general and is used by compiled C code.
+  \item Subroutines that modify R4--R11 must save and restore them (\texttt{STMFD}/\texttt{LDMFD}) to remain caller-transparent.
+  \item \textbf{Nested subroutines} arise when a subroutine itself issues a \texttt{BL}. The LR is overwritten by every \texttt{BL}, so it must be pushed onto the stack at the start of any subroutine that makes further calls: \texttt{STMFD SP!, \{..., LR\}}. Adding LR to the push list shifts all stack-relative parameter offsets by 4 bytes.
+  \item \textbf{Recursive subroutines} call themselves. Two requirements must be met: (1) a base case that stops the recursion, and (2) LR saved on the stack at every recursive level. Intermediate results must be preserved in callee-saved registers before the next recursive \texttt{BL} overwrites R12.
+\end{itemize}
+
+\chapter{Flow-Control Constructs}
+
+\section{IF Statements}
+
+The IF construct is one of the most fundamental flow-control structures in high-level languages. When translating it to assembly, a na\"ive approach is to imitate the high-level test condition directly:
+
+\begin{lstlisting}
+; C: if (a > b) { S1 }
+CMP  a, b
+BGT  DoIF        ; branch if a > b
+B    Skip        ; unconditional jump over S1
+DoIF {S1}
+Skip
+\end{lstlisting}
+
+This approach requires two branch instructions. A more efficient strategy is to \emph{reverse the test condition}, allowing the unconditional branch to be eliminated:
+
+\begin{lstlisting}
+; C: if (a > b) { S1 }
+CMP  a, b
+BLE  Skip        ; branch if NOT (a > b), i.e. reverse condition
+{S1}
+Skip
+\end{lstlisting}
+
+\begin{keyresult}[title={Reversing the IF Condition}]
+To implement an \texttt{if (cond) \{S1\}} construct efficiently, reverse the condition and branch over S1. This eliminates the extra unconditional branch and saves one instruction per IF statement.\\
+Common reverse pairs: HS $\leftrightarrow$ LO, LT $\leftrightarrow$ GE, EQ $\leftrightarrow$ NE, GT $\leftrightarrow$ LE\@.
+\end{keyresult}
+
+\subsection{Example: Find Largest Number}
+
+The inner IF logic --- updating the current maximum when a larger element is found --- is implemented using the reversed-condition technique:
+
+\begin{lstlisting}
+; R0 = pointer, R1 = counter, R2 = current element, R3 = max
+
+MOV  R0, #0x100      ; pointer to first element
+MOV  R1, #9          ; counter = 9
+LDR  R3, [R0]        ; assume first element is current max
+
+Loop
+LDR  R2, [R0, #4]!   ; load next element, auto-increment
+CMP  R2, R3           ; compare: R2 - R3
+BLO  Skip             ; if R2 < R3, skip update
+MOV  R3, R2           ; update max: R3 = R2
+
+Skip
+SUBS R1, R1, #1       ; decrement counter, set flags
+BNE  Loop             ; loop while counter != 0
+\end{lstlisting}
+
+\begin{warning}[title={Avoiding Reversion Introduces Redundancy}]
+Attempting to use the non-reversed condition (branching into the body rather than over it) requires duplicating the loop-control instructions (\texttt{SUBS}, \texttt{BNE}) after the IF body, creating redundant code. The reversed-condition approach avoids this entirely.
+\end{warning}
+
+\section{Conditional Execution in ARM}
+
+The 32-bit ARM ISA extends the concept introduced in Chapter 5 by allowing \emph{any} instruction --- not just branches --- to be conditionally executed based on the current Condition Code (CC) flags:
+
+\begin{lstlisting}
+; --- With branch ---
+CMP   r0, #1
+BNE   Skip
+MOV   r1, #3
+Skip
+
+; --- With conditional execution ---
+CMP   r0, #1
+MOVEQ r1, #3     ; MOV executes only if EQ flag is set
+Skip
+\end{lstlisting}
+
+The conditional execution version uses one fewer instruction and --- crucially --- does not alter the flow of the program counter, keeping the CPU pipeline intact.
+
+\begin{examtip}[title={Conditional Execution Across Multiple Instructions}]
+Conditional execution is not limited to a single instruction. It remains valid for any number of consecutive instructions, provided no intervening instruction updates the CC flags (i.e.\ no instruction with the \texttt{S} suffix, and no new \texttt{CMP}/\texttt{TST} between the comparison and the conditionally-executed code).
+\end{examtip}
+
+\subsection{Find Largest with Conditional Execution}
+
+Applying conditional execution to the FindMax example eliminates the branch entirely inside the loop:
+
+\begin{lstlisting}
+MOV  R0, #0x100
+MOV  R1, #9
+LDR  R3, [R0]
+
+Loop
+LDR   R2, [R0, #4]!
+CMP   R2, R3
+MOVGE R3, R2       ; update max only if R2 >= R3 (no branch!)
+SUBS  R1, R1, #1
+BNE   Loop
+\end{lstlisting}
+
+\subsection{Find Largest Number and Store Its Index}
+
+With conditional execution, both value and index updates are made inline without any branch:
+
+\begin{lstlisting}
+Loop
+LDR    R2, [R0, #4]!
+CMP    R2, R3
+MOVGE  R3, R2          ; conditional update of max
+RSUBGE R4, R1, #10     ; conditional update of index
+SUBS   R1, R1, #1
+BNE    Loop
+\end{lstlisting}
+
+Both \texttt{MOVGE} and \texttt{RSUBGE} execute only when $R2 \ge R3$. Because neither carries the \texttt{S} suffix, the CC flags set by \texttt{CMP} are preserved across both conditional instructions.
+
+\section{IF-ELSE Statements}
+
+The IF-ELSE construct requires both a conditional and an unconditional branch when implemented without conditional execution:
+
+\begin{lstlisting}
+; C: if (a == 3) { S1 } else { S2 }
+
+CMP  a, #3
+BEQ  DoIf
+{S2}            ; ELSE body
+B    Skip
+DoIf
+{S1}            ; IF body
+Skip
+\end{lstlisting}
+
+\begin{remark}
+Reversing the test condition in an IF-ELSE construct does not improve efficiency in general --- both branches always execute one conditional and one unconditional jump. However, reversing is beneficial when the ELSE code segment is more likely to execute.
+\end{remark}
+
+\subsection{Conditional Execution for IF-ELSE}
+
+When each branch body is a single instruction, conditional execution removes all branch instructions:
+
+\begin{lstlisting}
+; C: if (r0 == 1) r1 = 3; else r1 = 5;
+
+CMP   r0, #1
+MOVEQ r1, #3     ; execute if r0 == 1
+MOVNE r1, #5     ; execute if r0 != 1
+\end{lstlisting}
+
+\section{Compound Conditions}
+
+\subsection{Compound AND Conditions}
+
+A compound AND condition such as \texttt{if ((a == b) \&\& (b > 0)) \{S1\}} is resolved by a compiler into a series of independent simple tests:
+
+\begin{lstlisting}
+; if (a != b) then Skip    ; reverse of a == b
+; if (b <= 0) then Skip    ; reverse of b > 0
+; {S1}
+; Skip
+\end{lstlisting}
+
+The tests are evaluated left to right. As soon as the first condition evaluates to false, execution jumps to Skip without testing the remaining conditions. This optimisation is known as \emph{fast Boolean evaluation} (or short-circuit evaluation).
+
+\begin{keyresult}[title={Optimising Compound AND}]
+Place the \emph{least likely} condition leftmost in a compound AND expression. Because a false result short-circuits the evaluation, the unlikely condition acts as an early-exit gate, avoiding the cost of evaluating the remaining (more expensive) conditions.
+\end{keyresult}
+
+\begin{warning}[title={Compound AND with Conditional Execution}]
+It may be tempting to use chained conditional comparisons for a compound AND\@. This is incorrect when $a > b$ and $b > 0$: the first \texttt{CMP} sets a non-EQ flag, so \texttt{CMPEQ} does not execute (CC flags retain the result of the first comparison), and \texttt{XXXGT} fires incorrectly. Always verify that chained conditional comparisons cover all cases before using them.
+\end{warning}
+
+\subsection{Compound OR Conditions}
+
+A compound OR such as \texttt{if ((a == 1) || (a == 2)) \{S1\}} requires a different strategy. The goal is to branch into the IF body as soon as \emph{any} condition is true:
+
+\begin{lstlisting}
+; if (a == 1) then DoIf
+; if (a != 2) then Skip   ; reversed last condition
+; DoIf
+; {S1}
+; Skip
+\end{lstlisting}
+
+\begin{keyresult}[title={Optimising Compound OR}]
+Place the \emph{most likely} condition leftmost in a compound OR expression. Since any true result short-circuits evaluation, the most probable condition will trigger the early exit most often, minimising total instruction count.
+\end{keyresult}
+
+\section{Branchless Logic}
+
+Branch instructions (\texttt{Bcc}) can be costly on pipelined processors: if the CPU pre-fetches the wrong next instruction, the pipeline must be flushed, wasting several cycles. Branchless logic avoids conditional jumps altogether by exploiting arithmetic or bitwise relationships to compute the desired Boolean outcome directly.
+
+\begin{definition}[Branchless Logic]
+\label{def:branchless}
+A coding technique that transforms a conditional assignment into a sequence of arithmetic/bitwise instructions with no branch, relying on the algebraic relationship between the test condition and the required output value.
+\end{definition}
+
+\begin{example}
+Consider the following construct:
+\begin{lstlisting}[language=C]
+if ((X & 2) == 2)
+    X = true;   // i.e. X = 1
+else
+    X = false;  // i.e. X = 0
+\end{lstlisting}
+The bit at position 1 of X is already the Boolean answer. Masking it and rotating it into bit position 0 produces the result without any branch:
+\begin{lstlisting}
+AND R1, R1, #0x02  ; isolate bit 1
+ROR R1, R1, #1     ; rotate right 1: gives 0 or 1
+\end{lstlisting}
+\end{example}
+
+\begin{examtip}[title={Conditional Execution as Branchless Code}]
+Conditional execution instructions (e.g.\ \texttt{MOVEQ}, \texttt{MOVGE}) are themselves a form of branchless logic --- the program counter never branches, so the pipeline is never flushed. When the IF body is short (1--2 instructions), always prefer conditional execution over a \texttt{Bcc} branch.
+\end{examtip}
+
+\section{SWITCH Statements}
+
+The SWITCH construct allows a variable to select from multiple execution paths.
+
+\begin{definition}[Jump Table]
+\label{def:jump-table}
+A data structure stored in code memory containing a list of start addresses for each case's code segment. The switch variable acts as an index into the table; the corresponding address is loaded directly into the PC to dispatch execution.
+\end{definition}
+
+\subsection{Consecutive Narrow-Range Values --- Jump Table}
+
+When case values are consecutive integers spanning a narrow range, a jump table is used to dispatch execution in $O(1)$ time:
+
+\begin{lstlisting}
+LDR R1, [R2]            ; load switch variable x
+ADR R3, TBL             ; R3 = base address of jump table
+LDR PC, [R3, R1, LSL#2] ; PC = TBL[x * 4]
+
+RES STR R0, [R2, #4]    ; common result store (break target)
+...
+
+C1  MOV R0, #70          ; 'F'
+    B RES
+C2  MOV R0, #68          ; 'D'
+    B RES
+C3  MOV R0, #67          ; 'C'
+    B RES
+
+; Jump table (in data/code memory)
+TBL DCD C1               ; TBL + 0 -> address of C1
+    DCD C2               ; TBL + 4
+    DCD C3               ; TBL + 8
+\end{lstlisting}
+
+\begin{keyresult}[title={Jump Table Properties}]
+A jump table provides $O(1)$ dispatch: execution time is constant and independent of the number of cases. This is superior to a cascaded if-else-if chain, which requires $O(n)$ comparisons in the worst case.
+\end{keyresult}
+
+\subsection{Random Wide-Range Values --- Forked if-else-if}
+
+When case values span a wide range (e.g.\ 1, 10, 100, 1000), a jump table would require thousands of entries for the gaps between values. A cascade of if-else-if comparisons is used instead. To reduce the average number of comparisons, a \emph{forked if-else-if} (binary partition) algorithm is applied:
+
+\begin{lstlisting}[language=C]
+// Forked (binary partition) -- O(log n) average
+if (x <= 10) {
+    if (x == 1) { S0 }
+    else if (x == 10) { S1 }
+} else {
+    if (x == 100) { S2 }
+    else if (x == 1000) { S3 }
+}
+\end{lstlisting}
+
+\begin{examtip}[title={Choosing Between Jump Table and Forked if-else-if}]
+Use a jump table when case values are consecutive and span a narrow range --- lookup is $O(1)$. Use a forked if-else-if when values are random or widely spread --- the jump table would be too large and mostly empty.
+\end{examtip}
+
+\subsection{Extended Example: Grade Statistics Subroutine}
+
+The following example combines a DO-WHILE loop, a SWITCH construct with a jump table, and parameter passing via the stack. The subroutine \texttt{Cal\_grades} accepts a null-terminated character array of grades (\texttt{'A'}--\texttt{'D'}) and returns three counters: number of top grades (A and D), B-grades, and other passing grades (C).
+
+\begin{lstlisting}[language=C]
+void Cal_grades(char* arr, int* top,
+                int* Bgrading, int* other) {
+    *top = 0; *Bgrading = 0; *other = 0;
+    int index = 0;
+    do {
+        char val = arr[index++];
+        switch (val) {
+            case 'A': (*top)++; break;
+            case 'B': (*Bgrading)++; break;
+            case 'C': (*other)++; break;
+            case 'D': (*top)++; break;
+            default: return;
+        }
+    } while (1);
+}
+\end{lstlisting}
+
+The ARM assembly implementation uses a jump table dispatched via \texttt{LDR PC,[R9,R7,LSL\#2]}, where R7 is the ASCII code of the grade shifted by subtracting 65 (\texttt{'A'}), turning it into a zero-based table index.
+
+\section{Loop Constructs}
+
+Loop constructs are distinguished by the position of their conditional test relative to the loop body:
+
+\begin{definition}[Pre-test Loop]
+\label{def:pretest}
+A loop that evaluates its condition \emph{before} executing the loop body. If the condition is false on the first check, the loop body is never executed. Examples: WHILE, FOR\@.
+\end{definition}
+
+\begin{definition}[Post-test Loop]
+\label{def:posttest}
+A loop that evaluates its condition \emph{after} executing the loop body. The loop body is always executed at least once. Example: DO-WHILE\@.
+\end{definition}
+
+\subsection{WHILE Implementation}
+
+The WHILE loop is a pre-test construct. The condition is reversed to skip the unconditional jump:
+
+\begin{lstlisting}
+; C: while (VarX > 0) { Loop segment }
+
+Back CMP  "VarX", #0    ; load VarX into a register first
+     BLE  Exit           ; reversed condition: exit if VarX <= 0
+     ...                 ; loop body
+     B    Back           ; unconditional jump back to test
+Exit :
+\end{lstlisting}
+
+\subsection{DO-WHILE Implementation}
+
+The DO-WHILE loop is a post-test construct. No unconditional branch is needed at the top:
+
+\begin{lstlisting}
+; C: do { Loop segment } while (VarX > 0);
+
+Back ...                 ; loop body (always executes at least once)
+     CMP  "VarX", #0
+     BGT  Back           ; loop back if condition still true
+     :                   ; exit
+\end{lstlisting}
+
+\begin{keyresult}[title={DO-WHILE is More Efficient than WHILE}]
+A post-test (DO-WHILE) loop requires one fewer instruction per iteration than the equivalent pre-test (WHILE) loop, because the unconditional back-branch is eliminated --- the conditional branch at the bottom serves as both the loop test and the back-jump.
+\end{keyresult}
+
+\subsection{FOR Implementation}
+
+Optimising compilers often convert a FOR loop into a post-test loop using a decrement and test for zero pattern:
+
+\begin{lstlisting}
+; --- Post-test (optimised: count down, test for zero) ---
+MOV  R0, #5       ; load count = N (counting down)
+Back ...           ; loop body
+SUBS R0, R0, #1   ; decrement, set flags
+BNE  Back          ; loop while counter != 0
+\end{lstlisting}
+
+\begin{remark}
+The decrement-and-test-for-zero optimisation is valid only when the loop counter value is not referenced inside the loop body. When $N$ is used (e.g.\ to index an array), the pre-test version with an incrementing counter must be used instead.
+\end{remark}
+
+\subsection{Example: Summation 1 to N}
+
+Computing $\sum_{i=0}^{N} i$ demonstrates the pre-test and post-test implementations:
+
+\begin{lstlisting}
+; --- Post-test (5 instructions per loop iteration) ---
+MOV  R2, #0       ; i = 0
+MOV  R0, #0       ; Sum = 0
+Loop ADD  R0, R0, R2  ; Sum += i
+     ADD  R2, R2, #1  ; i++
+     CMP  R2, #5      ; check i <= N (N=5 here)
+     BLE  Loop
+     STR  R0, ["sum"]
+\end{lstlisting}
+
+\section{Chapter Summary}
+
+\begin{itemize}
+  \item The \textbf{IF} construct is implemented by reversing the test condition to eliminate an extra unconditional branch.
+  \item The \textbf{IF-ELSE} construct uses one conditional and one unconditional branch. Reversing the condition helps only when the ELSE body is more frequently executed.
+  \item \textbf{Conditional execution} in 32-bit ARM allows any instruction to carry a condition suffix, eliminating branches and preventing pipeline flushes.
+  \item For \textbf{compound AND}: place the least likely condition leftmost. For \textbf{compound OR}: place the most likely condition leftmost.
+  \item \textbf{Branchless logic} exploits arithmetic/bitwise relationships to compute Boolean outcomes without any branch instruction.
+  \item \textbf{SWITCH} constructs with consecutive narrow-range values use a jump table for $O(1)$ dispatch. Wide-range random values use a forked if-else-if (binary partition).
+  \item \textbf{Post-test loops} (DO-WHILE) are more efficient than pre-test loops (WHILE, FOR) because they require one fewer unconditional branch per iteration.
+  \item Optimising compilers may convert pre-test FOR loops into post-test decrement-and-test loops when the counter is not used inside the body.
+\end{itemize}
+
+\chapter{Instruction Encoding and ISA}
+
+\section{Introduction}
+
+For a CPU to execute assembly instructions, each unique instruction must be encoded as a unique binary pattern. In a 32-bit ARM system, instructions are encoded within a 32-bit word. The instruction word must specify not only the operation type (e.g., ADD, SUB, MOV) but also the operands, conditions for conditional execution, and various control flags. This chapter examines the ARM instruction encoding format and explores broader issues in instruction set architecture (ISA) design.
+
+\section{Instruction Encoding Fundamentals}
+
+\subsection{What is Encoded in an Instruction?}
+
+An ARM 32-bit instruction word encodes multiple pieces of information:
+
+\begin{itemize}
+  \item \textbf{Instruction type} --- identifies the operation (ADD, SUB, LDR, etc.)
+  \item \textbf{Operand(s)} --- specifies source and destination registers or immediate values
+  \item \textbf{Condition for conditional execution} --- determines when the instruction executes
+  \item \textbf{Other flags} --- such as whether to update condition flags (S bit), shift operations, etc.
+\end{itemize}
+
+The 32-bit instruction word is divided into fields, with bit positions allocated to each component. The challenge in ISA design is to fit all necessary information into a fixed number of bits while supporting a rich set of instructions and addressing modes.
+
+\section{ARM Instruction Format}
+
+ARM uses a fixed-length instruction format: every instruction is exactly 32 bits (in standard ARM mode). This simplifies instruction fetch and decode but places constraints on what can be encoded in a single instruction.
+
+\subsection{Arithmetic and Logic Instructions}
+
+Arithmetic and logic instructions (ADD, ADC, SUB, SBC, RSB, AND, EOR, RSC, ORR, BIC) follow one of three encoding patterns, depending on the second operand.
+
+\textbf{Register operand with immediate shift:} \texttt{XXXCCS Rd, Rs1, Rs2, \{shft \#\}}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+\hline
+31--28 & 27--24 & 23--21 & 20 & 19--16 & 15--12 & 11--7 & 6--5 & 4 & 3--0 \\
+\hline
+Cond & 000 & Inst.\ type & S & Rs1 & Rd & Shift size & shft & 0 & Rs2 \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Immediate operand:} \texttt{XXXCCS Rd, Rs1, \#immediate (rotated)}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+31--28 & 27--24 & 23--21 & 20 & 19--16 & 15--12 & 11--8 & 7--0 \\
+\hline
+Cond & 001 & Inst.\ type & S & Rs1 & Rd & \#rot & 8-bit immediate \\
+\hline
+\end{tabular}
+\end{center}
+
+The \texttt{\#rot} field (bits 11--8) specifies a rotation value; the actual rotation is $2 \times \texttt{\#rot}$ positions applied to the 8-bit immediate to produce a 32-bit constant.
+
+\begin{example}[Arithmetic Instruction Encodings]
+\leavevmode
+\begin{enumerate}
+  \item \texttt{ADD R0, R1, R2}: \texttt{1110 000 0100 0 0001 0000 00000 00 0 0010} (Condition: always, ADD opcode = 0100, S=0, no shift)
+  \item \texttt{ADD R0, R1, R2, LSL \#5}: Same as above, but shift size = 5, shift type = LSL = 00.
+  \item \texttt{SUBS R4, R3, R2, LSR R5}: SUB opcode = 0010, S=1, register-specified shift with R5.
+  \item \texttt{RSBEQS R5, R3, \#20}: Condition: EQ = 0000, immediate operand, RSB opcode = 0011, S=1.
+\end{enumerate}
+\end{example}
+
+\subsection{Comparison Instructions}
+
+Comparison instructions (TST, TEQ, CMP, CMN) always set condition flags but do not write a destination register. Their encoding is similar to arithmetic instructions, but the destination register field (Rd) is set to \texttt{0000}, and the S bit is implicitly 1.
+
+\subsection{MOV Instructions}
+
+MOV and MVN instructions move data from a source to a destination register, optionally applying a shift. They do not use a first source register, so Rs1 is set to \texttt{0000}.
+
+\begin{example}[MOV Instruction Encodings]
+\leavevmode
+\begin{enumerate}
+  \item \texttt{MOV R0, R5}: MOV opcode = 1101, no shift, Rs1 = 0000.
+  \item \texttt{MOVNE R1, R3, LSL R2}: Condition: NE = 0001, shift register R2, LSL = 00.
+  \item \texttt{MOV R1, \#0x40000000}: Immediate operand, rotation = 4, immediate = 0x40.
+\end{enumerate}
+\end{example}
+
+\subsection{Shift and Rotate Instructions}
+
+The shift and rotate instructions (LSL, LSR, ASR, ROR, RRX) do not have dedicated instruction opcodes. Instead, they are encoded as MOV instructions with an appropriate shift operation applied to the source register.
+
+\begin{keyresult}[title={Shift Instructions as MOV}]
+In ARM, \texttt{LSL R1, R2, \#5} is equivalent to \texttt{MOV R1, R2, LSL \#5}. The shift operations are encoded in the shift field (bits 6--5) of the MOV instruction:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textbf{Code} & \textbf{Shift type} \\
+\midrule
+00 & LSL \\
+01 & LSR \\
+10 & ASR \\
+11 & ROR/RRX \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{keyresult}
+
+\subsection{Branch Instructions}
+
+Branch instructions (B, BL) use a large offset field to specify the target address. The offset is a signed 24-bit value, which is shifted left by 2 bits (multiplied by 4) to give a byte offset, allowing a branch range of $\pm 32$ MB\@.
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+31--28 & 27--25 & 24 & 23--0 \\
+\hline
+Condition & 101 & L & Offset \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{itemize}
+  \item L (bit 24): link bit (1 for BL, 0 for B).
+  \item Offset (bits 23--0): signed 24-bit offset (in words, shifted left by 2 to get byte offset).
+\end{itemize}
+
+\subsection{Load/Store Instructions}
+
+Load and store instructions (LDR, LDRB, STR, STRB) encode the base register, offset, and various control bits for indexing modes and data size.
+
+\begin{itemize}
+  \item P (bit 24): pre-indexing (1) or post-indexing (0)
+  \item U (bit 23): add offset (1) or subtract offset (0)
+  \item B (bit 22): byte access (1) or word access (0)
+  \item W (bit 21): write-back (1) or no write-back (0)
+  \item L (bit 20): load (1) or store (0)
+\end{itemize}
+
+\begin{example}[Load/Store Encodings]
+\leavevmode
+\begin{enumerate}
+  \item \texttt{LDR R0, [R2, \#4]}: Load word, pre-indexed, add offset, no write-back.
+  \item \texttt{STRB R0, [R2, \#-4]!}: Store byte, pre-indexed, subtract offset, write-back.
+\end{enumerate}
+\end{example}
+
+\subsection{Load/Store Multiple Instructions}
+
+Load and store multiple instructions (LDM, STM) transfer multiple registers to or from memory in a single instruction. The register list is encoded as a 16-bit bitmask.
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+31--28 & 27--25 & 24 & 23 & 22 & 21 & 20 & 19--16 \\
+\hline
+Cond & 100 & P & U & \^{} & W & L & Rs \\
+\hline
+\multicolumn{8}{|c|}{Bits 15--0: Register list (16-bit bitmask)} \\
+\hline
+\end{tabular}
+\end{center}
+
+The combination of P and U bits determines the stack addressing mode:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{P} & \textbf{U} & \textbf{Instruction} \\
+\midrule
+1 & 0 & STMFD (full descending) \\
+0 & 1 & LDMFD (full descending) \\
+0 & 0 & STMFA (full ascending) \\
+1 & 1 & LDMFA (full ascending) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Instruction Type and Condition Field Encoding}
+
+\subsection{Instruction Type Field}
+
+The instruction type field uses 4 bits (bits 23--21 for data processing instructions), allowing up to 16 different operations:
+
+\begin{center}
+\begin{tabular}{llll}
+\toprule
+\textbf{Code} & \textbf{Instruction} & \textbf{Code} & \textbf{Instruction} \\
+\midrule
+0000 & AND & 1000 & TST \\
+0001 & EOR & 1001 & TEQ \\
+0010 & SUB & 1010 & CMP \\
+0011 & RSB & 1011 & CMN \\
+0100 & ADD & 1100 & ORR \\
+0101 & ADC & 1101 & MOV \\
+0110 & SBC & 1110 & BIC \\
+0111 & RSC & 1111 & MVN \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Condition Field}
+
+The condition field (bits 31--28) allows every ARM instruction to be conditionally executed based on the current state of the condition flags (N, Z, C, V):
+
+\begin{center}
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Code} & \textbf{Condition} & \textbf{Flags} \\
+\midrule
+0000 & EQ (equal) & $Z = 1$ \\
+0001 & NE (not equal) & $Z = 0$ \\
+0010 & CS/HS (unsigned $\ge$) & $C = 1$ \\
+0011 & CC/LO (unsigned $<$) & $C = 0$ \\
+0100 & MI (negative) & $N = 1$ \\
+0101 & PL (positive or zero) & $N = 0$ \\
+0110 & VS (overflow set) & $V = 1$ \\
+0111 & VC (overflow clear) & $V = 0$ \\
+1000 & HI (unsigned higher) & $C = 1$ and $Z = 0$ \\
+1001 & LS (unsigned lower or same) & $C = 0$ or $Z = 1$ \\
+1010 & GE (signed $\ge$) & $N = V$ \\
+1011 & LT (signed $<$) & $N \ne V$ \\
+1100 & GT (signed $>$) & $Z = 0$ and $N = V$ \\
+1101 & LE (signed $\le$) & $Z = 1$ or $N \ne V$ \\
+1110 & AL (always) & --- \\
+1111 & NV (never / reserved) & --- \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{keyresult}[title={Conditional Execution}]
+Every ARM instruction can be conditionally executed by appending a condition suffix. This eliminates the need for many branch instructions and helps maintain pipeline efficiency. The condition field occupies 4 bits of every instruction word.
+\end{keyresult}
+
+\section{Fixed-Length vs.\ Variable-Length ISA}
+
+\subsection{Fixed-Length ISA}
+
+ARM uses a fixed-length instruction format: all instructions are exactly 32 bits. Implications:
+
+\begin{itemize}
+  \item \textbf{Simplicity of fetch and decode:} The CPU always knows exactly how many bytes to fetch.
+  \item \textbf{Pipelining efficiency:} Fixed instruction length simplifies the pipeline design.
+  \item \textbf{Operand constraints:} Large constants cannot be encoded directly.
+  \item \textbf{Code density:} Fixed-length instructions may result in lower code density.
+\end{itemize}
+
+\subsection{Variable-Length ISA}
+
+Variable-length ISAs, such as Intel x86, allow instructions of different lengths (e.g., 1 to 17 bytes for x86, 1 to 54 bytes for VAX).
+
+\begin{itemize}
+  \item \textbf{Flexibility:} Complex operations with multiple operands in a single instruction.
+  \item \textbf{Code density:} More compact encoding for simple operations.
+  \item \textbf{Complexity:} Multi-step fetch and decode; more complex hardware.
+  \item \textbf{Performance trade-offs:} Slower, more complex decoding.
+\end{itemize}
+
+\begin{keyresult}[title={Fixed vs.\ Variable Length}]
+\begin{itemize}
+  \item \textbf{Fixed-length (ARM):} Simple hardware, easier pipelining, but lower code density and limited immediate operands.
+  \item \textbf{Variable-length (x86):} Higher code density, complex operations in single instruction, but complex hardware and slower decode.
+\end{itemize}
+\end{keyresult}
+
+\section{Design Considerations in ISA}
+
+\subsection{Using Registers Efficiently}
+
+Operations using registers are significantly faster than those involving memory due to the physical proximity of registers to the ALU and the shorter data paths.
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textbf{Memory Level} & \textbf{Access Time} \\
+\midrule
+Register & $< 1$ cycle \\
+L1 Cache & 1--4 cycles \\
+L2 Cache & 10--20 cycles \\
+DRAM & 100--300 cycles \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{keyresult}[title={Minimise Memory Access}]
+Keep as much of your computation within registers as possible. Each memory access incurs a significant performance penalty compared to register operations.
+\end{keyresult}
+
+\subsection{Implications of Register Count}
+
+Increasing the number of registers has both benefits and costs:
+
+\textbf{Benefits:} More opportunities for keeping data in registers; better support for complex algorithms.
+
+\textbf{Costs:} More silicon area; more bits for register encoding (e.g., 16 registers need 4 bits per operand, 32 registers need 5); more routing complexity; more context-switching overhead.
+
+\begin{example}[Register Encoding Overhead]
+Consider a 32-bit fixed-length instruction for a 3-operand operation (e.g., \texttt{ADD Rd, Rs1, Rs2}):
+\begin{itemize}
+  \item With 16 registers: $3 \times 4 = 12$ bits for operands.
+  \item With 32 registers: $3 \times 5 = 15$ bits for operands.
+\end{itemize}
+The extra 3 bits consumed by register encoding reduces the space available for other fields such as immediate values or opcodes.
+\end{example}
+
+\subsection{Orthogonality of ISA}
+
+\begin{definition}[Orthogonality]
+\label{def:orthogonality}
+An ISA is orthogonal if every instruction can use every available addressing mode, and there are no restrictions on which registers can be used with which instructions. In a truly orthogonal ISA, instruction type and operand specification are independent.
+\end{definition}
+
+Complete orthogonality is difficult to achieve in a fixed-length ISA because encoding all possible combinations of operations and addressing modes requires a large number of bit patterns.
+
+\begin{remark}
+Most real-world ISAs are not fully orthogonal. For example, ARM restricts certain operations (e.g., multiplication) to specific register combinations, and some instructions cannot use certain addressing modes available to arithmetic instructions.
+\end{remark}
+
+\begin{warning}[title={Non-Orthogonal Restrictions}]
+When writing assembly code, be aware of instruction-specific restrictions. For instance, not all ARM instructions support shifted register operands, and some instructions implicitly use specific registers. Consult the architecture reference manual to avoid invalid instruction encodings.
+\end{warning}
+
+\section{Why Good ISA Design Matters}
+
+Good instruction set architecture design can yield significant benefits across multiple dimensions: execution performance, code density, power consumption, manufacturing cost, programmer productivity, and compiler optimisation.
+
+\begin{keyresult}[title={ISA Design is a Multi-Objective Optimisation Problem}]
+ISA designers must balance competing objectives: performance, code density, hardware complexity, power consumption, and ease of use. There is no single ``best'' ISA; the optimal design depends on the intended application domain (e.g., embedded systems, high-performance computing, general-purpose processors).
+\end{keyresult}
+
+\subsection{Custom Processor Design in Industry}
+
+Designing a processor is no longer exclusively the domain of traditional hardware companies. With the rise of open ISAs (e.g., RISC-V), domain-specific accelerators, and hardware description languages (HDLs), software companies and startups are increasingly designing custom processors tailored to specific workloads:
+
+\begin{itemize}
+  \item \textbf{Google:} Tensor Processing Unit (TPU), optimised for machine learning.
+  \item \textbf{Facebook (Meta):} Custom ASICs for video processing and AI inference.
+  \item \textbf{Amazon:} Graviton ARM-based server processors and Inferentia/Trainium AI accelerators.
+  \item \textbf{Tesla:} Custom AI chips for autonomous driving.
+  \item \textbf{NVIDIA:} CUDA ISA and Tensor Cores for domain-specific computation.
+\end{itemize}
+
+This trend highlights the importance of understanding ISA design principles: even if you do not design processors professionally, knowledge of instruction encoding and ISA trade-offs is increasingly relevant in software engineering and system design.
+
+\section{Chapter Summary}
+
+\begin{itemize}
+  \item ARM uses a \textbf{fixed-length 32-bit instruction format}, encoding instruction type, operands, condition codes, and control flags within each instruction word.
+  \item \textbf{Arithmetic and logic instructions} encode operation type, source and destination registers, and optional shift operations. Immediate operands use an 8-bit value with a 4-bit rotation field.
+  \item \textbf{Comparison instructions} (CMP, CMN, TST, TEQ) always set condition flags and do not write a destination register.
+  \item \textbf{MOV instructions} transfer data between registers, optionally applying a shift. Shift and rotate instructions are encoded as MOV with shift.
+  \item \textbf{Branch instructions} use a 24-bit signed offset for a range of $\pm 32$ MB\@.
+  \item \textbf{Load/store instructions} encode base register, offset, addressing mode, and data size. Load/store multiple instructions use a 16-bit register bitmask.
+  \item The \textbf{condition field} (bits 31--28) allows every ARM instruction to be conditionally executed.
+  \item \textbf{Fixed-length ISAs} simplify fetch and decode but constrain operand encoding. \textbf{Variable-length ISAs} allow more flexible encoding but require complex decoding hardware.
+  \item \textbf{Register usage} is critical for performance: operations on registers are orders of magnitude faster than memory accesses.
+  \item \textbf{ISA orthogonality} is difficult to achieve in fixed-length ISAs due to encoding constraints.
+  \item Good ISA design balances performance, code density, power consumption, hardware complexity, and programmer productivity.
+  \item \textbf{Custom processor design} is increasingly common outside traditional hardware companies, with software companies designing domain-specific accelerators.
+\end{itemize}
+
+\end{document}
