@@ -1,0 +1,3880 @@
+\documentclass[11pt, a4paper, notitlepage]{report}
+
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue!60!black, urlcolor=blue!60!black}
+\usepackage{enumitem}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{theorems}
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{array}
+\setcounter{secnumdepth}{3}
+
+% ── Highlight boxes ───────────────────────────────────────────────────────────
+\newtcolorbox{keyresult}[1][]{
+  enhanced, colback=blue!5!white, colframe=blue!60!black,
+  fonttitle=\bfseries, title={Key Result}, #1
+}
+\newtcolorbox{examtip}[1][]{
+  enhanced, colback=green!5!white, colframe=green!50!black,
+  fonttitle=\bfseries, title={Exam Tip}, #1
+}
+\newtcolorbox{warning}[1][]{
+  enhanced, colback=red!5!white, colframe=red!60!black,
+  fonttitle=\bfseries, title={Warning}, #1
+}
+
+% ── Theorem environments ──────────────────────────────────────────────────────
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% ── Code listings ─────────────────────────────────────────────────────────────
+\lstset{
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue},
+  commentstyle=\color{gray},
+  breaklines=true,
+  frame=single
+}
+
+% ── Suppress forced page break in \tableofcontents ────────────────────────────
+\makeatletter
+\renewcommand\tableofcontents{%
+  \section*{\contentsname}%
+  \@starttoc{toc}%
+}
+\makeatother
+
+% ── Chapter title formatting ──────────────────────────────────────────────────
+\titleformat{\chapter}[display]
+  {\normalfont\LARGE\bfseries}
+  {\chaptertitlename\ \thechapter}{12pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{20pt}{30pt}
+
+\title{\textbf{MH1301: Discrete Mathematics}\\[0.5em]
+       \large Weeks 1--7 Lecture Notes}
+\author{NTU --- AY 2025/26}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+% =============================================================================
+\chapter{Basics of Counting}
+\label{chap:counting}
+% =============================================================================
+
+\section{Set Theory Recap}
+% =============================================================================
+
+This handout begins with a brief review of set theory from MH1300, which provides the
+foundational vocabulary needed for counting.
+
+\subsection{Sets and Notation}
+
+\begin{definition}[Set]
+\label{def:set}
+A \textbf{set} is an unordered collection of objects, called \emph{elements}. Two sets are
+equal if and only if they have exactly the same elements.
+\end{definition}
+
+We write $a \in A$ to denote that $a$ is an element of the set $A$, and $a \notin A$ to denote
+that $a$ is not an element of $A$. The \textbf{axiom of extension} states that a set is
+completely determined by its elements; the order in which elements are listed is irrelevant, and
+repeated listings do not change the set. For example,
+\[
+  \{a, b, c\} = \{b, c, a\} = \{c, a, b\} = \{a, b, c, a\}.
+\]
+
+Sets are typically denoted by uppercase letters such as $A$, $B$, $C$. Elements can be listed
+explicitly using \textbf{set-roster notation}, e.g.\ $\{1, 2, 3\}$, $\{1, 2, 3, \ldots, 50\}$,
+$\{5, 10, 15, 20, \ldots\}$. The symbol ``$\ldots$'' is called an \emph{ellipsis} and is read
+``and so forth.''
+
+The standard number sets and their symbols are:
+
+\begin{center}
+\begin{tabular}{cl}
+\toprule
+\textbf{Symbol} & \textbf{Set} \\
+\midrule
+$\mathbb{N}$ & Set of natural numbers \\
+$\mathbb{Z}$ & Set of integers \\
+$\mathbb{Q}$ & Set of rational numbers (quotients of integers) \\
+$\mathbb{R}$ & Set of real numbers \\
+$\mathbb{C}$ & Set of complex numbers \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+In particular, $\mathbb{N} = \{0, 1, 2, 3, \ldots\}$, $\mathbb{Z} = \{\ldots, -2, -1, 0, 1, 2, \ldots\}$,
+and $\mathbb{Z}^{\text{nonneg}} = \mathbb{N}$.
+
+A set can also be specified using \textbf{set-builder notation}: given a set $S$ and a property
+$P(x)$, the set $\{x \in S \mid P(x)\}$ is read ``the set of all $x$ in $S$ such that $P(x)$
+holds.'' For example,
+\[
+  \mathbb{Z}^+ = \{x \in \mathbb{Z} \mid x > 0\}.
+\]
+
+\subsection{Subsets and Cardinality}
+
+\begin{definition}[Subset]
+\label{def:subset}
+If $A$ and $B$ are sets, then $A$ is called a \textbf{subset} of $B$, written $A \subseteq B$,
+if and only if every element of $A$ is also an element of $B$. Symbolically:
+\[
+  A \subseteq B \iff \forall x,\ (x \in A \Rightarrow x \in B).
+\]
+We also say ``$A$ is contained in $B$'' or ``$B$ contains $A$.'' The negation $A \not\subseteq B$
+means there exists an element $x$ such that $x \in A$ but $x \notin B$.
+\end{definition}
+
+\begin{definition}[Proper Subset]
+$A$ is a \textbf{proper subset} of $B$, written $A \subsetneq B$, if every element of $A$ is
+in $B$ but there is at least one element of $B$ that is not in $A$. The relationship is
+analogous to $<$ versus $\leq$ for numbers.
+\end{definition}
+
+\begin{definition}[Cardinality]
+\label{def:cardinality}
+The \textbf{size} or \textbf{cardinality} of a set $S$, denoted $|S|$, is the number of
+distinct elements in $S$.
+\end{definition}
+
+\begin{example}
+What is $|\{a, b, c, a\}|$? Since $\{a, b, c, a\} = \{a, b, c\}$ (repeated elements do not
+count twice), the cardinality is $3$.
+\end{example}
+
+Counting, as studied in this course, is essentially the task of determining the cardinality of
+a given set.
+
+\subsection{Sequences}
+
+\begin{definition}[Sequence]
+\label{def:sequence}
+A \textbf{sequence} is an \emph{ordered} collection of elements (also called
+components or entries), not necessarily distinct.
+\end{definition}
+
+Unlike sets, sequences are sensitive to order and repetition. For example, $(a, b, c)$,
+$(b, a, c)$, and $(a, b, a)$ are three distinct sequences. The sequences $(a, b, c)$ and
+$(b, a, c)$ are \emph{not} equal, even though $\{a, b, c\} = \{b, a, c\}$ as sets.
+
+% =============================================================================
+\section{The Product Rule}
+% =============================================================================
+
+\subsection{Statement and Intuition}
+
+\begin{keyresult}[title={Key Result: Product Rule}]
+Given a set $S$ of sequences of length $k$, where there are $n_1$ possible first entries,
+$n_2$ possible second entries for each first entry, $n_3$ possible third entries for each
+combination of first and second entries, and so on, the total size of $S$ is
+\[
+  |S| = n_1 \cdot n_2 \cdot n_3 \cdots n_k.
+\]
+\end{keyresult}
+
+The product rule applies whenever a process consists of $k$ independent sequential choices.
+Each ``box'' (position in the sequence) contributes a multiplicative factor equal to the number
+of options available at that stage.
+
+\subsection{Examples}
+
+\begin{example}[Dice and Coin]
+A six-sided die and a two-sided coin (H or T) are tossed simultaneously. The set of all
+possible outcomes is
+\[
+  \{(1,H),(2,H),(3,H),(4,H),(5,H),(6,H),(1,T),(2,T),(3,T),(4,T),(5,T),(6,T)\}.
+\]
+There are 6 choices for the die and 2 for the coin, so by the product rule there are
+$6 \times 2 = 12$ outcomes.
+\end{example}
+
+\begin{example}[License Plates]
+\label{ex:license}
+How many different license plates are available if each plate contains a sequence of 3 letters
+followed by 3 digits?
+
+\textit{Solution.} There are 26 choices for each of the three letter positions and 10 choices
+for each of the three digit positions. By the product rule:
+\[
+  26 \cdot 26 \cdot 26 \cdot 10 \cdot 10 \cdot 10 = 26^3 \cdot 10^3 = 17{,}576{,}000.
+\]
+\end{example}
+
+\begin{example}[Permutations of an $n$-element set]
+\label{ex:permutation}
+A \textbf{permutation} of a set $S$ is a sequence that contains every element of $S$ exactly
+once. For example, the permutations of $\{1, 2, 3\}$ are:
+$(1,2,3),\ (1,3,2),\ (2,1,3),\ (2,3,1),\ (3,1,2),\ (3,2,1).$
+
+How many permutations does an $n$-element set have? The first entry can be any of the $n$
+elements; the second can be any of the remaining $n-1$ elements; the third any of the $n-2$
+remaining, and so on. By the product rule:
+\[
+  n \cdot (n-1) \cdot (n-2) \cdots 1 = n!.
+\]
+\end{example}
+
+% =============================================================================
+\section{Functions and Counting}
+% =============================================================================
+
+\subsection{Functions}
+
+\begin{definition}[Function]
+\label{def:function}
+Let $X$ and $Y$ be sets. A \textbf{function} $f: X \to Y$ is a relation such that for every
+element $x \in X$, there is \emph{exactly one} element $y \in Y$ with $f(x) = y$.
+\end{definition}
+
+For example, $f(x) = x^2$ defines a function $f: \mathbb{R} \to \mathbb{R}$, since each real
+number $x$ maps to a unique value $x^2$. By contrast, $f(x) = \pm\sqrt{x}$ is \emph{not} a
+function, because for $x = 4$ it would assign both $+2$ and $-2$.
+
+\begin{definition}[Surjection, Injection, Bijection]
+\label{def:bij}
+Let $f: X \to Y$.
+\begin{itemize}
+  \item $f$ is \textbf{surjective} (onto) if every element of $Y$ is mapped from \emph{at least
+    one} element of $X$.
+  \item $f$ is \textbf{injective} (one-to-one) if every element of $Y$ is mapped from \emph{at
+    most one} element of $X$.
+  \item $f$ is \textbf{bijective} if it is both surjective and injective, i.e.\ every element
+    of $Y$ is mapped from \emph{exactly one} element of $X$.
+\end{itemize}
+\end{definition}
+
+\subsection{Mapping Rules}
+
+\begin{theorem}[Mapping Rules]
+\label{thm:mapping}
+Let $X$ and $Y$ be finite sets and $f: X \to Y$ a function.
+\begin{itemize}
+  \item If $f$ is surjective, then $|X| \geq |Y|$.
+  \item If $f$ is injective, then $|X| \leq |Y|$.
+  \item If $f$ is bijective, then $|X| = |Y|$.
+\end{itemize}
+\end{theorem}
+
+\begin{keyresult}[title={Key Result: Bijections and Counting}]
+To count $|Y|$, it suffices to find a bijection $f: X \to Y$ and count $|X|$ instead. This is
+the fundamental technique of \emph{counting by bijection}: reduce an unfamiliar counting
+problem to a familiar one via a one-to-one correspondence.
+\end{keyresult}
+
+\begin{warning}[title={Warning: Over- and Under-Counting}]
+When constructing a bijection, verify carefully that every element of $Y$ is counted
+\emph{exactly once}. Over-counting (surjective but not injective) and under-counting
+(injective but not surjective) are the two most common errors.
+\end{warning}
+
+\subsection{Counting Functions and Sequences}
+
+\begin{example}[Counting functions]
+How many functions are there from a set $X$ with $m$ elements to a set $Y$ with $n$ elements?
+
+\textit{Solution.} Specifying a function $f: X \to Y$ means choosing, for each of the $m$
+elements of $X$, one of the $n$ elements of $Y$. By the product rule:
+\[
+  \underbrace{n \cdot n \cdots n}_{m \text{ times}} = n^m.
+\]
+\textbf{Note:} The answer is $n^m$, not $m^n$.
+\end{example}
+
+\begin{examtip}[title={Exam Tip: $n^m$ vs $m^n$}]
+When counting functions from $X$ (size $m$) to $Y$ (size $n$), the answer is $n^m$: for each
+element of the \emph{domain} ($m$ elements), there are $n$ choices in the \emph{codomain}.
+Do not confuse with $m^n$.
+\end{examtip}
+
+\begin{example}[Binary strings]
+How many $n$-bit binary sequences are there?
+
+\textit{Solution.} Each bit has 2 possible values (0 or 1). By the product rule, the total
+number of $n$-bit sequences is $2^n$. (This equals the number of functions from an $n$-element
+set to $\{0, 1\}$.)
+\end{example}
+
+\begin{example}[Subsets via bijection]
+\label{ex:subsets}
+How many different subsets does $S = \{1, 2, \ldots, n\}$ have?
+
+\textit{Solution.} We construct a bijection between subsets of $S$ and $n$-bit binary
+sequences. Given a subset $A \subseteq S$, define the corresponding sequence
+$(x_1, x_2, \ldots, x_n)$ by:
+\[
+  x_i = \begin{cases} 1 & \text{if } i \in A, \\ 0 & \text{if } i \notin A. \end{cases}
+\]
+For example, with $n = 7$, the subset $\{3, 4, 6\}$ maps to $(0, 0, 1, 1, 0, 1, 0)$. Every
+subset maps to a unique binary sequence and every binary sequence corresponds to a unique
+subset, so this is a bijection. Since there are $2^n$ binary sequences of length $n$, there
+are also $2^n$ subsets of $S$.
+\end{example}
+
+% =============================================================================
+\section{The Sum Rule}
+% =============================================================================
+
+\begin{keyresult}[title={Key Result: Sum Rule}]
+If $A_1, A_2, \ldots, A_k$ are \textbf{pairwise disjoint} sets, then
+\[
+  |A_1 \cup A_2 \cup \cdots \cup A_k| = |A_1| + |A_2| + \cdots + |A_k|.
+\]
+\end{keyresult}
+
+The sum rule applies when the elements to be counted fall into mutually exclusive categories.
+
+\begin{example}[Passwords]
+Passwords on a computer are 6 to 8 characters long, where each character is either an
+uppercase letter (26 choices) or a digit (10 choices). How many possible passwords are there?
+
+\textit{Solution.} Let $X_6$, $X_7$, $X_8$ denote the sets of valid passwords of length 6,
+7, and 8 respectively. These sets are pairwise disjoint, so by the sum rule:
+\[
+  |X| = |X_6| + |X_7| + |X_8|.
+\]
+By the product rule (36 choices per character):
+\[
+  |X_6| = 36^6, \quad |X_7| = 36^7, \quad |X_8| = 36^8.
+\]
+Therefore the total is $36^6 + 36^7 + 36^8 = 2{,}901{,}650{,}853{,}888 \approx 2.9 \times 10^{12}$.
+\end{example}
+
+\begin{warning}[title={Warning: The Sum Rule Requires Disjoint Sets}]
+The sum rule only holds when the sets $A_1, \ldots, A_k$ are pairwise disjoint. If a string (or
+object) can belong to more than one category, simply adding the sizes leads to
+\emph{over-counting}. Use the Inclusion-Exclusion Principle instead (Section~\ref{sec:ie}).
+\end{warning}
+
+% =============================================================================
+\section{The Inclusion-Exclusion Principle}
+\label{sec:ie}
+% =============================================================================
+
+\subsection{Two Sets}
+
+When two sets $A_1$ and $A_2$ overlap, the sum $|A_1| + |A_2|$ counts every element in
+$A_1 \cap A_2$ twice. We correct for this by subtracting the intersection once:
+
+\begin{keyresult}[title={Key Result: Inclusion-Exclusion (Two Sets)}]
+For any two sets $A_1$ and $A_2$:
+\[
+  |A_1 \cup A_2| = |A_1| + |A_2| - |A_1 \cap A_2|.
+\]
+When $A_1$ and $A_2$ are disjoint, $|A_1 \cap A_2| = 0$ and this reduces to the Sum Rule.
+\end{keyresult}
+
+\begin{example}[Bit strings (revisited)]
+\label{ex:bitstringIE}
+How many 8-bit binary strings either start with a ``1'' bit or end with the two bits ``00''?
+
+\textit{Solution.} Let $A_1$ be the set of strings starting with ``1'' and $A_2$ the set
+ending with ``00''. These sets are \emph{not} disjoint (a string can do both).
+
+\begin{align*}
+  |A_1| &= 2^7 = 128 \quad \text{(first bit fixed, 7 free)}, \\
+  |A_2| &= 2^6 = 64 \quad \text{(last two bits fixed, 6 free)}, \\
+  |A_1 \cap A_2| &= 2^5 = 32 \quad \text{(first bit and last two bits fixed, 5 free)}.
+\end{align*}
+
+By inclusion-exclusion:
+\[
+  |A_1 \cup A_2| = 128 + 64 - 32 = 160.
+\]
+\end{example}
+
+\begin{example}[Students taking courses]
+There are 1807 students in SPMS. Of these, 453 take Mathematics, 567 take Physics, and 299
+take both. How many students take neither?
+
+\textit{Solution.} Let $M$ and $P$ be the sets of students taking Maths and Physics
+respectively. By inclusion-exclusion:
+\[
+  |M \cup P| = 453 + 567 - 299 = 721.
+\]
+Hence $1807 - 721 = 1086$ students take neither course.
+\end{example}
+
+\subsection{Three Sets}
+
+\begin{theorem}[Inclusion-Exclusion for Three Sets]
+\label{thm:ie3}
+\[
+  |A \cup B \cup C| = |A| + |B| + |C| - |A \cap B| - |A \cap C| - |B \cap C| + |A \cap B \cap C|.
+\]
+\end{theorem}
+
+The pattern: add individual sets, subtract pairwise intersections, add the triple intersection.
+This compensates for the layered over-counting introduced by overlapping regions in the Venn
+diagram.
+
+\begin{example}[Language courses]
+1232 students take Spanish, 879 take French, 114 take Russian; 103 take both Spanish and
+French, 23 take both Spanish and Russian, 14 take both French and Russian. If 2092 students
+take at least one course, how many take all three?
+
+\textit{Solution.} Let $S$, $F$, $R$ denote the three sets. By Theorem~\ref{thm:ie3}:
+\[
+  2092 = 1232 + 879 + 114 - 103 - 23 - 14 + |S \cap F \cap R|.
+\]
+Solving, $|S \cap F \cap R| = 2092 - 2085 = 7$. So 7 students take all three courses.
+\end{example}
+
+\subsection{General Inclusion-Exclusion}
+
+\begin{theorem}[Inclusion-Exclusion Principle (General)]
+\label{thm:ieg}
+For sets $A_1, A_2, \ldots, A_n$:
+\begin{align*}
+  \left|\bigcup_{i=1}^{n} A_i\right| =
+    &\sum_{i=1}^{n} |A_i|
+    - \sum_{1 \le i < j \le n} |A_i \cap A_j|
+    + \sum_{1 \le i < j < k \le n} |A_i \cap A_j \cap A_k|
+    - \cdots \\
+    &+ (-1)^{n-1} |A_1 \cap A_2 \cap \cdots \cap A_n|.
+\end{align*}
+Equivalently: add individual sizes, subtract all two-way intersections, add all three-way
+intersections, subtract all four-way intersections, and so on, alternating signs.
+\end{theorem}
+
+\begin{proof}[Sketch of Proof]
+By induction on $n$. The base case $n=1$ is trivial. For $n=2$, note that $A = (A \setminus B)
+\cup (A \cap B)$ is a disjoint union, so $|A| = |A \setminus B| + |A \cap B|$. Since
+$A \cup B = B \cup (A \setminus B)$ is also a disjoint union:
+\[
+  |A \cup B| = |B| + |A \setminus B| = |B| + |A| - |A \cap B|.
+\]
+For the inductive step, given the formula holds for $n$ sets, write
+$\bigcup_{i=1}^{n+1} A_i = \left(\bigcup_{i=1}^{n} A_i\right) \cup A_{n+1}$
+and apply the two-set formula. Using the identity
+$\left(\bigcup_{i=1}^{n} A_i\right) \cap A_{n+1} = \bigcup_{i=1}^{n} (A_i \cap A_{n+1})$,
+apply the inductive hypothesis to both $\bigcup_{i=1}^n A_i$ and
+$\bigcup_{i=1}^n (A_i \cap A_{n+1})$ and simplify to obtain the formula for $n+1$ sets.
+\end{proof}
+
+% =============================================================================
+\section*{Reading Assignment}
+% =============================================================================
+
+\begin{itemize}
+  \item Rosen (7th edition), Chapter 6.1: The Basics of Counting.
+  \item Rosen (7th edition), Chapter 8.5: Inclusion-Exclusion.
+\end{itemize}
+
+% =============================================================================
+\chapter{Logic and Proof Techniques}
+\label{chap:logic}
+
+\section{Conditional Statements}
+\label{sec:conditional}
+% =============================================================================
+
+This section covers conditional (if-then) statements, their logical properties, and the key
+proof techniques that rely on them: proof by contradiction and proof by contraposition.
+
+\subsection{Definition and Truth Table}
+
+\begin{definition}[Conditional Statement]
+\label{def:conditional}
+Let $p$ and $q$ be statement variables. The \textbf{conditional} of $q$ by $p$, denoted
+$p \to q$, is the statement ``If $p$ then $q$'', or equivalently ``$p$ implies $q$''. We
+call $p$ the \textbf{hypothesis} (or \textbf{antecedent}) and $q$ the \textbf{conclusion}
+(or \textbf{consequent}).
+\end{definition}
+
+The truth value of $p \to q$ is determined by the following truth table:
+
+\[
+\begin{array}{cc|c}
+  p & q & p \to q \\ \hline
+  1 & 1 & 1 \\
+  1 & 0 & 0 \\
+  0 & 1 & 1 \\
+  0 & 0 & 1 \\
+\end{array}
+\]
+
+The conditional is \emph{false only} when $p$ is true and $q$ is false. When $p$ is false,
+$p \to q$ is always true, regardless of $q$. In this case we say the statement is
+\textbf{vacuously true} (or \textbf{true by default}).
+
+\begin{example}
+``If I am Superman, then you are Spiderman.'' Since the hypothesis is false (no one is
+Superman), the statement is vacuously true.
+\end{example}
+
+\begin{keyresult}[title={Key Result: When is $p \to q$ false?}]
+$p \to q$ is \textbf{false if and only if} $p$ is true and $q$ is false. In all other
+cases it is true.
+\end{keyresult}
+
+\subsection{Logical Equivalence: \texorpdfstring{$p \to q \equiv \lnot p \lor q$}{p implies q}}
+\label{subsec:ptoq-equiv}
+
+A useful rewriting of the conditional is:
+\[
+  p \to q \;\equiv\; \lnot p \lor q.
+\]
+This can be verified directly via a truth table (Tutorial exercise).
+
+\textbf{Application.} Any disjunction of the form $\lnot p \lor q$ can be rewritten in
+if-then form. For instance, ``Either you get to work on time or you are fired'' can be
+expressed as ``If you do not get to work on time, then you are fired.'' (Equivalently, by
+the contrapositive discussed below, this is the same as ``If you are not fired, then you
+got to work on time.'')
+
+\subsection{Negation of a Conditional}
+
+\begin{proposition}
+\label{prop:neg-conditional}
+$\lnot(p \to q) \;\equiv\; p \land \lnot q$.
+\end{proposition}
+
+\begin{proof}
+Using the equivalence from Section~\ref{subsec:ptoq-equiv} and De Morgan's law:
+\[
+  \lnot(p \to q)
+  \;\equiv\; \lnot(\lnot p \lor q)
+  \;\equiv\; \lnot(\lnot p) \land \lnot q
+  \;\equiv\; p \land \lnot q. \qedhere
+\]
+\end{proof}
+
+\begin{example}
+\begin{itemize}[nosep]
+  \item ``If you attend all lectures, then you will get A's for all of your courses.''\\
+        \textit{Negation:} You attended all lectures and you did not get A's for all of your
+        courses.
+  \item ``If you are caught littering, then you will be fined.''\\
+        \textit{Negation:} You are caught littering but you are not fined.
+\end{itemize}
+\end{example}
+
+\begin{warning}[title={Warning: Negating an If-Then Statement}]
+The negation of an if-then statement does \textbf{not} start with the word ``if''. It takes
+the form $p \land \lnot q$, which is a conjunction.
+\end{warning}
+
+\subsection{Contrapositive}
+
+\begin{definition}[Contrapositive]
+\label{def:contrapositive}
+The \textbf{contrapositive} of $p \to q$ is $\lnot q \to \lnot p$.
+\end{definition}
+
+A conditional and its contrapositive are logically equivalent:
+\[
+  p \to q \;\equiv\; \lnot q \to \lnot p.
+\]
+
+% =============================================================================
+\section{Proof Techniques}
+\label{sec:proofs}
+% =============================================================================
+
+\subsection{Getting Proofs Started}
+
+Every proof of a conditional statement has a \emph{starting point} (the hypothesis) and a
+\emph{conclusion to be shown}. It is good practice to write these out explicitly at the
+beginning and end of the proof respectively. For example, to prove that a group of order 36
+is not simple, one begins: ``Let $G$ be a group of order 36.'' and concludes:
+``$\therefore G$ is not simple.''
+
+\subsection{Proof by Contradiction}
+
+\begin{keyresult}[title={Method: Proof by Contradiction}]
+\begin{enumerate}[nosep]
+  \item \textbf{Suppose the statement is false}, i.e.\ assume the negation is true.
+  \item \textbf{Derive a contradiction} from this assumption using logical deduction.
+  \item \textbf{Conclude} that the original statement must be true.
+\end{enumerate}
+Be careful when writing the negation in Step~1.
+\end{keyresult}
+
+\begin{theorem}[Theorem 4.6.1]
+\label{thm:no-greatest-int}
+There is no greatest integer.
+\end{theorem}
+
+\begin{proof}
+Suppose not. Then there exists a greatest integer $N \in \mathbb{Z}$, so $m \le N$ for all
+$m \in \mathbb{Z}$. Take $M := N + 1$. Then $M \in \mathbb{Z}$ and $M > N$, contradicting
+$N$ being the greatest integer.
+\end{proof}
+
+\begin{theorem}[Theorem 4.6.2]
+\label{thm:not-even-odd}
+There is no integer that is both even and odd.
+\end{theorem}
+
+\begin{proof}
+Suppose not. Then there exists $N \in \mathbb{Z}$ that is both even and odd. Since $N$ is
+even, $N = 2k$ for some $k \in \mathbb{Z}$. Since $N$ is odd, $N = 2l + 1$ for some
+$l \in \mathbb{Z}$. Hence:
+\[
+  2k = 2l + 1 \implies 2(k - l) = 1 \implies k - l = \tfrac{1}{2} \notin \mathbb{Z}.
+\]
+But $k - l \in \mathbb{Z}$ (difference of two integers), a contradiction.
+\end{proof}
+
+\begin{theorem}[Theorem 4.6.3]
+\label{thm:rat-irrat-irrat}
+The sum of any rational number and any irrational number is irrational.
+\end{theorem}
+
+\begin{proof}
+Suppose not. Then there exist $r, s \in \mathbb{R}$ with $r \in \mathbb{Q}$,
+$s \notin \mathbb{Q}$, and $r + s \in \mathbb{Q}$. Write $r = \tfrac{a}{b}$ and
+$r + s = \tfrac{c}{d}$ for integers $a, b, c, d$ with $b, d \ne 0$. Then:
+\[
+  s = (r + s) - r = \frac{c}{d} - \frac{a}{b} = \frac{bc - ad}{bd}.
+\]
+Since $bc - ad \in \mathbb{Z}$ and $bd \ne 0$ (zero product rule), we get $s \in \mathbb{Q}$,
+contradicting $s \notin \mathbb{Q}$.
+\end{proof}
+
+\subsection{Proof by Contraposition}
+
+\begin{keyresult}[title={Method: Proof by Contraposition}]
+To prove $\forall x \in D,\ P(x) \Rightarrow Q(x)$:
+\begin{enumerate}[nosep]
+  \item Rewrite as the contrapositive: $\forall x \in D,\ \lnot Q(x) \Rightarrow \lnot P(x)$.
+  \item Suppose $x \in D$ with $Q(x)$ false (i.e.\ $\lnot Q(x)$ holds).
+  \item Show directly that $P(x)$ is also false (i.e.\ $\lnot P(x)$ holds).
+\end{enumerate}
+\end{keyresult}
+
+\begin{proposition}[Proposition 4.6.4]
+\label{prop:n2even}
+For all integers $n$, if $n^2$ is even then $n$ is even.
+\end{proposition}
+
+\begin{proof}[Proof (by contraposition)]
+We prove the contrapositive: if $n$ is odd then $n^2$ is odd. Suppose $n$ is odd, so
+$n = 2k + 1$ for some $k \in \mathbb{Z}$. Then:
+\[
+  n^2 = (2k+1)^2 = 4k^2 + 4k + 1 = 2(2k^2 + 2k) + 1,
+\]
+which is odd.
+\end{proof}
+
+\subsection{Relationship Between Contradiction and Contraposition}
+
+The same chain of deductions used in a proof by contraposition can be recast as a proof by
+contradiction. To prove $\forall x \in D,\ P(x) \Rightarrow Q(x)$ by contradiction:
+
+\begin{enumerate}
+  \item Assume $P(x)$ and $\lnot Q(x)$ simultaneously.
+  \item Follow the contrapositive argument to derive $\lnot P(x)$.
+  \item This gives $P(x) \land \lnot P(x)$, a contradiction ($\bot$).
+\end{enumerate}
+
+\begin{example}[Proposition 4.6.4 reproved by contradiction]
+Suppose $n^2$ is even and $n$ is odd. Since $n$ is odd, write $n = 2k+1$ and compute
+$n^2 = 2(2k^2 + 2k) + 1$, so $n^2$ is odd. Thus $n^2$ is both even and odd, contradicting
+Theorem~\ref{thm:not-even-odd}.
+\end{example}
+
+\begin{examtip}[title={Exam Tip: Choosing Between Contradiction and Contraposition}]
+Both methods are valid for conditional statements. Proof by \emph{contraposition} is often
+cleaner when the negation of the conclusion has a concrete algebraic form (e.g.\ ``$n$ is
+odd''). Proof by \emph{contradiction} is preferred when the statement is existential (e.g.\
+``there is no greatest integer'') or when no obvious contrapositive structure exists.
+\end{examtip}
+
+%% ============================================================
+%%  HANDOUT 2 --- Pigeonhole Principle, Permutations, Combinations
+%% ============================================================
+
+\newpage
+\section{The Pigeonhole Principle}
+\label{sec:pigeonhole}
+
+\subsection{Motivating Example}
+
+\begin{example}
+Suppose a flock of 20 pigeons flies into 19 pigeonholes to roost. Prove that at least one
+pigeonhole must contain at least two pigeons.
+\end{example}
+
+\begin{proof}
+Suppose for contradiction that every pigeonhole has at most one pigeon. Then across all 19
+pigeonholes there are at most 19 pigeons, which contradicts the fact that 20 pigeons were placed.
+\end{proof}
+
+\subsection{The Pigeonhole Principle}
+
+\begin{theorem}[Pigeonhole Principle (Section 6.2)]
+\label{thm:pigeonhole}
+Let $k$ be a positive integer. If $k+1$ or more objects are placed into $k$ boxes, then
+there is at least one box containing two or more objects.
+\end{theorem}
+
+\begin{proof}
+We prove the contrapositive: if no box contains more than one object, then fewer than $k+1$
+objects are placed into the $k$ boxes. Indeed, if every box holds at most one object, the total
+number of objects is at most $k < k+1$.
+\end{proof}
+
+\begin{keyresult}[title={Key Result: Pigeonhole Principle}]
+If $n$ objects are placed into $k$ boxes with $n > k$, then some box contains $\geq 2$ objects.
+The \emph{objects} are the ``pigeons''; the \emph{boxes} (categories) are the ``pigeonholes''.
+Identifying the right assignment is the key step in applying this principle.
+\end{keyresult}
+
+\subsection{Application: Multiples with Only 0s and 1s}
+
+\begin{example}[Example 4, Section 6.2]
+Show that for every positive integer $n$, there is a multiple of $n$ whose decimal expansion
+consists entirely of $0$s and $1$s.
+\end{example}
+
+\begin{proof}
+Consider the set of $n+1$ integers
+\[
+  X = \{1,\; 11,\; 111,\; \ldots,\; \underbrace{11\cdots 1}_{n+1}\}.
+\]
+There are $n$ possible remainders when an integer is divided by $n$ (namely $0, 1, \ldots, n-1$).
+Since $|X| = n+1 > n$, by the Pigeonhole Principle two distinct elements $x > x'$ in $X$ share the
+same remainder when divided by $n$. Therefore $x - x'$ is a multiple of $n$, and its decimal
+expansion consists entirely of $0$s and $1$s (e.g.\ $111\,100\cdots 0 = 1111\cdots 1 - 11\cdots 1$).
+\end{proof}
+
+\begin{examtip}[title={Exam Tip: Identifying Pigeons and Pigeonholes}]
+Always state explicitly:
+\begin{itemize}
+  \item What are the \emph{pigeons} (objects)?
+  \item What are the \emph{pigeonholes} (boxes / categories)?
+  \item Why does $|\text{pigeons}| > |\text{pigeonholes}|$?
+\end{itemize}
+The conclusion then follows automatically from the theorem.
+\end{examtip}
+
+\subsection{Recall: Floor and Ceiling Functions}
+
+\begin{definition}[Floor and Ceiling]
+\label{def:floor-ceiling}
+For any real number $x$:
+\begin{itemize}
+  \item The \textbf{floor} of $x$, written $\lfloor x \rfloor$, is the unique integer $n$ such
+        that $n \leq x < n+1$.
+  \item The \textbf{ceiling} of $x$, written $\lceil x \rceil$, is the unique integer $n$ such
+        that $n-1 < x \leq n$.
+\end{itemize}
+Symbolically, $\lfloor x \rfloor = n \iff n \leq x < n+1$ and
+$\lceil x \rceil = n \iff n-1 < x \leq n$.
+\end{definition}
+
+Examples: $\lfloor 4.5 \rfloor = 4$, $\lfloor -1.73 \rfloor = -2$, $\lfloor -5 \rfloor = -5$;
+$\lceil 4.5 \rceil = 5$, $\lceil -4.5 \rceil = -4$, $\lceil -4 \rceil = -4$.
+
+\subsection{Generalised Pigeonhole Principle}
+
+\begin{theorem}[Generalised Pigeonhole Principle (Section 6.2)]
+\label{thm:gen-pigeonhole}
+If $N$ objects are placed into $k$ boxes, then at least one box contains at least
+$\lceil N/k \rceil$ objects.
+\end{theorem}
+
+\begin{proof}
+Suppose for contradiction that every box contains fewer than $\lceil N/k \rceil$ objects, i.e.\
+each box holds at most $\lceil N/k \rceil - 1$ objects. Then the total number of objects is at most
+\[
+  k\!\left(\lceil N/k \rceil - 1\right)
+  < k\!\left(\frac{N}{k} + 1 - 1\right)
+  = N,
+\]
+where we used $\lceil N/k \rceil < N/k + 1$. This contradicts the existence of $N$ objects.
+\end{proof}
+
+\begin{example}[Hair Coincidence]
+Singapore has more than $5\,000\,000$ non-bald people. Assume every person has fewer than
+$200\,000$ hairs. Show that at least 26 people have the same number of hairs.
+\end{example}
+
+\begin{proof}
+Let $N \geq 5\,000\,001$ (people) and $k \leq 199\,999$ (possible hair counts $0,1,\ldots,199\,999$).
+By the Generalised Pigeonhole Principle some hair-count category contains at least
+\[
+  \left\lceil \frac{5\,000\,001}{199\,999} \right\rceil = 26
+\]
+people.
+\end{proof}
+
+\begin{examtip}[title={Exam Tip: Generalised Pigeonhole Ceiling Computation}]
+For 20 objects distributed among 3 boxes (e.g.\ 20 students choosing from 3 burger types):
+$\lceil 20/3 \rceil = 7$. So at least 7 students chose the same type. This is \emph{always}
+true — it is not possible to have every type chosen by at most 6 (that would give at most
+$6 \times 3 = 18 < 20$).
+\end{examtip}
+
+%% ──────────────────────────────────────────────────────────────
+\chapter{Counting Methods}
+\label{chap:counting-methods}
+
+\section{Permutations}
+\label{sec:permutations}
+
+\subsection{Definitions}
+
+\begin{definition}[Permutation and $r$-Permutation]
+\label{def:r-perm}
+A \textbf{permutation} of a set $S$ of distinct elements is an \emph{ordered} arrangement of
+all elements of $S$.
+
+An \textbf{$r$-permutation} of $S$ (with $|S| = n$, $r \leq n$) is an \emph{ordered} selection
+of $r$ distinct elements from $S$.
+
+The number of $r$-permutations of an $n$-element set is denoted $P(n,r)$, also written
+${}^n P_r$ or $nP_r$.
+\end{definition}
+
+\begin{example}
+Let $S = \{a, b, c\}$. Then $(b, c, a)$ is a permutation of $S$. The $2$-permutations of $S$
+are $(a,b),(b,a),(a,c),(c,a),(b,c),(c,b)$, so $P(3,2) = 6$.
+\end{example}
+
+\subsection{Formula for $P(n,r)$}
+
+\begin{theorem}[Section 6.3]
+\label{thm:pnr}
+For positive integers $n$ and $r$ with $1 \leq r \leq n$,
+\[
+  P(n,r) = n(n-1)(n-2)\cdots(n-r+1).
+\]
+\end{theorem}
+
+\begin{proof}
+To build an $r$-permutation, choose elements one position at a time. The first position has $n$
+choices, the second $n-1$, and so on; the $r$-th position has $n-(r-1) = n-r+1$ choices.
+By the Product Rule (see Section~\ref{sec:conditional}),
+$P(n,r) = n(n-1)\cdots(n-r+1)$.
+\end{proof}
+
+\begin{corollary}[Section 6.3]
+\label{cor:pnr-factorial}
+For integers $n, r$ with $0 \leq r \leq n$,
+\[
+  P(n,r) = \frac{n!}{(n-r)!}.
+\]
+\end{corollary}
+
+\textbf{Special cases:}
+\begin{itemize}
+  \item $P(n,n) = n!$ \quad (all permutations of $n$ elements; recall $0! = 1$).
+  \item $P(n,1) = n$.
+  \item $P(n,0) = 1$ (exactly one way to arrange zero elements).
+\end{itemize}
+
+Useful factorials to memorise: $1!=1,\; 2!=2,\; 3!=6,\; 4!=24,\; 5!=120,\; 6!=720$.
+
+\begin{keyresult}[title={Key Result: $P(n,r) = n!/(n-r)!$}]
+Order matters in a permutation. Use $P(n,r)$ whenever you are selecting $r$ items from $n$
+\emph{and the order of selection is significant}.
+\end{keyresult}
+
+\subsection{Examples}
+
+\begin{example}[COMPUTER]
+\begin{itemize}
+  \item[(i)] The letters of \textsc{COMPUTER} can be arranged in $P(8,8) = 8! = 40\,320$ ways.
+  \item[(ii)] If \texttt{CO} must appear as a fixed unit, treat it as a single character. There
+              are then 7 distinct characters, giving $P(7,7) = 7! = 5\,040$ arrangements.
+\end{itemize}
+\end{example}
+
+\begin{example}[Prize Winners]
+The number of ways to award first, second, and third prizes from 200 students is
+\[
+  P(200, 3) = 200 \times 199 \times 198 = 7\,880\,400.
+\]
+\end{example}
+
+\begin{example}[EQUATION -- $r$-permutations with a constraint]
+\begin{itemize}
+  \item[(i)] The number of 3-letter arrangements from the 8 distinct letters of \textsc{EQUATION}
+             is $P(8,3) = 8 \times 7 \times 6 = 336$.
+  \item[(ii)] The number of 4-letter arrangements containing \texttt{QU} together (in that order):
+              treat \texttt{QU} as one unit, leaving 2 more letters chosen from the remaining 6.
+              Place the \texttt{QU}-block in any of the 3 slots, and fill the other 2 from 6
+              remaining letters. Two sub-cases --- \texttt{QU} first or last --- each give $6 \times 5 = 30$,
+              for a total of $30 + 30 = \mathbf{90}$.
+\end{itemize}
+\end{example}
+
+%% ──────────────────────────────────────────────────────────────
+\section{Combinations}
+\label{sec:combinations}
+
+\subsection{Definition}
+
+\begin{definition}[$r$-Combination]
+\label{def:r-comb}
+An \textbf{$r$-combination} of a set $S$ with $n$ elements is an \emph{unordered} selection of
+$r$ elements from $S$ (i.e.\ a subset of $S$ of size $r$), where $r \leq n$.
+
+The number of $r$-combinations of an $n$-element set is denoted $C(n,r)$, $\binom{n}{r}$,
+${}^n C_r$, or $nC_r$, and is called a \textbf{binomial coefficient}, read ``$n$ choose $r$''.
+\end{definition}
+
+\begin{warning}[title={Warning: Permutation vs.\ Combination}]
+\begin{itemize}
+  \item \textbf{Permutation (ordered):} $(a,b)$ and $(b,a)$ are \emph{different}.
+  \item \textbf{Combination (unordered):} $\{a,b\}$ and $\{b,a\}$ are the \emph{same}.
+\end{itemize}
+Ask: ``Does the \emph{order} of selection matter?'' If yes, use $P(n,r)$. If no, use $C(n,r)$.
+\end{warning}
+
+\subsection{Relation Between $P(n,r)$ and $C(n,r)$}
+
+Building an $r$-permutation is a two-step process:
+\begin{enumerate}
+  \item Choose an $r$-element subset (combination): $C(n,r)$ ways.
+  \item Order the chosen subset: $P(r,r) = r!$ ways.
+\end{enumerate}
+By the Product Rule, $P(n,r) = C(n,r) \cdot r!$, so
+\[
+  C(n,r) = \frac{P(n,r)}{r!} = \frac{n!}{r!\,(n-r)!}.
+\]
+
+\subsection{Formula for $C(n,r)$}
+
+\begin{theorem}[Section 6.3]
+\label{thm:cnr}
+For integers $r, n$ with $0 \leq r \leq n$,
+\[
+  C(n,r) = \binom{n}{r} = \frac{n!}{r!\,(n-r)!}.
+\]
+\end{theorem}
+
+\textbf{Special cases:}
+\begin{itemize}
+  \item $C(n,n) = 1$ (only one way to choose all $n$ elements; uses $0! = 1$).
+  \item $C(n,1) = n$.
+  \item $C(n, n-1) = n$.
+  \item $C(n,0) = 1$.
+\end{itemize}
+
+\begin{keyresult}[title={Key Result: $C(n,r) = n!/[r!(n-r)!]$}]
+Use $C(n,r)$ when selecting $r$ items from $n$ with \emph{no regard to order}.
+The formula satisfies $C(n,r) = C(n, n-r)$ — choosing $r$ items to \emph{include} is equivalent
+to choosing $n-r$ items to \emph{exclude}.
+\end{keyresult}
+
+\subsection{Symmetry of Binomial Coefficients}
+
+\begin{corollary}[Section 6.3]
+\label{cor:symmetry}
+For nonnegative integers $r \leq n$,
+\[
+  C(n, r) = C(n, n-r).
+\]
+\end{corollary}
+
+\begin{proof}[Proof 1 (Algebraic)]
+$C(n,r) = \dfrac{n!}{r!(n-r)!} = \dfrac{n!}{(n-r)!\,[n-(n-r)]!} = C(n, n-r)$.
+\end{proof}
+
+\begin{proof}[Proof 2 (Combinatorial)]
+Every $r$-element subset $A$ of an $n$-element set $S$ corresponds bijectively to its complement
+$\overline{A}$, which has $n-r$ elements. Thus there are equally many $r$-subsets and
+$(n-r)$-subsets.
+\end{proof}
+
+\subsection{Examples}
+
+\begin{example}[0-1 Bit Strings, Example 14 Section 6.3]
+The number of 0-1 bit strings of length $n$ containing exactly $r$ ones equals $C(n,r)$, since
+we are choosing which $r$ of the $n$ positions to fill with $1$.
+\end{example}
+
+\begin{example}[Forming a Team, Example 15 Section 6.3]
+There are 9 boys and 11 girls. The number of ways to choose a team of 3 boys and 4 girls is
+\[
+  C(9,3) \cdot C(11,4) = 84 \times 330 = 27\,720.
+\]
+\end{example}
+
+\begin{example}[A and B Must Work Together]
+From 12 people (including A and B who must both be on the team or neither), the number of
+5-person teams is:
+\begin{itemize}
+  \item Both A and B included: choose 3 more from remaining 10: $C(10,3) = 120$.
+  \item Neither A nor B included: choose 5 from remaining 10: $C(10,5) = 252$.
+\end{itemize}
+By the Sum Rule: $120 + 252 = \mathbf{372}$.
+\end{example}
+
+\begin{example}[A and B Cannot Work Together]
+If A and B cannot both be on the team, the three cases are:
+\begin{itemize}
+  \item A only (B excluded): choose 4 more from remaining 10: $C(10,4) = 210$.
+  \item B only (A excluded): $C(10,4) = 210$.
+  \item Neither A nor B: $C(10,5) = 252$.
+\end{itemize}
+Total: $210 + 210 + 252 = \mathbf{672}$.
+\end{example}
+
+\begin{example}[Powerball Lottery]
+In Powerball, 5 white balls are chosen from 69 (distinct, unordered) and 1 red ``Powerball''
+from 26. The total number of combinations is
+\[
+  C(69, 5) \times 26 = 11\,238\,513 \times 26 = 292\,201\,338.
+\]
+\end{example}
+
+\begin{example}[Poker Hands]
+\begin{itemize}
+  \item[(i)] Five-card hands from 52 cards: $C(52,5) = \dfrac{52!}{5!\,47!} = 2\,598\,960$.
+  \item[(ii)] The number of ways to select 47 cards is $C(52,47) = C(52,5) = 2\,598\,960$,
+              by the symmetry $C(n,r) = C(n,n-r)$.
+\end{itemize}
+\end{example}
+
+%% ──────────────────────────────────────────────────────────────
+\section{Combinatorial Proofs}
+\label{sec:combproof}
+
+\begin{definition}[Combinatorial Proof]
+\label{def:combproof}
+A \textbf{combinatorial proof} of an identity is a proof showing that both sides count the same
+collection of objects, but in different ways (also called a \emph{double-counting argument}).
+\end{definition}
+
+\subsection{Pascal's Identity}
+
+\begin{theorem}[Pascal's Identity]
+\label{thm:pascal}
+For all integers $n \geq k \geq 1$,
+\[
+  \binom{n}{k} = \binom{n-1}{k} + \binom{n-1}{k-1}.
+\]
+\end{theorem}
+
+\begin{proof}[Proof 1 (Algebraic)]
+\begin{align*}
+\binom{n-1}{k-1} + \binom{n-1}{k}
+  &= \frac{(n-1)!}{(k-1)!\,(n-k)!} + \frac{(n-1)!}{k!\,(n-1-k)!} \\
+  &= \frac{(n-1)!\,k}{k!\,(n-k)!} + \frac{(n-1)!\,(n-k)}{k!\,(n-k)!} \\
+  &= \frac{(n-1)!\,(k + n - k)}{k!\,(n-k)!}
+   = \frac{n!}{k!\,(n-k)!} = \binom{n}{k}.
+\end{align*}
+\end{proof}
+
+\begin{proof}[Proof 2 (Combinatorial)]
+We count $k$-subsets of $S = \{1, 2, \ldots, n\}$ in two ways. Fix element $1$.
+\begin{itemize}
+  \item \textbf{Case 1 — element $1$ is in the subset:} choose $k-1$ more from the remaining
+        $n-1$ elements: $\binom{n-1}{k-1}$ ways.
+  \item \textbf{Case 2 — element $1$ is not in the subset:} choose all $k$ from the remaining
+        $n-1$ elements: $\binom{n-1}{k}$ ways.
+\end{itemize}
+Since these cases partition all $k$-subsets: $\binom{n}{k} = \binom{n-1}{k-1} + \binom{n-1}{k}$.
+\end{proof}
+
+\subsection{The 6-Person Party Problem}
+
+\begin{example}
+Among any party of 6 people, there exist 3 people who all know one another or 3 who are all
+strangers to one another.
+\end{example}
+
+\begin{proof}[Sketch]
+Fix one person $A$. There are 5 edges from $A$ to others, each coloured ``know'' or ``stranger''.
+By the Pigeonhole Principle (Theorem~\ref{thm:pigeonhole}), at least $\lceil 5/2 \rceil = 3$ edges
+share the same colour — say $A$ knows $B, C, D$.
+\begin{itemize}
+  \item If any pair among $\{B, C, D\}$ know each other (say $B$ knows $C$), then $A, B, C$
+        all know each other.
+  \item If no pair among $\{B, C, D\}$ know each other, then $B, C, D$ are all mutual strangers.
+\end{itemize}
+In either case, a monochromatic triple exists.
+\end{proof}
+
+\subsection{Social Connections: Two People with Equal Degree}
+
+\begin{example}
+Among $n \geq 2$ people, prove there always exist two people who know the same number of others.
+\end{example}
+
+\begin{proof}
+Each person's acquaintance count lies in $\{0, 1, \ldots, n-1\}$, giving $n$ possible values.
+However, $0$ and $n-1$ cannot both occur simultaneously (if someone knows everyone, no one is a
+stranger to all). Hence the $n$ counts in fact lie in at most $n-1$ distinct values. By the
+Pigeonhole Principle (Theorem~\ref{thm:pigeonhole}), two people share the same count.
+\end{proof}
+
+\subsection{Bijective Combinatorial Proof}
+
+\begin{example}[Equal Partition Counts]
+Let $n$ be a positive integer. Prove that the number of ways to write $n = a + b$ with integers
+$a \geq b \geq 0$ equals the number of ways to write $n = c + 2d$ with nonnegative integers
+$c, d \geq 0$.
+\end{example}
+
+\begin{proof}
+Let $A = \{(a,b) \in \mathbb{Z}^2 : n = a+b,\; a \geq b \geq 0\}$ and
+$B = \{(c,d) \in \mathbb{Z}^2 : n = c+2d,\; c, d \geq 0\}$.
+Define $\varphi : A \to B$ by $\varphi(a, b) = (a-b, b)$.
+
+\textit{Well-defined:} $a - b \geq 0$ since $a \geq b$, and $(a-b) + 2b = a+b = n$. \checkmark
+
+\textit{Injective:} If $\varphi(a,b) = \varphi(a', b')$ then $(a-b, b) = (a'-b', b')$, so $b = b'$
+and hence $a = a'$. \checkmark
+
+\textit{Surjective:} Given $(c, d) \in B$, note $\varphi(c+d, d) = (c, d)$ and
+$(c+d) + d = c + 2d = n$, $c+d \geq d \geq 0$. \checkmark
+
+Thus $\varphi$ is a bijection, so $|A| = |B|$.
+\end{proof}
+
+%% ============================================================
+%%  Handout 3: Binomial Theorem, Generalised Permutations and Combinations
+%% ============================================================
+
+\section{The Binomial Theorem}
+\label{sec:binomial}
+
+\subsection{Binomial Coefficients}
+
+Recall that $C(n,k)$ (also written $\binom{n}{k}$) counts the number of $k$-element subsets of an
+$n$-element set.  These are called \emph{binomial coefficients} because they appear as the
+coefficients in the expansion of $(x+y)^n$.
+
+To see why, consider expanding $(x+y)^n = (x+y)(x+y)\cdots(x+y)$ ($n$ factors).  Each term of the
+expansion is formed by choosing either $x$ or $y$ from every factor.  A term $x^{n-i}y^{i}$ arises
+exactly when we choose $y$ from $i$ of the $n$ factors (and $x$ from the remaining $n-i$); there are
+$C(n,i)$ ways to make that choice.
+
+\begin{theorem}[The Binomial Theorem]
+\label{thm:binomial}
+Let $x$ and $y$ be variables and let $n$ be a nonnegative integer.  Then
+\[
+  (x+y)^n = \sum_{i=0}^{n} C(n,i)\,x^{n-i}y^{i}.
+\]
+\end{theorem}
+
+\begin{proof}[Combinatorial proof]
+Expanding $(x+y)(x+y)\cdots(x+y)$, a term of the form $x^{n-i}y^{i}$ is obtained by choosing
+$x$ from exactly $n-i$ of the $n$ factors (equivalently, choosing $y$ from the remaining $i$
+factors).  The number of such choices is $C(n,n-i) = C(n,i)$.  Summing over $i$ gives the result.
+\end{proof}
+
+\begin{keyresult}[title={Key Result: Binomial Theorem}]
+\[
+  (x+y)^n = \sum_{i=0}^{n} \binom{n}{i} x^{n-i} y^{i}.
+\]
+The coefficient of $x^{n-i}y^{i}$ is $C(n,i)$, the number of ways to choose $i$ factors
+from which to take $y$.
+\end{keyresult}
+
+\begin{example}
+Expand $(x+y)^4$.
+
+\[
+  (x+y)^4 = C(4,0)x^4 + C(4,1)x^3y + C(4,2)x^2y^2 + C(4,3)xy^3 + C(4,4)y^4
+           = x^4 + 4x^3y + 6x^2y^2 + 4xy^3 + y^4.
+\]
+\end{example}
+
+\begin{example}
+What is the coefficient of $x^{12}y^{13}$ in the expansion of $(x+y)^{25}$?
+
+By the Binomial Theorem (Theorem~\ref{thm:binomial}), the coefficient is
+\[
+  C(25,13) = \frac{25!}{13!\,12!} = 5{,}200{,}300.
+\]
+\end{example}
+
+\begin{example}
+\label{ex:binomial-scaled}
+What is the coefficient of $x^{12}y^{13}$ in the expansion of $(2x - 3y)^{25}$?
+
+Write $(2x-3y)^{25} = [(2x)+(-3y)]^{25} = \sum_{i=0}^{25} C(25,i)(2x)^{25-i}(-3y)^{i}$.
+The term with $i=13$ gives $x^{12}y^{13}$, so the coefficient is
+\[
+  C(25,13)\,2^{12}\,(-3)^{13} = -\frac{25!}{13!\,12!}\,2^{12}\,3^{13}.
+\]
+\end{example}
+
+\begin{examtip}[title={Exam Tip: Scaled Binomial}]
+When the expression is $(ax + by)^n$, substitute $X = ax$ and $Y = by$ to apply the
+standard Binomial Theorem, then match the desired monomial.  Remember to include the
+scaling factors $a^{n-i}$ and $b^i$ in the coefficient.
+\end{examtip}
+
+\subsection{Pascal's Triangle}
+
+The binomial coefficients $C(n,i)$ for successive values of $n$ form Pascal's Triangle:
+
+\[
+\begin{array}{ccccccccc}
+  n=0: & & & & 1 \\
+  n=1: & & & 1 & & 1 \\
+  n=2: & & 1 & & 2 & & 1 \\
+  n=3: & 1 & & 3 & & 3 & & 1 \\
+  n=4: & 1 & & 4 & & 6 & & 4 & & 1
+\end{array}
+\]
+
+Each interior entry is the sum of the two entries directly above it, which is precisely
+Pascal's Identity (Theorem~\ref{thm:pascal}).
+
+\subsection{Corollaries of the Binomial Theorem}
+
+\begin{corollary}
+\label{cor:sum2n}
+For every nonnegative integer $n$,
+\[
+  \sum_{i=0}^{n} C(n,i) = 2^n.
+\]
+\end{corollary}
+
+\begin{proof}
+Set $x = y = 1$ in the Binomial Theorem:
+\[
+  2^n = (1+1)^n = \sum_{i=0}^{n} C(n,i)\,1^{n-i}\,1^{i} = \sum_{i=0}^{n} C(n,i). \qedhere
+\]
+\end{proof}
+
+\begin{proof}[Combinatorial proof]
+Let $S$ be a set with $n$ elements.  The right-hand side $2^n$ counts all subsets of $S$
+(one per binary string of length $n$).  The left-hand side counts the same subsets grouped
+by size: $C(n,0)$ subsets of size $0$, $C(n,1)$ of size $1$, \dots, $C(n,n)$ of size $n$.
+Both sides count the same collection, so they are equal.
+\end{proof}
+
+\begin{keyresult}[title={Key Result: Sum of Binomial Coefficients}]
+The $n$-th row of Pascal's Triangle sums to $2^n$.  Equivalently, an $n$-element set has
+exactly $2^n$ subsets in total.
+\end{keyresult}
+
+%% ============================================================
+\section{Generalised Permutations and Combinations}
+\label{sec:genpermcomb}
+
+Real counting problems often involve elements placed in a cycle, elements used repeatedly, or
+indistinguishable elements.  The key strategies are:
+\begin{itemize}
+  \item View the problem from a different perspective.
+  \item Apply or combine the appropriate counting rules.
+  \item Use bijective functions to reduce to a known case.
+  \item Never overcount or undercount.
+\end{itemize}
+
+\subsection{The Division Rule}
+\label{subsec:divisionrule}
+
+\begin{definition}[$k$-to-$1$ function]
+A function $f: X \to Y$ is \emph{$k$-to-$1$} if for every $y \in Y$, the number of
+elements $x \in X$ with $f(x) = y$ is exactly $k$.
+\end{definition}
+
+\begin{theorem}[Division Rule]
+\label{thm:division}
+If $f : X \to Y$ is $k$-to-$1$, then $|Y| = \dfrac{|X|}{k}$.
+\end{theorem}
+
+The Division Rule is used when we know $|X|$ and can construct a $k$-to-$1$ map from $X$ to
+the set $Y$ we want to count.
+
+\subsection{Permutations Around a Cycle}
+\label{subsec:cycleperm}
+
+When objects are arranged around a circle, rotations of the same arrangement are considered
+identical.
+
+\begin{example}
+How many ways are there to seat $3$ people around a round table?
+
+A linear arrangement of $3$ people gives $P(3,3) = 6$ orderings.  However, the $3$ cyclic
+rotations $(A,B,C)$, $(B,C,A)$, $(C,A,B)$ all represent the same circular seating.  Dividing by
+$3$ gives $6/3 = 2$ distinct circular arrangements.  (The two arrangements correspond to
+``$B$ is to $A$'s left'' and ``$C$ is to $A$'s left''.)
+\end{example}
+
+\begin{theorem}[Circular $r$-Permutations]
+\label{thm:cycleperm}
+The number of $r$-permutations of a set with $n$ elements arranged around a cycle is
+\[
+  \frac{1}{r}\cdot P(n,r) = \frac{n!}{r(n-r)!}.
+\]
+\end{theorem}
+
+\begin{proof}
+Let $P$ be the set of all (linear) $r$-permutations of $n$ elements, so $|P| = P(n,r)$.
+Let $C$ be the set of all circular $r$-permutations.  Define $f : P \to C$ by placing the
+elements of each linear permutation $(p_1, p_2, \ldots, p_r)$ around a cycle in order.
+
+The map $f$ is $r$-to-$1$ because exactly $r$ linear permutations map to the same circular
+permutation: the $r$ cyclic rotations
+\[
+  (a_1,a_2,\ldots,a_r),\quad (a_2,a_3,\ldots,a_r,a_1),\quad \ldots,\quad (a_r,a_1,\ldots,a_{r-1})
+\]
+all produce the same circular arrangement.  By the Division Rule (Theorem~\ref{thm:division}),
+\[
+  |C| = \frac{P(n,r)}{r} = \frac{n!}{r(n-r)!}. \qedhere
+\]
+\end{proof}
+
+\begin{keyresult}[title={Key Result: Circular Permutations}]
+Arrange $n$ distinct objects in a circle: $(n-1)!$ ways (fix one object and permute the rest).
+More generally, choose and arrange $r$ objects from $n$ in a circle: $\dfrac{P(n,r)}{r}$ ways.
+\end{keyresult}
+
+\subsection{Permutations with Repetition}
+
+\begin{theorem}
+\label{thm:permrep}
+The number of $r$-permutations of a set of $n$ elements \emph{with repetition allowed} is $n^r$.
+\end{theorem}
+
+\begin{proof}
+Each of the $r$ positions may be filled by any of the $n$ elements independently.  By the
+Product Rule, the total is $n \cdot n \cdots n = n^r$.
+\end{proof}
+
+\begin{example}
+The number of strings of length $r$ over the $26$-letter English alphabet is $26^r$.
+\end{example}
+
+\subsection{Combinations with Repetition}
+
+\begin{theorem}
+\label{thm:combrep}
+The number of $r$-combinations from a set of $n$ elements \emph{with repetition allowed} is
+\[
+  C(n+r-1,\,r) = C(n+r-1,\,n-1).
+\]
+\end{theorem}
+
+\begin{proof}
+We establish a bijection between $r$-combinations with repetition and binary strings of length
+$n+r-1$ containing exactly $r$ ones (``balls'') and $n-1$ zeros (``dividers'').
+
+Represent the $n$ element types as $n$ bins separated by $n-1$ dividers.  A choice of $r$
+items (with repetition) from the $n$ types is encoded by placing $r$ balls into the bins: the
+number of balls in bin $i$ equals how many times type $i$ was chosen.  This bijection shows
+that the count equals the number of ways to choose $r$ positions for the balls among
+$n+r-1$ positions, which is $C(n+r-1,r) = C(n+r-1,n-1)$.
+\end{proof}
+
+\begin{example}[Fruit selection]
+How many ways are there to select $3$ pieces of fruit from a bowl containing apples, oranges,
+and pears if order does not matter and repetition is allowed?
+
+This is a $3$-combination with repetition from $n = 3$ types:
+\[
+  C(3+3-1,\,3) = C(5,3) = 10.
+\]
+\end{example}
+
+\begin{example}[Cookies]
+A cookie shop sells $4$ kinds of cookies.  How many ways can $6$ cookies be chosen (order
+does not matter, repetition allowed)?
+
+Here $n=4$, $r=6$:
+\[
+  C(4+6-1,\,6) = C(9,6) = 84.
+\]
+\end{example}
+
+\begin{example}[Integer solutions]
+\label{ex:eqnsols}
+How many solutions does $x_1 + x_2 + x_3 = 11$ have with $x_1, x_2, x_3 \geq 0$ integers?
+
+Each solution corresponds to distributing $11$ identical balls into $3$ labelled bins, i.e.,
+an $11$-combination with repetition from $3$ types:
+\[
+  C(3+11-1,\,11) = C(13,11) = C(13,2) = 78.
+\]
+\end{example}
+
+\begin{example}[Integer solutions with lower bounds]
+How many solutions does $x_1 + x_2 + x_3 = 11$ have with $x_1 \geq 1$, $x_2 \geq 2$,
+$x_3 \geq 3$?
+
+Substitute $y_i = x_i - (\text{lower bound})$: let $x_1 = 1+y_1$, $x_2 = 2+y_2$,
+$x_3 = 3+y_3$.  The equation becomes $y_1 + y_2 + y_3 = 5$ with $y_i \geq 0$, giving
+\[
+  C(3+5-1,\,5) = C(7,5) = C(7,2) = 21.
+\]
+\end{example}
+
+\begin{examtip}[title={Exam Tip: Lower-Bound Substitution}]
+To handle $x_i \geq a_i > 0$, substitute $y_i = x_i - a_i$ to get $y_i \geq 0$ and reduce
+the right-hand side by $\sum a_i$.  Then apply Theorem~\ref{thm:combrep} to the new equation.
+\end{examtip}
+
+\subsection{Permutations with Indistinguishable Objects}
+
+\begin{theorem}
+\label{thm:indistperm}
+The number of distinct permutations of $n$ objects where there are $n_1$ indistinguishable
+objects of type $1$, $n_2$ of type $2$, \ldots, $n_k$ of type $k$ (with $n_1 + \cdots + n_k = n$) is
+\[
+  \frac{n!}{n_1!\,n_2!\cdots n_k!}.
+\]
+\end{theorem}
+
+\begin{proof}
+Let $P$ be the set of all permutations treating every object as distinguishable ($|P| = n!$).
+Define $f: P \to C$ (where $C$ is the set of permutations of the indistinguishable objects) by
+ignoring the labels.  Two distinguishable permutations map to the same indistinguishable
+permutation if and only if they differ only in the internal ordering of the objects within each
+type.  The number of such orderings is $n_1!\,n_2!\cdots n_k!$, so $f$ is
+$(n_1!\,n_2!\cdots n_k!)$-to-$1$.  By the Division Rule,
+\[
+  |C| = \frac{n!}{n_1!\,n_2!\cdots n_k!}. \qedhere
+\]
+\end{proof}
+
+\begin{example}[SUCCESS]
+How many strings can be made by reordering the letters of the word ``SUCCESS''?
+
+The letters are: $3$ S's, $2$ C's, $1$ U, $1$ E (total $7$).  By Theorem~\ref{thm:indistperm},
+\[
+  \frac{7!}{3!\,2!\,1!\,1!} = \frac{5040}{12} = 420.
+\]
+\end{example}
+
+\begin{example}[MISSISSIPPI]
+How many strings can be formed from the letters of ``MISSISSIPPI''?
+
+The letters are: $4$ I's, $4$ S's, $2$ P's, $1$ M (total $11$):
+\[
+  \frac{11!}{4!\,4!\,2!\,1!} = 34{,}650.
+\]
+\end{example}
+
+\subsection{Distributing Objects into Boxes}
+
+The four distribution problems form a useful taxonomy.
+
+\begin{theorem}[Distinguishable objects into distinguishable boxes]
+\label{thm:distdist}
+The number of ways to distribute $n$ distinguishable objects into $k$ distinguishable boxes
+so that box $i$ receives $n_i$ objects ($n_1 + \cdots + n_k = n$) is
+\[
+  \frac{n!}{n_1!\,n_2!\cdots n_k!}.
+\]
+\end{theorem}
+
+This is the same formula as Theorem~\ref{thm:indistperm}; a bijection between the two settings
+can be constructed by associating position $j$ in a string with box $j$.
+
+\medskip\noindent
+\textbf{Indistinguishable objects into distinguishable boxes.}
+Placing $r$ identical balls into $n$ labelled bins is equivalent to choosing an $r$-combination
+with repetition from $n$ types (Theorem~\ref{thm:combrep}), giving $C(n+r-1,r)$.
+
+\begin{example}
+The number of ways to distribute $5$ indistinguishable objects into $3$ distinguishable boxes is
+$C(3+5-1,5) = C(7,2) = 21$.
+\end{example}
+
+\medskip\noindent
+\textbf{Distinguishable objects into indistinguishable boxes.}
+There is no simple closed form.  One must sum Stirling numbers of the second kind
+$S(n,j)$ over $j \leq k$.  For small cases, break into sub-cases by how many boxes are
+non-empty and divide by the number of permutations of identical boxes.
+
+\begin{example}
+The number of ways to distribute $5$ distinguishable objects into $3$ indistinguishable boxes
+is $S(5,1)+S(5,2)+S(5,3) = 1 + 15 + 25 = 41$.
+\end{example}
+
+\medskip\noindent
+\textbf{Indistinguishable objects into indistinguishable boxes.}
+This equals the number of partitions of $n$ into at most $k$ positive parts, denoted $p_k(n)$.
+There is no elementary closed form in general.
+
+\begin{example}
+$p_3(5)$: the partitions of $5$ into at most $3$ parts are
+$5$; $4+1$; $3+2$; $3+1+1$; $2+2+1$.
+So $p_3(5) = 5$.
+\end{example}
+
+\subsection{Summary Table}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{lcc}
+\hline
+& \textbf{$r$-permutation} & \textbf{$r$-combination} \\
+\hline
+Without repetition & $P(n,r) = \dfrac{n!}{(n-r)!}$ & $C(n,r) = \dfrac{n!}{(n-r)!\,r!}$ \\[6pt]
+With repetition    & $n^r$ & $C(n+r-1,r)$ \\[6pt]
+Indistinguishable objects & $\dfrac{n!}{n_1!\,n_2!\cdots n_k!}$ & --- \\[6pt]
+Around a cycle     & $\dfrac{P(n,r)}{r} = \dfrac{n!}{r(n-r)!}$ & --- \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{warning}[title={Warning: Circular vs.\ Linear}]
+For $n$ objects in a \emph{line} the count is $P(n,n) = n!$; around a \emph{circle} it is
+$(n-1)!$.  The division by $n$ corrects for the $n$ rotations that yield the same circular
+arrangement.
+\end{warning}
+
+\section*{Reading Assignment (Handout 3)}
+Rosen (7th edition): Chapter~6.4 (Binomial Coefficients and Identities);
+Chapter~6.5 (Generalised Permutations and Combinations).
+
+%% ============================================================
+%%  Handout 4 – Recurrence Relations: Introduction and Applications
+%% ============================================================
+\chapter{Recurrence Relations: Foundations}
+\label{chap:recurrence-foundations}
+
+\section{Introduction to Recurrence Relations}
+\label{sec:recurrence-intro}
+
+A \textbf{recurrence relation} expresses the $n$-th term of a sequence in terms of one or more
+earlier terms.  The core idea is:
+
+\begin{itemize}
+  \item For a problem of size $n$, relate its solution to smaller sub-problems of size
+        $n-1$, $n-2$, and so on.
+  \item Combine this recurrence with one or more \emph{initial conditions} to fully specify
+        the sequence.
+\end{itemize}
+
+Together, an initial condition and a recurrence uniquely determine every term of the sequence.
+Once a closed-form expression is conjectured, it is typically verified by induction.
+
+\subsection{Tower of Hanoi}
+\label{subsec:hanoi}
+
+\begin{example}[Tower of Hanoi]
+\label{ex:hanoi}
+What is the minimum number of moves needed to transfer $n$ disks from one peg to another,
+subject to the rules that (1) only one disk may be moved at a time, and (2) a larger disk
+may never rest on top of a smaller one?
+\end{example}
+
+Let $H_n$ denote the minimum number of moves for $n$ disks.  Computing small cases directly
+gives $H_1 = 1$, $H_2 = 3$, $H_3 = 7$.
+
+\textbf{Recurrence.}  To move $n$ disks from peg A to peg C:
+\begin{enumerate}
+  \item Move the top $n-1$ disks from A to B \hfill ($H_{n-1}$ moves).
+  \item Move the largest disk from A to C \hfill (1 move).
+  \item Move the $n-1$ disks from B to C \hfill ($H_{n-1}$ moves).
+\end{enumerate}
+
+Hence
+\[
+  H_n = 2H_{n-1} + 1, \qquad H_1 = 1.
+\]
+
+\textbf{Closed form.}  The pattern $1, 3, 7, 15, 31, \ldots$ suggests $H_n = 2^n - 1$.
+
+\begin{proof}
+\textit{Base step.}  $H_1 = 2^1 - 1 = 1$. \checkmark
+
+\textit{Inductive step.}  Assume $H_k = 2^k - 1$ for some $k \geq 1$.  Then
+\[
+  H_{k+1} = 2H_k + 1 = 2(2^k - 1) + 1 = 2^{k+1} - 2 + 1 = 2^{k+1} - 1.
+\]
+\end{proof}
+
+\begin{keyresult}[title={Tower of Hanoi Solution}]
+The minimum number of moves to transfer $n$ disks is $H_n = 2^n - 1$.
+\end{keyresult}
+
+\begin{remark}[Reve's Puzzle]
+If there are $k \geq 4$ pegs instead of 3, the problem is called \emph{Reve's Puzzle}.  The
+$k = 4$ case was solved in 2014; the general formula for $k > 4$ remains unknown.
+\end{remark}
+
+\subsection{Compound Interest}
+\label{subsec:compound-interest}
+
+\begin{example}[Compound Interest]
+A deposit of \$10{,}000 earns $11\%$ annual interest compounded annually.  How much is in the
+account after $n$ years?
+\end{example}
+
+Let $P_n$ be the account balance after $n$ years.  The initial condition is $P_0 = 10{,}000$.
+
+\textbf{Recurrence.}
+\[
+  P_n = P_{n-1} + 0.11\,P_{n-1} = 1.11\,P_{n-1}.
+\]
+
+Iterating this relation:
+\[
+  P_n = (1.11)^n P_0.
+\]
+
+For $n = 30$: $P_{30} = (1.11)^{30} \times 10{,}000 \approx \$228{,}922.97$.
+
+\subsection{Graduate Student Job Problem and Fibonacci Numbers}
+\label{subsec:fibonacci}
+
+\begin{example}[Graduate Student Job Problem]
+Each professor (except those in their first year) graduates one student per year who immediately
+becomes a professor.  First-year professors produce no graduates.  There are no retirements.
+Starting with one professor in year 1, how many professors are there in year $n$?
+\end{example}
+
+Let $f_n$ be the number of professors in year $n$.  Computing initial terms:
+\[
+  f_0 = 0,\; f_1 = 1,\; f_2 = 1,\; f_3 = 2,\; f_4 = 3,\; f_5 = 5.
+\]
+
+\textbf{Recurrence.}  In year $n$, the total professorial population consists of:
+\begin{itemize}
+  \item all $f_{n-1}$ professors who were present last year (no retirements), and
+  \item the $f_{n-2}$ new graduates produced by professors who have been around for at least
+        two years (i.e.\ those present in year $n-2$ are no longer first-year by year $n-1$).
+\end{itemize}
+
+Hence
+\[
+  f_n = f_{n-1} + f_{n-2}, \qquad f_0 = 0,\; f_1 = 1.
+\]
+
+This is precisely the recurrence for the \textbf{Fibonacci numbers}.  The closed-form solution
+(to be derived in Handout 5) is
+
+\begin{keyresult}[title={Closed Form for Fibonacci Numbers (Binet's Formula)}]
+\[
+  f_n = \frac{\varphi^n - \psi^n}{\sqrt{5}}, \qquad
+  \varphi = \frac{1+\sqrt{5}}{2}, \quad \psi = \frac{1-\sqrt{5}}{2}.
+\]
+\end{keyresult}
+
+\begin{examtip}[title={Initial Conditions Matter}]
+The recurrence $a_n = a_{n-1} + a_{n-2}$ is shared by many sequences.  Always state initial
+conditions: the Fibonacci sequence has $f_0 = 0, f_1 = 1$, while the ``no-two-consecutive-zeros''
+bit-string count (Section~\ref{subsec:strings}) has $a_1 = 2, a_2 = 3$.
+\end{examtip}
+
+\section{Modelling with Recurrence Relations}
+\label{sec:recurrence-modelling}
+
+This section develops two further examples that illustrate the method of conditioning on the
+last symbol (or digit) of a combinatorial object.
+
+\subsection{Bit Strings with No Two Consecutive Zeros}
+\label{subsec:strings}
+
+\begin{example}[Bit Strings]
+\label{ex:bitstrings}
+How many binary strings of length $n$ contain no two consecutive $0$s?
+\end{example}
+
+Let $a_n$ denote this count.  By enumeration: $a_1 = 2$ (strings: \texttt{0}, \texttt{1}) and
+$a_2 = 3$ (strings: \texttt{01}, \texttt{10}, \texttt{11}; \texttt{00} is excluded).
+
+\textbf{Recurrence.}  Consider the last bit of a valid string of length $n$:
+
+\begin{itemize}
+  \item \textbf{Last bit is $1$:} The first $n-1$ bits can be any valid string of length $n-1$.
+        This contributes $a_{n-1}$ strings.
+  \item \textbf{Last bit is $0$:} To avoid two consecutive zeros, the $(n-1)$-th bit must be
+        $1$.  The first $n-2$ bits can be any valid string of length $n-2$.
+        This contributes $a_{n-2}$ strings.
+\end{itemize}
+
+Hence
+\[
+  a_n = a_{n-1} + a_{n-2}, \qquad a_1 = 2,\; a_2 = 3.
+\]
+
+The sequence runs $2, 3, 5, 8, 13, \ldots$ — a Fibonacci-type sequence with shifted initial
+conditions.  A closed form will be obtained in Handout~5.
+
+\subsection{Valid Decimal Codewords}
+\label{subsec:codewords}
+
+\begin{example}[Codewords with an Even Number of Zeros]
+\label{ex:codewords}
+A decimal string (digits $0$--$9$) is \emph{valid} if it contains an even number of $0$s.
+Let $a_n$ be the number of valid $n$-digit strings.  Find a recurrence for $a_n$.
+\end{example}
+
+By direct count: $a_1 = 9$, $a_2 = 82$, $a_3 = 756$.
+
+\textbf{Recurrence.}  Condition on the last digit of a valid $n$-digit string:
+
+\begin{itemize}
+  \item \textbf{Last digit is non-zero} (9 choices: $1$--$9$): The first $n-1$ digits must form
+        a valid codeword (even number of zeros), giving $9\,a_{n-1}$ strings.
+  \item \textbf{Last digit is $0$}: The first $n-1$ digits must contain an \emph{odd} number of
+        zeros.  Since all $10^{n-1}$ strings of length $n-1$ partition into those with an even
+        number of zeros ($a_{n-1}$) and those with an odd number ($10^{n-1} - a_{n-1}$), this
+        case contributes $10^{n-1} - a_{n-1}$ strings.
+\end{itemize}
+
+Therefore
+\[
+  a_n = 9\,a_{n-1} + \bigl(10^{n-1} - a_{n-1}\bigr) = 8\,a_{n-1} + 10^{n-1}, \qquad a_1 = 9.
+\]
+
+\begin{examtip}[title={Complementary Counting in Recurrences}]
+When conditioning on appending a symbol that changes a parity or other property, count the
+``bad'' prefix strings as the complement: (\text{total prefixes}) $-$ (\text{valid prefixes}).
+\end{examtip}
+
+\begin{warning}[title={Verifying Initial Conditions}]
+Always verify that your recurrence is consistent with the initial conditions you state.
+For Example~\ref{ex:codewords}: $a_2 = 8 \times 9 + 10^1 = 72 + 10 = 82$. \checkmark
+\end{warning}
+
+\section*{Reading Assignment (Handout 4)}
+Rosen (7th edition): Chapter~8.1 (Applications of Recurrence Relations).
+
+% ════════════════════════════════════════════════════════════════════════════
+%  HANDOUT 5 — LINEAR HOMOGENEOUS RECURRENCE RELATIONS
+% ════════════════════════════════════════════════════════════════════════════
+
+\chapter{Linear Homogeneous Recurrence Relations}
+\label{chap:linear-homo}
+
+\section{Linear Homogeneous Recurrence Relations}
+\label{sec:lhrr}
+
+Recall from Section~\ref{sec:recurrence-intro} that a \emph{recurrence relation} expresses
+each term $a_n$ in terms of earlier terms.  In Handout~4 we set up recurrences by modelling
+counting problems; here we develop systematic techniques for \emph{solving} them, starting
+with the most structured class: linear homogeneous recurrences with constant coefficients.
+
+% ── 5.1 Definition ─────────────────────────────────────────────────────────
+\subsection{Definition and Terminology}
+\label{subsec:lhrr-def}
+
+\begin{definition}[Linear Homogeneous Recurrence of Degree $k$]
+\label{def:lhrr}
+A \textbf{linear homogeneous recurrence relation of degree $k$ with constant coefficients}
+is a recurrence of the form
+\[
+  a_n = c_1 a_{n-1} + c_2 a_{n-2} + \cdots + c_k a_{n-k},
+\]
+where $c_1, c_2, \ldots, c_k \in \mathbb{R}$ and $c_k \neq 0$.
+\end{definition}
+
+The three adjectives each rule out something:
+\begin{itemize}
+  \item \textbf{Linear}: no term $a_{n-i}$ appears raised to a power other than~$1$, and
+        there is no product of two sequence terms.
+  \item \textbf{Homogeneous}: the right-hand side contains \emph{only} multiples of previous
+        terms — no additive constant or other function of $n$.
+  \item \textbf{Constant coefficients}: each $c_i$ is a fixed real number, not a function
+        of $n$.
+\end{itemize}
+
+\begin{example}[Classifying recurrences]
+\label{ex:classify}
+\hfill
+\begin{itemize}
+  \item $f_n = f_{n-1} + f_{n-2}$ \quad \checkmark\ linear homogeneous, degree $2$.
+  \item $a_n = a_{n-1} + a_{n-2}^2$ \quad \texttimes\ \emph{not linear} ($a_{n-2}^2$).
+  \item $H_n = H_{n-1} + 2$ \quad \texttimes\ \emph{not homogeneous} (additive constant).
+  \item $X_n = n \cdot X_{n-1}$ \quad \texttimes\ \emph{not constant coefficients} (factor of $n$).
+\end{itemize}
+\end{example}
+
+\begin{remark}[Uniqueness of solutions]
+Given $k$ initial values $a_0, a_1, \ldots, a_{k-1}$, the recurrence
+$a_n = c_1 a_{n-1} + \cdots + c_k a_{n-k}$ determines $a_k, a_{k+1}, \ldots$ uniquely.
+This follows from the Principle of Strong Mathematical Induction: each new term is computed
+from already-known terms.
+\end{remark}
+
+% ── 5.2 The Characteristic Equation ────────────────────────────────────────
+\subsection{The Characteristic Equation}
+\label{subsec:char-eq}
+
+The key idea for solving a linear homogeneous recurrence is to look for solutions of the
+form $a_n = r^n$ for some constant $r \neq 0$.  Substituting into
+$a_n = c_1 a_{n-1} + c_2 a_{n-2} + \cdots + c_k a_{n-k}$ gives
+\[
+  r^n = c_1 r^{n-1} + c_2 r^{n-2} + \cdots + c_k r^{n-k}.
+\]
+Dividing both sides by $r^{n-k}$ (valid since $r \neq 0$) yields the
+\emph{characteristic equation}:
+
+\begin{definition}[Characteristic equation]
+\label{def:char-eq}
+The \textbf{characteristic equation} of $a_n = c_1 a_{n-1} + \cdots + c_k a_{n-k}$ is
+\[
+  r^k - c_1 r^{k-1} - c_2 r^{k-2} - \cdots - c_{k-1} r - c_k = 0.
+\]
+Its roots $r_1, \ldots, r_k$ are called the \textbf{characteristic roots}.
+\end{definition}
+
+\begin{example}[Finding characteristic equations]
+\label{ex:char-eq}
+\hfill
+\begin{itemize}
+  \item $f_n = f_{n-1} + f_{n-2}$: characteristic equation $r^2 - r - 1 = 0$.
+  \item $a_n = a_{n-1} + 3a_{n-2} - 2a_{n-3}$: characteristic equation
+        $r^3 - r^2 - 3r + 2 = 0$.
+\end{itemize}
+\end{example}
+
+% ── 5.3 Degree-2: Two Distinct Roots ───────────────────────────────────────
+\subsection{Degree-2 Recurrences: Two Distinct Roots}
+\label{subsec:deg2-distinct}
+
+We focus first on degree-$2$ recurrences, $a_n = c_1 a_{n-1} + c_2 a_{n-2}$.  If the
+characteristic equation $r^2 - c_1 r - c_2 = 0$ has two \emph{distinct} roots $r_1 \neq r_2$,
+then both $a_n = r_1^n$ and $a_n = r_2^n$ are solutions.  Moreover, any linear combination
+$h_1 r_1^n + h_2 r_2^n$ is also a solution (linearity of the recurrence).  Theorem~1 states
+this is in fact the \emph{complete} family of solutions.
+
+\begin{theorem}[Section 8.2, Theorem~1]
+\label{thm:deg2-distinct}
+Suppose the characteristic equation of $a_n = c_1 a_{n-1} + c_2 a_{n-2}$ has two distinct
+roots $r_1$ and $r_2$.  Then the sequence $(a_n)$ is a solution of the recurrence if and
+only if
+\[
+  a_n = h_1 \cdot r_1^n + h_2 \cdot r_2^n
+\]
+for some constants $h_1, h_2$.
+\end{theorem}
+
+\begin{proof}
+\textbf{($\Leftarrow$)} Let $a_n = h_1 r_1^n + h_2 r_2^n$.  Since $r_1, r_2$ are roots of
+$r^2 - c_1 r - c_2 = 0$, we have $r_i^2 = c_1 r_i + c_2$ for $i = 1,2$.  Therefore:
+\begin{align*}
+  c_1 a_{n-1} + c_2 a_{n-2}
+    &= c_1(h_1 r_1^{n-1} + h_2 r_2^{n-1}) + c_2(h_1 r_1^{n-2} + h_2 r_2^{n-2}) \\
+    &= h_1 r_1^{n-2}(c_1 r_1 + c_2) + h_2 r_2^{n-2}(c_1 r_2 + c_2) \\
+    &= h_1 r_1^{n-2} \cdot r_1^2 + h_2 r_2^{n-2} \cdot r_2^2 \\
+    &= h_1 r_1^n + h_2 r_2^n = a_n.
+\end{align*}
+
+\textbf{($\Rightarrow$)} Suppose $(a_n)$ is any solution with $a_0 = C_0$, $a_1 = C_1$.
+Set $h_1$ and $h_2$ to satisfy
+\[
+  \begin{cases} h_1 + h_2 = C_0, \\ h_1 r_1 + h_2 r_2 = C_1. \end{cases}
+\]
+Since $r_1 \neq r_2$ this linear system has a unique solution:
+\[
+  h_1 = \frac{C_1 - C_0 r_2}{r_1 - r_2}, \qquad
+  h_2 = \frac{C_0 r_1 - C_1}{r_1 - r_2}.
+\]
+(The denominator $r_1 - r_2 \neq 0$ by distinctness.)  The sequence $b_n = h_1 r_1^n + h_2 r_2^n$
+then satisfies the same recurrence \emph{and} the same initial conditions as $(a_n)$.  By
+uniqueness of solutions, $a_n = b_n$ for all $n$.
+\end{proof}
+
+\begin{keyresult}[title={Solving a Degree-2 Recurrence (Distinct Roots)}]
+Given $a_n = c_1 a_{n-1} + c_2 a_{n-2}$ with initial values $a_0, a_1$:
+\begin{enumerate}
+  \item Write the characteristic equation $r^2 - c_1 r - c_2 = 0$ and find roots $r_1 \neq r_2$.
+  \item Write $a_n = h_1 r_1^n + h_2 r_2^n$.
+  \item Substitute $n = 0$ and $n = 1$ to form a $2 \times 2$ linear system in $h_1, h_2$.
+  \item Solve for $h_1$ and $h_2$.
+\end{enumerate}
+\end{keyresult}
+
+\begin{warning}[title={Distinctness is Essential}]
+Theorem~\ref{thm:deg2-distinct} requires $r_1 \neq r_2$.  When the characteristic equation
+has a \emph{repeated} root, the formula $h_1 r^n + h_2 r^n = (h_1+h_2)r^n$ collapses to a
+one-parameter family — not enough to match two initial conditions.  Use
+Theorem~\ref{thm:deg2-repeated} in that case.
+\end{warning}
+
+% ── 5.4 Examples (distinct roots) ──────────────────────────────────────────
+\subsection{Examples: Distinct Roots}
+\label{subsec:deg2-distinct-examples}
+
+\begin{example}[Section 8.2, Example 3]
+\label{ex:sec82-ex3}
+Solve $a_n = a_{n-1} + 2a_{n-2}$ with $a_0 = 2$, $a_1 = 7$.
+
+\textbf{Solution.}  The characteristic equation is $r^2 - r - 2 = 0$, which factors as
+$(r-2)(r+1) = 0$, giving roots $r_1 = 2$ and $r_2 = -1$.  Thus $a_n = h_1 \cdot 2^n + h_2 \cdot (-1)^n$.
+Applying initial conditions:
+\[
+  \begin{cases} a_0 = 2: & h_1 + h_2 = 2, \\ a_1 = 7: & 2h_1 - h_2 = 7. \end{cases}
+  \implies h_1 = 3,\quad h_2 = -1.
+\]
+Therefore $\boxed{a_n = 3 \cdot 2^n - (-1)^n}$.
+\end{example}
+
+\begin{example}[Fibonacci Numbers --- Section 8.2, Example 4]
+\label{ex:fibonacci-closed}
+Solve $f_n = f_{n-1} + f_{n-2}$ with $f_0 = 0$, $f_1 = 1$.
+
+\textbf{Solution.}  The characteristic equation is $r^2 - r - 1 = 0$, with roots
+\[
+  r_1 = \frac{1+\sqrt{5}}{2} \quad\text{(the golden ratio } \phi\text{)}, \qquad
+  r_2 = \frac{1-\sqrt{5}}{2}.
+\]
+So $f_n = h_1 \left(\tfrac{1+\sqrt{5}}{2}\right)^n + h_2 \left(\tfrac{1-\sqrt{5}}{2}\right)^n$.
+From $f_0 = 0$: $h_1 + h_2 = 0$, so $h_2 = -h_1$.
+From $f_1 = 1$: $h_1 \tfrac{1+\sqrt{5}}{2} - h_1 \tfrac{1-\sqrt{5}}{2} = h_1 \sqrt{5} = 1$,
+giving $h_1 = 1/\sqrt{5}$.  Therefore
+\[
+  \boxed{f_n = \frac{1}{\sqrt{5}}\left(\frac{1+\sqrt{5}}{2}\right)^n
+              - \frac{1}{\sqrt{5}}\left(\frac{1-\sqrt{5}}{2}\right)^n.}
+\]
+This is \textbf{Binet's formula}: despite involving irrational numbers, $f_n$ is always a
+non-negative integer.
+\end{example}
+
+% ── 5.5 Degree-2: Repeated Root ─────────────────────────────────────────────
+\subsection{Degree-2 Recurrences: Repeated Root}
+\label{subsec:deg2-repeated}
+
+When the characteristic equation $r^2 - c_1 r - c_2 = 0$ has a \emph{repeated} root
+$r_0$ (i.e.\ $r^2 - c_1 r - c_2 = (r - r_0)^2$), the second linearly independent solution
+is $n \cdot r_0^n$.
+
+\begin{theorem}[Section 8.2, Theorem~2]
+\label{thm:deg2-repeated}
+Suppose the characteristic equation of $a_n = c_1 a_{n-1} + c_2 a_{n-2}$ has only one
+(repeated) root $r_0$.  Then the sequence $(a_n)$ is a solution if and only if
+\[
+  a_n = h_1 \cdot r_0^n + h_2 \cdot n \cdot r_0^n
+\]
+for some constants $h_1, h_2$.
+\end{theorem}
+
+\begin{examtip}[title={Recognising a Repeated Root}]
+If the characteristic equation factors as $(r - r_0)^2 = 0$, use the
+$h_1 r_0^n + h_2 n r_0^n$ form.  A quick check: for $r^2 - c_1 r - c_2 = 0$, the discriminant
+$c_1^2 + 4c_2 = 0$ signals a repeated root.
+\end{examtip}
+
+\begin{example}[Plants reproducing once]
+\label{ex:plants}
+Each plant produces one new plant during the first year of its life, then never again; all
+plants live forever.  Starting with one plant in year~1, how many plants $p_n$ are there in
+year $n$?
+
+\textbf{Setting up the recurrence.}  In year $n$ we have all plants from the previous year
+($p_{n-1}$) plus the newly born plants, which equals the number of plants that were
+\emph{at least one year old} last year, i.e.\ $p_{n-1} - p_{n-2}$.  So
+\[
+  p_n = p_{n-1} + (p_{n-1} - p_{n-2}) = 2p_{n-1} - p_{n-2},
+  \qquad p_0 = 0,\; p_1 = 1.
+\]
+
+\textbf{Solving.}  Characteristic equation: $r^2 - 2r + 1 = (r-1)^2 = 0$, so $r_0 = 1$.
+General solution: $p_n = h_1 \cdot 1^n + h_2 \cdot n \cdot 1^n = h_1 + h_2 n$.
+
+Applying initial conditions:
+\[
+  p_0 = 0 \implies h_1 = 0; \qquad p_1 = 1 \implies h_2 = 1.
+\]
+Therefore $\boxed{p_n = n}$ — precisely as expected, since each year exactly one new plant
+enters.
+\end{example}
+
+\begin{example}[Section 8.2, Example 5]
+\label{ex:sec82-ex5}
+Solve $a_n = 6a_{n-1} - 9a_{n-2}$ with $a_0 = 1$, $a_1 = 6$.
+
+\textbf{Solution.}  Characteristic equation: $r^2 - 6r + 9 = (r-3)^2 = 0$, so $r_0 = 3$.
+Thus $a_n = h_1 \cdot 3^n + h_2 \cdot n \cdot 3^n$.
+
+From initial conditions:
+\[
+  \begin{cases} a_0 = 1: & h_1 = 1, \\ a_1 = 6: & 3h_1 + 3h_2 = 6 \implies h_2 = 1. \end{cases}
+\]
+Therefore $a_n = 3^n + n \cdot 3^n = \boxed{(n+1) \cdot 3^n}$.
+\end{example}
+
+% ── 5.6 Higher Degree: Distinct Roots ──────────────────────────────────────
+\subsection{Higher-Degree Recurrences: Distinct Roots}
+\label{subsec:highdeg-distinct}
+
+The approach extends naturally to degree $k$.
+
+\begin{theorem}[Section 8.2, Theorem~3]
+\label{thm:degk-distinct}
+Suppose the characteristic equation of
+$a_n = c_1 a_{n-1} + c_2 a_{n-2} + \cdots + c_k a_{n-k}$
+has $k$ distinct roots $r_1, r_2, \ldots, r_k$.  Then $(a_n)$ is a solution if and only if
+\[
+  a_n = h_1 r_1^n + h_2 r_2^n + \cdots + h_k r_k^n
+\]
+for some constants $h_1, \ldots, h_k$.
+\end{theorem}
+
+Given $k$ initial conditions $a_0, \ldots, a_{k-1}$, setting $n = 0, 1, \ldots, k-1$
+produces a Vandermonde linear system whose unique solution gives $h_1, \ldots, h_k$.
+
+\begin{example}[Section 8.2, Example 6]
+\label{ex:sec82-ex6}
+Solve $a_n = 6a_{n-1} - 11a_{n-2} + 6a_{n-3}$ with $a_0 = 2$, $a_1 = 5$, $a_2 = 15$.
+
+\textbf{Solution.}  Characteristic equation: $r^3 - 6r^2 + 11r - 6 = 0$.
+Testing $r = 1$: $1 - 6 + 11 - 6 = 0$~\checkmark, so $(r-1)$ is a factor.
+Dividing: $(r-1)(r^2 - 5r + 6) = (r-1)(r-2)(r-3) = 0$, giving $r_1 = 1$, $r_2 = 2$,
+$r_3 = 3$.
+
+Thus $a_n = h_1 \cdot 1^n + h_2 \cdot 2^n + h_3 \cdot 3^n$.  Applying initial conditions:
+\[
+  \begin{cases} h_1 + h_2 + h_3 = 2, \\ h_1 + 2h_2 + 3h_3 = 5, \\ h_1 + 4h_2 + 9h_3 = 15. \end{cases}
+  \implies h_1 = 1,\; h_2 = -1,\; h_3 = 2.
+\]
+Therefore $\boxed{a_n = 1 - 2^n + 2 \cdot 3^n}$.
+\end{example}
+
+% ── 5.7 Repeated Roots (Optional) ──────────────────────────────────────────
+\subsection{Repeated Roots in the General Case (Optional)}
+\label{subsec:repeated-optional}
+
+When the characteristic equation has roots of higher multiplicity, each root $r_i$ of
+multiplicity $m_i$ contributes a block of $m_i$ linearly independent solutions:
+$r_i^n,\; n r_i^n,\; n^2 r_i^n,\; \ldots,\; n^{m_i - 1} r_i^n$.
+
+\begin{theorem}[Section 8.2, Theorem~4]
+\label{thm:degk-repeated}
+Suppose the characteristic equation has $t$ distinct roots $r_1, \ldots, r_t$ with
+multiplicities $m_1, \ldots, m_t$ (so $m_1 + \cdots + m_t = k$).  Then $(a_n)$ is a
+solution if and only if
+\begin{align*}
+  a_n = &\;(h_{1,0} + h_{1,1} n + \cdots + h_{1,m_1-1} n^{m_1-1})\,r_1^n \\
+        &+ (h_{2,0} + h_{2,1} n + \cdots + h_{2,m_2-1} n^{m_2-1})\,r_2^n \\
+        &+ \cdots + (h_{t,0} + h_{t,1} n + \cdots + h_{t,m_t-1} n^{m_t-1})\,r_t^n,
+\end{align*}
+for constants $h_{i,j}$.
+\end{theorem}
+
+\begin{example}[Optional]
+\label{ex:triple-root}
+Solve $a_n = -3a_{n-1} - 3a_{n-2} - a_{n-3}$ with $a_0 = 1$, $a_1 = -2$, $a_2 = -1$.
+
+\textbf{Solution.}  Characteristic equation: $r^3 + 3r^2 + 3r + 1 = (r+1)^3 = 0$.
+One root $r_1 = -1$ with multiplicity $3$.  By Theorem~\ref{thm:degk-repeated}:
+\[
+  a_n = (h_{1,0} + h_{1,1} n + h_{1,2} n^2)(-1)^n.
+\]
+Applying initial conditions:
+\[
+  \begin{cases} h_{1,0} = 1, \\ -(h_{1,0} + h_{1,1} + h_{1,2}) = -2 \implies h_{1,1} + h_{1,2} = 1, \\ h_{1,0} + 2h_{1,1} + 4h_{1,2} = -1 \implies 2h_{1,1} + 4h_{1,2} = -2. \end{cases}
+\]
+Solving: $h_{1,2} = -2$, $h_{1,1} = 3$.  Therefore
+\[
+  \boxed{a_n = (1 + 3n - 2n^2)(-1)^n.}
+\]
+\end{example}
+
+% ── 5.8 Simultaneous Recurrences ───────────────────────────────────────────
+\subsection{Simultaneous Recurrence Relations}
+\label{subsec:simultaneous}
+
+Sometimes two sequences are coupled: each is defined in terms of the other.  The strategy
+is to \emph{eliminate} one sequence to obtain a single higher-degree recurrence, then
+back-substitute.
+
+\begin{example}[Simultaneous recurrences]
+\label{ex:simultaneous}
+Solve
+\[
+  a_n = a_{n-1} + b_{n-1}, \qquad b_n = a_{n-1} - b_{n-1},
+\]
+with $a_0 = 1$, $b_0 = 2$.
+
+\textbf{Step 1: eliminate $a$.}  From the second equation, $a_{n-1} = b_n + b_{n-1}$, so
+$a_n = b_{n+1} + b_n$.  Substituting into the first equation:
+\[
+  b_{n+1} + b_n = (b_n + b_{n-1}) + b_{n-1}
+  \implies b_{n+1} = 2b_{n-1}
+  \implies b_n = 2b_{n-2}.
+\]
+
+\textbf{Step 2: solve for $b_n$.}  Characteristic equation: $r^2 - 2 = 0$, roots
+$r = \pm\sqrt{2}$.  Thus $b_n = h_1(\sqrt{2})^n + h_2(-\sqrt{2})^n$.
+
+Note $b_1 = a_0 - b_0 = 1 - 2 = -1$.  Applying $b_0 = 2$ and $b_1 = -1$:
+\[
+  h_1 + h_2 = 2, \quad \sqrt{2}\,h_1 - \sqrt{2}\,h_2 = -1
+  \implies h_1 = 1 - \tfrac{1}{2\sqrt{2}},\; h_2 = 1 + \tfrac{1}{2\sqrt{2}}.
+\]
+
+\textbf{Step 3: recover $a_n$.}  From $a_n = b_{n+1} + b_n$, substitute the expression
+for $b_n$.
+\end{example}
+
+\begin{examtip}[title={Solving Simultaneous Recurrences}]
+Always begin by using one equation to express one sequence in terms of the other, then
+substitute to obtain a \emph{single} recurrence in one unknown.  Once that is solved, recover
+the second sequence by back-substitution.
+\end{examtip}
+
+% ── 5.9 Connection to Linear Algebra (Optional) ─────────────────────────────
+\subsection{Connection to Linear Algebra (Optional)}
+\label{subsec:linalg-connection}
+
+There is a beautiful linear-algebraic interpretation of the method above.  Consider again
+the degree-$2$ case $a_n = c_1 a_{n-1} + c_2 a_{n-2}$.  Define the vector
+$\mathbf{v}_n = \bigl(\begin{smallmatrix} a_n \\ a_{n-1} \end{smallmatrix}\bigr)$.  Then
+\[
+  \mathbf{v}_n = A\,\mathbf{v}_{n-1}, \quad \text{where } A = \begin{pmatrix} c_1 & c_2 \\ 1 & 0 \end{pmatrix},
+\]
+so $\mathbf{v}_n = A^{n-1}\mathbf{v}_1$.  If the characteristic equation of the recurrence
+has two distinct roots $r_1, r_2$, the matrix $A$ is \emph{diagonalisable}: $A = PDP^{-1}$
+where $D = \bigl(\begin{smallmatrix} r_1 & 0 \\ 0 & r_2 \end{smallmatrix}\bigr)$ and
+$P$ has the corresponding eigenvectors as columns.  Then $A^{n-1} = PD^{n-1}P^{-1}$, and
+computing the first component of $\mathbf{v}_n$ recovers precisely the formula
+$a_n = h_1 r_1^n + h_2 r_2^n$.
+
+This perspective explains \emph{why} we get a polynomial-times-exponential form for repeated
+roots: a non-diagonalisable (Jordan) block of size $m$ for eigenvalue $r_0$ produces terms
+$r_0^n, n r_0^n, \ldots, n^{m-1} r_0^n$.
+
+\section*{Reading Assignment (Handout 5)}
+Rosen (7th edition): Chapter~8.2 (Solving Linear Recurrence Relations).
+
+% ============================================================
+\chapter{Linear Non-Homogeneous Recurrence Relations}
+\label{chap:linear-nonhomo}
+
+\section{Linear Non-Homogeneous Recurrence Relations}
+\label{sec:lnhrr}
+% ============================================================
+
+In Handout~5 we solved linear \emph{homogeneous} recurrence relations, where every
+term depends only on earlier terms and $F(n)=0$.  We now handle the general case where an
+additional \emph{driving term} $F(n)\neq 0$ is present.
+
+% ------------------------------------------------------------
+\subsection{Definition}
+\label{subsec:lnhrr-def}
+% ------------------------------------------------------------
+
+\begin{definition}[Linear Non-Homogeneous Recurrence Relation]
+\label{def:lnhrr}
+A \emph{linear non-homogeneous recurrence relation of degree $k$ with constant
+coefficients} has the form
+\[
+  a_n = c_1 a_{n-1} + c_2 a_{n-2} + \cdots + c_k a_{n-k} + F(n),
+\]
+where $c_1, \ldots, c_k \in \mathbb{R}$, $c_k \neq 0$, and $F(n) \not\equiv 0$ is a
+function of $n$ alone.
+
+The recurrence obtained by setting $F(n) = 0$,
+\[
+  b_n = c_1 b_{n-1} + c_2 b_{n-2} + \cdots + c_k b_{n-k},
+\]
+is called the \textbf{associated homogeneous recurrence relation}.
+\end{definition}
+
+\begin{keyresult}[title={Key Idea: Two Parts}]
+To solve a non-homogeneous recurrence, we need two ingredients:
+\begin{enumerate}
+  \item A \textbf{particular solution} $a_n^{(p)}$ satisfying the full recurrence.
+  \item The \textbf{general solution} $b_n$ of the associated \emph{homogeneous} recurrence (no initial conditions imposed).
+\end{enumerate}
+Every solution then has the form $a_n^{(p)} + b_n$.
+\end{keyresult}
+
+\begin{example}[Identifying associated homogeneous recurrences]
+\label{ex:lnhrr-identify}
+\hfill
+\begin{itemize}
+  \item $f_n = f_{n-1} + f_{n-2} + 3$\quad $\Longrightarrow$\quad associated homogeneous: $b_n = b_{n-1} + b_{n-2}$.
+  \item $a_n = 3a_{n-1} + 5a_{n-2} + n^2$\quad $\Longrightarrow$\quad associated homogeneous: $b_n = 3b_{n-1} + 5b_{n-2}$.
+  \item $a_n = 2a_{n-1} - 5a_{n-3} - 2^n + n^2 - 5$\quad $\Longrightarrow$\quad associated homogeneous: $b_n = 2b_{n-1} - 5b_{n-3}$.
+\end{itemize}
+Note that $F(n)$ is simply dropped; the coefficients $c_i$ are unchanged.
+\end{example}
+
+% ------------------------------------------------------------
+\subsection{Structure of the Solution Set}
+\label{subsec:lnhrr-structure}
+% ------------------------------------------------------------
+
+A key structural observation distinguishes the non-homogeneous from the homogeneous case.
+
+\begin{remark}[Sum of two solutions is \emph{not} a solution]
+Suppose $(a_n)$ and $(b_n)$ both satisfy $a_n = c_1 a_{n-1} + \cdots + c_k a_{n-k} + F(n)$.
+Then
+\begin{align*}
+  (a_n + b_n) &= c_1(a_{n-1}+b_{n-1}) + \cdots + c_k(a_{n-k}+b_{n-k}) + 2F(n).
+\end{align*}
+Since the right-hand side has $2F(n)$, not $F(n)$, the sequence $(a_n + b_n)$ is
+\textbf{not} a solution.
+\end{remark}
+
+\begin{warning}[title={Warning: Non-Homogeneous Solutions Don't Add}]
+  Unlike linear homogeneous recurrences, the sum of two solutions of a non-homogeneous
+  recurrence is \emph{not} itself a solution.  Adding a solution of the homogeneous part
+  \emph{is} valid (see Theorem~\ref{thm:lnhrr} below).
+\end{warning}
+
+However, there is a useful substitute:
+
+\begin{proposition}
+\label{prop:part-plus-hom}
+If $(a_n)$ is a solution of the non-homogeneous recurrence and $(b_n)$ is a solution of
+the \emph{associated homogeneous} recurrence, then $(a_n + b_n)$ is also a solution of the
+non-homogeneous recurrence.
+\end{proposition}
+
+\begin{proof}
+Since $a_n = c_1 a_{n-1} + \cdots + c_k a_{n-k} + F(n)$ and
+$b_n = c_1 b_{n-1} + \cdots + c_k b_{n-k}$, adding gives
+\[
+  (a_n + b_n) = c_1(a_{n-1}+b_{n-1}) + \cdots + c_k(a_{n-k}+b_{n-k}) + F(n). \qedhere
+\]
+\end{proof}
+
+This leads to the central theorem for this section.
+
+\begin{theorem}[Theorem~5, \S8.2]
+\label{thm:lnhrr}
+Let $\bigl(a_n^{(p)}\bigr)$ be a \emph{particular} solution of the non-homogeneous
+recurrence
+\[
+  a_n = c_1 a_{n-1} + c_2 a_{n-2} + \cdots + c_k a_{n-k} + F(n).
+\]
+Then \textbf{every} solution of this recurrence has the form
+\[
+  a_n = a_n^{(p)} + b_n,
+\]
+where $(b_n)$ is a solution of the associated homogeneous recurrence
+$b_n = c_1 b_{n-1} + \cdots + c_k b_{n-k}$.
+(No initial conditions are imposed on $b_n$ at this stage.)
+\end{theorem}
+
+\begin{proof}
+We already know from Proposition~\ref{prop:part-plus-hom} that $a_n^{(p)} + b_n$ is a
+solution.  It remains to show there are no other solutions.
+
+Let $(d_n)$ be any solution of the non-homogeneous recurrence.  Then:
+\[
+  a_n^{(p)} = c_1 a_{n-1}^{(p)} + \cdots + c_k a_{n-k}^{(p)} + F(n), \qquad
+  d_n = c_1 d_{n-1} + \cdots + c_k d_{n-k} + F(n).
+\]
+Subtracting the first equation from the second:
+\[
+  d_n - a_n^{(p)} = c_1\!\left(d_{n-1}-a_{n-1}^{(p)}\right) + \cdots +
+                    c_k\!\left(d_{n-k}-a_{n-k}^{(p)}\right).
+\]
+Setting $b_n = d_n - a_n^{(p)}$ shows that $(b_n)$ satisfies the associated homogeneous
+recurrence.  Hence $d_n = a_n^{(p)} + b_n$, as claimed.
+\end{proof}
+
+\begin{keyresult}[title={Key Result: Theorem 5 (Structure Theorem)}]
+Every solution $=$ (one particular solution) $+$ (general solution of associated homogeneous recurrence).
+
+\textbf{Strategy}: (1) Solve the associated homogeneous recurrence to get $b_n$ with free constants.
+(2) Find any one particular solution $a_n^{(p)}$.
+(3) Write $a_n = a_n^{(p)} + b_n$.
+(4) Use initial conditions to pin down the free constants.
+\end{keyresult}
+
+% ------------------------------------------------------------
+\subsection{Finding a Particular Solution}
+\label{subsec:particular}
+% ------------------------------------------------------------
+
+The hardest step is guessing $a_n^{(p)}$.  For the two most common forms of $F(n)$,
+there are systematic trial forms.
+
+\subsubsection{Polynomial driving term}
+
+\begin{theorem}[Particular solution: polynomial $F$]
+\label{thm:particular-poly}
+Suppose $F(n) = b_t n^t + b_{t-1}n^{t-1} + \cdots + b_1 n + b_0$ is a polynomial of
+degree $t$.
+\begin{itemize}
+  \item If $1$ is \textbf{not} a root of the characteristic equation of the associated
+        homogeneous recurrence, try
+        \[a_n^{(p)} = p_t n^t + p_{t-1}n^{t-1} + \cdots + p_1 n + p_0.\]
+  \item If $1$ \textbf{is} a root of the characteristic equation, try
+        \[a_n^{(p)} = n\cdot(p_t n^t + p_{t-1}n^{t-1} + \cdots + p_1 n + p_0).\]
+\end{itemize}
+Substitute the trial form into the recurrence and match coefficients to find $p_0, \ldots, p_t$.
+\end{theorem}
+
+\begin{example}[Why we multiply by $n$ when $1$ is a root]
+\label{ex:root1}
+Consider $a_n = a_{n-1} + n$.  The associated homogeneous recurrence is $b_n = b_{n-1}$,
+with characteristic equation $r - 1 = 0$, so $r = 1$ is the only root.
+
+Since $F(n) = n$ is a polynomial of degree~1 and $1$ \emph{is} a root, we try
+$a_n^{(p)} = n(cn + d) = cn^2 + dn$.  Substituting:
+\[
+  cn^2 + dn = c(n-1)^2 + d(n-1) + n.
+\]
+Expanding the right side: $cn^2 - 2cn + c + dn - d + n$.  Matching coefficients:
+\[
+  n^2{:}\ c = c \quad(\text{automatic}),\qquad
+  n^1{:}\ d = -2c + d + 1 \;\Rightarrow\; c = \tfrac{1}{2},\qquad
+  n^0{:}\ 0 = c - d \;\Rightarrow\; d = \tfrac{1}{2}.
+\]
+Hence $a_n^{(p)} = \tfrac{1}{2}n^2 + \tfrac{1}{2}n = \tfrac{n(n+1)}{2}$.
+
+(Had we tried $a_n^{(p)} = cn + d$ without the extra factor of $n$, the coefficient
+equations would yield $0 = 1$, a contradiction.)
+\end{example}
+
+\subsubsection{Exponential driving term}
+
+\begin{theorem}[Particular solution: exponential $F$]
+\label{thm:particular-exp}
+Suppose $F(n) = s^n$ for some constant $s \neq 0$.
+\begin{itemize}
+  \item If $s$ is \textbf{not} a root of the characteristic equation of the associated
+        homogeneous recurrence, try $a_n^{(p)} = c \cdot s^n$.
+  \item If $s$ \textbf{is} a root of the characteristic equation, try
+        $a_n^{(p)} = c \cdot n \cdot s^n$.
+\end{itemize}
+\end{theorem}
+
+\begin{example}[Why we multiply by $n$ when $s$ is a root]
+\label{ex:roots-exp}
+Consider $a_n = 5a_{n-1} + 5^n$.  The associated homogeneous recurrence is $b_n = 5b_{n-1}$
+with characteristic root $r = 5$.  Since $F(n) = 5^n$ and $s = 5$ \emph{is} a root, we
+try $a_n^{(p)} = c \cdot n \cdot 5^n$.  Substituting:
+\[
+  cn \cdot 5^n = 5 \cdot c(n-1) \cdot 5^{n-1} + 5^n = c(n-1) \cdot 5^n + 5^n.
+\]
+Dividing both sides by $5^n$: $cn = c(n-1) + 1 = cn - c + 1$, so $c = 1$.
+
+Hence $a_n^{(p)} = n \cdot 5^n$.  (Trying $a_n^{(p)} = c \cdot 5^n$ without the factor
+of $n$ leads to $c = c + 1$, a contradiction.)
+\end{example}
+
+% ------------------------------------------------------------
+\subsection{Worked Examples}
+\label{subsec:lnhrr-examples}
+% ------------------------------------------------------------
+
+\begin{example}[Example~10, \S8.2 --- Polynomial driving term]
+\label{ex:lnhrr-ex10}
+Find all solutions of $a_n = 3a_{n-1} + 2n$ with $a_1 = 3$.
+
+\medskip\noindent\textbf{Step 1 --- Solve the associated homogeneous recurrence.}
+The associated recurrence is $b_n = 3b_{n-1}$ with characteristic root $r = 3$, giving
+\[
+  b_n = h \cdot 3^n \quad (h \text{ a free constant}).
+\]
+
+\medskip\noindent\textbf{Step 2 --- Find a particular solution.}
+Here $F(n) = 2n$ is a polynomial of degree~1.  The characteristic equation is $r = 3$,
+so $1$ is not a root.  Try $a_n^{(p)} = cn + d$:
+\[
+  cn + d = 3\bigl(c(n-1)+d\bigr) + 2n = (3c+2)n + (-3c+3d).
+\]
+Matching coefficients:
+\[
+  n^1{:}\ c = 3c + 2 \;\Rightarrow\; c = -1, \qquad
+  n^0{:}\ d = -3c + 3d \;\Rightarrow\; 2d = 3c = -3 \;\Rightarrow\; d = -\tfrac{3}{2}.
+\]
+So $a_n^{(p)} = -n - \tfrac{3}{2}$.
+
+\medskip\noindent\textbf{Step 3 --- General solution (Theorem~\ref{thm:lnhrr}).}
+\[
+  a_n = -n - \tfrac{3}{2} + h \cdot 3^n.
+\]
+
+\medskip\noindent\textbf{Step 4 --- Apply initial condition $a_1 = 3$.}
+\[
+  3 = -1 - \tfrac{3}{2} + 3h \;\Rightarrow\; 3h = \tfrac{11}{2} \;\Rightarrow\; h = \tfrac{11}{6}.
+\]
+
+\medskip\noindent\textbf{Final answer:}
+\[
+  \boxed{a_n = -n - \tfrac{3}{2} + \tfrac{11}{6}\cdot 3^n.}
+\]
+\end{example}
+
+\begin{example}[Polynomial driving term, negative coefficient]
+\label{ex:lnhrr-neg}
+Find all solutions of $a_n = -2a_{n-1} + n + 1$ with $a_0 = 2$.
+
+\medskip\noindent\textbf{Step 1.}
+Associated homogeneous: $b_n = -2b_{n-1}$, characteristic root $r = -2$, so
+\[
+  b_n = h \cdot (-2)^n.
+\]
+
+\medskip\noindent\textbf{Step 2.}
+$F(n) = n+1$ is degree~1; the characteristic root is $-2 \neq 1$, so try $a_n^{(p)} = cn + d$:
+\[
+  cn + d = -2\bigl(c(n-1)+d\bigr) + n + 1 = (-2c+1)n + (2c - 2d + 1).
+\]
+Matching coefficients:
+\[
+  n^1{:}\ c = -2c+1 \;\Rightarrow\; 3c = 1 \;\Rightarrow\; c = \tfrac{1}{3},\qquad
+  n^0{:}\ d = 2c - 2d + 1 \;\Rightarrow\; 3d = \tfrac{2}{3}+1 = \tfrac{5}{3}
+         \;\Rightarrow\; d = \tfrac{5}{9}.
+\]
+
+\medskip\noindent\textbf{Step 3.}
+\[
+  a_n = \tfrac{n}{3} + \tfrac{5}{9} + h\cdot(-2)^n.
+\]
+
+\medskip\noindent\textbf{Step 4.} Apply $a_0 = 2$:
+\[
+  2 = 0 + \tfrac{5}{9} + h \;\Rightarrow\; h = 2 - \tfrac{5}{9} = \tfrac{13}{9}.
+\]
+
+\medskip\noindent\textbf{Final answer:}
+\[
+  \boxed{a_n = \frac{n}{3} + \frac{5}{9} + \frac{13}{9}\cdot(-2)^n.}
+\]
+\end{example}
+
+\begin{example}[Example~11, \S8.2 --- Exponential driving term]
+\label{ex:lnhrr-ex11}
+Find all solutions of $a_n = 5a_{n-1} - 6a_{n-2} + 7^n$.
+
+\medskip\noindent\textbf{Step 1.}
+Associated homogeneous: $b_n = 5b_{n-1} - 6b_{n-2}$.  Characteristic equation:
+\[
+  r^2 - 5r + 6 = (r-2)(r-3) = 0 \;\Rightarrow\; r_1=2,\; r_2=3.
+\]
+By Theorem~\ref{thm:deg2-distinct} (Handout~5):
+\[
+  b_n = h_1 \cdot 2^n + h_2 \cdot 3^n.
+\]
+
+\medskip\noindent\textbf{Step 2.}
+$F(n) = 7^n$; since $s = 7$ is not a characteristic root, try $a_n^{(p)} = c \cdot 7^n$:
+\[
+  c \cdot 7^n = 5c \cdot 7^{n-1} - 6c \cdot 7^{n-2} + 7^n.
+\]
+Dividing by $7^{n-2}$:
+\[
+  49c = 35c - 6c + 49 \;\Rightarrow\; 20c = 49 \;\Rightarrow\; c = \tfrac{49}{20}.
+\]
+
+\medskip\noindent\textbf{Step 3.}
+\[
+  \boxed{a_n = \frac{49}{20}\cdot 7^n + h_1 \cdot 2^n + h_2 \cdot 3^n,}
+\]
+where $h_1, h_2$ are determined by two initial conditions.
+\end{example}
+
+\begin{examtip}[title={Exam Tip: Choosing the Right Trial Form}]
+When $F(n)$ is a polynomial of degree $t$:
+\begin{itemize}
+  \item Check whether $r = 1$ is a characteristic root of the associated homogeneous recurrence.
+  \item If \textbf{no}: try $p_t n^t + \cdots + p_0$ (same degree as $F$).
+  \item If \textbf{yes}: multiply by $n$, i.e.\ try $n(p_t n^t + \cdots + p_0)$ (degree $t+1$).
+\end{itemize}
+When $F(n) = s^n$:
+\begin{itemize}
+  \item Check whether $s$ is a characteristic root.
+  \item If \textbf{no}: try $c \cdot s^n$.
+  \item If \textbf{yes}: try $c \cdot n \cdot s^n$.
+\end{itemize}
+Always substitute your trial form back into the recurrence and match coefficients to find the constants.
+\end{examtip}
+
+% ------------------------------------------------------------
+\subsection{Recurrence Relations --- Review}
+\label{subsec:rr-review}
+% ------------------------------------------------------------
+
+Having completed the study of recurrence relations, here is a summary of which theorem to use.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{lll}
+\hline
+\textbf{Theorem} & \textbf{Applies when\ldots} & \textbf{See} \\
+\hline
+Theorem~1 & Deg-2 homogeneous, two \emph{distinct} characteristic roots & \S\ref{subsec:deg2-distinct} \\
+Theorem~2 & Deg-2 homogeneous, one \emph{repeated} characteristic root & \S\ref{subsec:deg2-repeated} \\
+Theorem~3 & Deg-$k$ homogeneous, $k$ distinct characteristic roots & \S\ref{subsec:highdeg-distinct} \\
+Theorem~5 & Any linear \emph{non-homogeneous} recurrence & \S\ref{sec:lnhrr} \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{remark}
+Theorem~5 always reduces a non-homogeneous problem to (a)~a homogeneous sub-problem
+(solved by Theorems~1--3 as appropriate) and (b)~finding one particular solution by the
+trial-form method of Section~\ref{subsec:particular}.
+\end{remark}
+
+\section*{Reading Assignment (Handout 6)}
+Rosen (7th edition): Chapter~8.1 (Applications of Recurrence Relations);
+Chapter~8.2 (Solving Linear Recurrence Relations).
+
+\chapter{Graph Theory: Introduction}
+\label{chap:graph-theory}
+
+\section{Graph Theory: Introduction}
+\label{sec:graph-theory-1}
+
+\subsection{Motivation and Graph Models}
+\label{subsec:graph-motivation}
+
+Graphs are mathematical structures that arise naturally whenever we need to model
+\emph{relationships} between objects. Real-world examples include:
+\begin{itemize}
+  \item \textbf{Transit networks} — MRT stations as objects, rail connections as links.
+  \item \textbf{Social networks} — users as objects, friendships as links.
+  \item \textbf{Molecules} — atoms as objects, chemical bonds as links.
+  \item \textbf{Flowcharts / algorithms} — states as objects, transitions as directed links.
+\end{itemize}
+
+Each of these structures consists of a \emph{collection of objects} together with \emph{links
+between those objects}. The goal of graph theory is to provide a unified framework for
+describing and analysing such structures.
+
+A foundational historical problem is the \textbf{Bridges of K\"{o}nigsberg}: in 1735 Euler
+asked whether one could take a walk through the city that crosses each of its seven bridges
+exactly once. Formalising this question led to the birth of graph theory.
+
+\subsection{Formal Definitions}
+\label{subsec:graph-definitions}
+
+\begin{definition}[Graph]
+\label{def:graph}
+A \textbf{graph} $G = (V, E)$ consists of a nonempty set $V$ of \textbf{vertices} (or
+\textbf{nodes}) and a set $E$ of \textbf{edges}. Each edge has either one or two vertices
+associated with it, called its \textbf{endpoints}. An edge is said to \textbf{connect} its
+endpoints.
+\end{definition}
+
+We usually write $n = |V|$ for the number of vertices and $m = |E|$ for the number of edges.
+
+\begin{definition}[Directed Graph]
+\label{def:digraph}
+A \textbf{directed graph} (or \textbf{digraph}) $(V, E)$ consists of a nonempty vertex set
+$V$ and a set of \textbf{directed edges} $E$. Each directed edge $e \in E$ is associated with
+an \textbf{ordered pair} $(u, v)$ for some $u, v \in V$, and is said to \emph{start} at $u$
+and \emph{end} at $v$.
+
+By contrast, in an \textbf{undirected graph} each edge $e \in E$ is an \textbf{unordered
+pair} $\{u, v\}$ for some $u \neq v \in V$. Note $\{u,v\} = \{v,u\}$, whereas
+$(u,v) \neq (v,u)$ in general.
+\end{definition}
+
+\begin{definition}[Simple Graph and Multigraph]
+\label{def:simple-graph}
+An undirected graph is a \textbf{simple graph} if
+\begin{itemize}
+  \item no \emph{self-loops} (edges of the form $\{v, v\}$) are allowed, and
+  \item there is at most one edge between any two vertices.
+\end{itemize}
+For a simple graph on $n$ vertices, $0 \le m \le \binom{n}{2}$.
+
+A \textbf{multigraph} permits self-loops and multiple edges between the same pair of vertices.
+\end{definition}
+
+\begin{warning}[title={Convention}]
+  Unless stated otherwise, all graphs in this course are \textbf{simple graphs}.
+\end{warning}
+
+An important observation: the same graph can be \emph{drawn} in many different ways. The
+exact positions of vertices on the page are not part of the mathematical object; only the
+vertex set and edge set matter.
+
+\subsection{Graph Terminology}
+\label{subsec:graph-terminology}
+
+\begin{definition}[Adjacent, Incident, Endpoints]
+\label{def:adjacent}
+Let $G = (V, E)$ be a graph. Two vertices $u, v \in V$ are \textbf{adjacent} (or
+\textbf{neighbors}) if $\{u, v\} \in E$. If $e = \{u, v\} \in E$, then $e$ is
+\textbf{incident} with $u$ and $v$, and both $u$ and $v$ are \textbf{endpoints} of $e$.
+\end{definition}
+
+\begin{example}
+In the graph with vertices $\{1,2,3,4,5\}$ and edges $\{1,2\},\{1,3\},\{1,5\},\{2,4\},\{3,5\}$:
+\begin{itemize}
+  \item The adjacent pairs are: $1$--$2$, $1$--$3$, $1$--$5$, $2$--$4$, $3$--$5$.
+  \item Edge $e_1 = \{1,2\}$ is incident with vertices $1$ and $2$.
+  \item Vertex $1$ is an endpoint of $e_1$, $e_2 = \{1,3\}$, and $e_3 = \{1,5\}$.
+\end{itemize}
+\end{example}
+
+\begin{definition}[Degree]
+\label{def:degree}
+The \textbf{degree} of a vertex $v \in V$, written $\deg(v)$, is the number of edges
+incident to $v$. The \textbf{degree of the graph} $G$, written $\deg(G)$, is the
+\emph{maximum} degree of any vertex in $V$. A vertex of degree $0$ is called
+\textbf{isolated}. If all vertices have the same degree $k$, then $G$ is called
+\textbf{$k$-regular}.
+
+\textit{Note for multigraphs:} a self-loop at $v$ contributes $2$ to $\deg(v)$.
+\end{definition}
+
+\begin{definition}[Subgraph and Induced Subgraph]
+\label{def:subgraph}
+A \textbf{subgraph} of $G = (V,E)$ is a graph $H = (W, F)$ with $W \subseteq V$ and
+$F \subseteq E$. The subgraph $H$ is an \textbf{induced subgraph} if $F$ contains
+\emph{all} edges from $E$ whose both endpoints lie in $W$.
+\end{definition}
+
+\subsection{The Handshaking Lemma}
+\label{subsec:handshaking}
+
+\begin{theorem}[Handshaking Lemma]
+\label{thm:handshaking}
+Let $G = (V, E)$ be a graph with $m$ edges. Then
+\[
+  2m = \sum_{v \in V} \deg(v).
+\]
+\end{theorem}
+
+\begin{proof}
+Each edge $\{u,v\} \in E$ contributes exactly $1$ to $\deg(u)$ and $1$ to $\deg(v)$, hence
+$2$ in total to the sum $\sum_{v \in V} \deg(v)$. Summing over all $m$ edges gives $2m$.
+\end{proof}
+
+\begin{keyresult}[title={Key Result: Handshaking Lemma}]
+  In any graph, $2m = \sum_{v \in V} \deg(v)$. Equivalently, the sum of all vertex degrees
+  is always even, and equals twice the number of edges.
+\end{keyresult}
+
+\begin{theorem}
+\label{thm:even-odd-degree}
+In every graph $G$, the number of vertices of odd degree is even.
+\end{theorem}
+
+\begin{proof}
+Partition $V$ into $V_0$ (even-degree vertices) and $V_1$ (odd-degree vertices). By
+Theorem~\ref{thm:handshaking},
+\[
+  \underbrace{2m}_{\text{even}}
+  = \underbrace{\sum_{v \in V_0} \deg(v)}_{\text{even (sum of even integers)}}
+  + \sum_{v \in V_1} \deg(v).
+\]
+Hence $\sum_{v \in V_1} \deg(v)$ must also be even. Since each term is odd, the number of
+terms $|V_1|$ must be even.
+\end{proof}
+
+\begin{example}
+How many edges are in a $6$-regular graph on $10$ vertices?
+
+\textit{Solution.} Let $m$ be the number of edges. By the Handshaking Lemma,
+$2m = 10 \times 6 = 60$, so $m = 30$.
+\end{example}
+
+\begin{examtip}[title={Exam Tip: Applying the Handshaking Lemma}]
+  For a $k$-regular graph on $n$ vertices, $2m = nk$, so $m = nk/2$. If $nk$ is odd,
+  no such graph exists (enter \textbf{DNE}). Specifically, a $k$-regular graph on $n$ vertices
+  exists only when $nk$ is even.
+\end{examtip}
+
+\subsection{Special Graphs}
+\label{subsec:special-graphs}
+
+\begin{definition}[Complete Graph $K_n$]
+\label{def:complete-graph}
+The \textbf{complete graph} $K_n$ on $n$ vertices is the unique simple graph in which every
+pair of distinct vertices is connected by an edge. It has $\binom{n}{2}$ edges and is
+$(n-1)$-regular.
+\end{definition}
+
+\begin{definition}[Cycle Graph $C_n$]
+\label{def:cycle}
+The \textbf{cycle graph} $C_n$ ($n \ge 3$) on vertices $v_1, \ldots, v_n$ has edge set
+\[
+  \bigl\{\{v_1,v_2\},\{v_2,v_3\},\ldots,\{v_{n-1},v_n\},\{v_n,v_1\}\bigr\}.
+\]
+Every vertex of $C_n$ has degree $2$, so $C_n$ is $2$-regular.
+\end{definition}
+
+\begin{remark}
+$C_2$ would require two edges between the same pair of vertices, so it is not a simple graph.
+The smallest cycle is $C_3$.
+\end{remark}
+
+\subsection{Graph Isomorphism}
+\label{subsec:isomorphism}
+
+\begin{definition}[Isomorphic Graphs]
+\label{def:isomorphism}
+Two undirected graphs $G_1 = (V_1, E_1)$ and $G_2 = (V_2, E_2)$ are \textbf{isomorphic}
+if there exists a bijection $f : V_1 \to V_2$ such that for all $u, v \in V_1$,
+\[
+  \{u,v\} \in E_1 \iff \{f(u), f(v)\} \in E_2.
+\]
+Intuitively, isomorphic graphs are structurally identical — they differ only in how their
+vertices are labelled. Graphs that are not isomorphic are called \textbf{non-isomorphic}.
+\end{definition}
+
+Checking isomorphism by brute force requires examining $n!$ bijections for $n$-vertex graphs,
+which is infeasible for large $n$. Whether an efficient (polynomial-time) algorithm for graph
+isomorphism exists is still an open problem in computer science.
+
+A more practical approach is to use \textbf{graph invariants} — properties preserved by
+any isomorphism. If two graphs differ on any invariant, they are non-isomorphic. Common
+invariants include:
+\begin{itemize}
+  \item Number of vertices ($n$) and number of edges ($m$).
+  \item The \textbf{degree sequence}: the list of vertex degrees sorted in non-decreasing order.
+  \item Number of vertices of each given degree.
+\end{itemize}
+
+\begin{warning}[title={Matching Invariants is Necessary, Not Sufficient}]
+  Two graphs can have identical degree sequences yet still be non-isomorphic. Matching
+  invariants rules out isomorphism when they differ, but does not confirm it when they agree.
+\end{warning}
+
+\begin{example}
+To show two graphs $G, H$ are non-isomorphic: find a property that holds for $G$ but not $H$.
+
+For instance, suppose vertex $a$ in $G$ has $\deg(a) = 2$ and both its neighbours have
+degree $3$. If no degree-$2$ vertex in $H$ is adjacent to two degree-$3$ vertices, then
+$G \not\cong H$.
+\end{example}
+
+\begin{example}
+To show two graphs $G, H$ are isomorphic: exhibit an explicit bijection $f : V(G) \to V(H)$
+and verify that $\{u,v\} \in E(G) \iff \{f(u),f(v)\} \in E(H)$ for every pair.
+\end{example}
+
+\section*{Reading Assignment (Handout 7)}
+Rosen (7th edition): Chapter~10.1 (Graphs and Graph Models);
+Chapter~10.2 (Graph Terminology and Special Types of Graphs);
+Chapter~10.3 (Graph Isomorphism).
+
+\chapter{Graph Theory: Traversing Graphs}
+\label{chap:traversing-graphs}
+
+\section{Directed Graph Degrees}
+\label{sec:digraph-degrees}
+
+\subsection{Initial and Terminal Vertices}
+\label{subsec:initial-terminal}
+
+Recall from Definition~\ref{def:digraph} that a directed graph $G = (V,E)$ has edges that are
+\emph{ordered pairs} of vertices. We now formalise the notion of direction at individual edges.
+
+\begin{definition}[Initial and Terminal Vertex]
+\label{def:initial-terminal}
+For any edge $e = (u,v)$ in a directed graph $G$, vertex $u$ is called the
+\textbf{initial vertex} of $e$, and vertex $v$ is called the \textbf{terminal vertex} of $e$.
+\end{definition}
+
+\begin{definition}[In-Degree and Out-Degree]
+\label{def:in-out-degree}
+In a directed graph $G = (V,E)$:
+\begin{itemize}
+  \item The \textbf{in-degree} of a vertex $v$, denoted $\deg^{-}(v)$, is the number of edges
+    with $v$ as their terminal vertex.
+  \item The \textbf{out-degree} of a vertex $v$, denoted $\deg^{+}(v)$, is the number of edges
+    with $v$ as their initial vertex.
+\end{itemize}
+A self-loop at a vertex contributes one to both the in-degree and the out-degree of that vertex.
+\end{definition}
+
+\begin{example}[Directed Graph Degrees]
+\label{ex:digraph-degrees}
+Consider the directed graph with $V = \{v_1, v_2, v_3, v_4, v_5\}$ and
+$E = \{(v_1,v_2),(v_1,v_3),(v_1,v_5),(v_4,v_2),(v_3,v_5)\}$.
+The degrees are:
+\[
+\begin{array}{l@{\qquad}l}
+  \deg^{-}(v_1) = 0, & \deg^{+}(v_1) = 3, \\
+  \deg^{-}(v_2) = 2, & \deg^{+}(v_2) = 0, \\
+  \deg^{-}(v_3) = 1, & \deg^{+}(v_3) = 1, \\
+  \deg^{-}(v_4) = 0, & \deg^{+}(v_4) = 1, \\
+  \deg^{-}(v_5) = 2, & \deg^{+}(v_5) = 0.
+\end{array}
+\]
+\end{example}
+
+\subsection{Directed Handshaking Lemma}
+\label{subsec:directed-handshaking}
+
+The undirected handshaking lemma (Theorem~\ref{thm:handshaking}) counted each edge twice
+because every edge has two endpoints. In a directed graph each edge has exactly one initial
+vertex and one terminal vertex, so we obtain the following analogue.
+
+\begin{theorem}[Directed Handshaking Lemma]
+\label{thm:directed-handshaking}
+Let $G = (V,E)$ be a directed graph with $m$ edges. Then
+\[
+  \sum_{v \in V} \deg^{-}(v) \;=\; \sum_{v \in V} \deg^{+}(v) \;=\; m.
+\]
+\end{theorem}
+
+\begin{proof}
+Each edge $(u,v) \in E$ contributes exactly $1$ to $\deg^{+}(u)$ and exactly $1$ to
+$\deg^{-}(v)$. Hence summing either quantity over all vertices counts every edge precisely once.
+\end{proof}
+
+\begin{examtip}[title={Exam Tip: Directed vs.\ Undirected Handshaking}]
+In an \emph{undirected} graph: $\sum \deg(v) = 2m$.
+In a \emph{directed} graph: $\sum \deg^{-}(v) = \sum \deg^{+}(v) = m$.
+The factor-of-two difference is the most common source of error.
+\end{examtip}
+
+\subsection{Graph Type Classification (Recap)}
+\label{subsec:graph-types-recap}
+
+For reference, the four standard graph types differ along three axes.
+The classification below is the one used in this course (note that the convention on
+self-loops in multigraphs is \emph{not} universal across textbooks).
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Graph Type} & \textbf{Self-Loops} & \textbf{Multiple Edges} & \textbf{Directed} \\
+\midrule
+Simple Graph           & No  & No  & No  \\
+Multigraph             & Yes & Yes & No  \\
+Directed Simple Graph  & No  & No  & Yes \\
+Directed Multigraph    & Yes & Yes & Yes \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+For the remainder of this chapter the discussion applies to both simple graphs and multigraphs
+unless stated otherwise.
+
+%% ----------------------------------------------------------------
+\section{Paths and Connectivity}
+\label{sec:paths-connectivity}
+
+\subsection{Paths, Simple Paths, and Circuits}
+\label{subsec:paths}
+
+\begin{definition}[Path]
+\label{def:path}
+A \textbf{path} in an undirected graph $G$ from $u$ to $v$ is a sequence of vertices
+$(u = w_0, w_1, \dots, w_k, w_{k+1} = v)$ such that $\{w_i, w_{i+1}\} \in E$ for all
+$0 \le i \le k$.
+
+A \textbf{path} in a directed graph $G$ from $u$ to $v$ is a sequence of vertices
+$(u = w_0, w_1, \dots, w_k, w_{k+1} = v)$ such that $(w_i, w_{i+1}) \in E$ for all
+$0 \le i \le k$.
+\end{definition}
+
+Key terminology:
+\begin{itemize}
+  \item Paths \emph{can} contain the same edge several times.
+  \item The \textbf{length} of a path is the number of edges it contains (at least $1$).
+  \item A \textbf{simple path} is a path that contains no edge more than once.
+    In a directed graph, a simple path may include both $(u,v)$ and $(v,u)$, each at most once.
+  \item If the start vertex equals the end vertex ($u = v$), the path is called a \textbf{circuit}.
+\end{itemize}
+
+\begin{warning}[title={Warning: Definition of ``Simple Path''}]
+In this course, a \emph{simple path} means no \textbf{edge} is repeated. Some other
+textbooks define a simple path as one in which no \textbf{vertex} is repeated ---
+a strictly stronger condition. Be sure to use the definition from this course.
+\end{warning}
+
+\begin{example}[Paths in a Graph]
+\label{ex:paths}
+Consider the undirected graph on vertices $\{a,b,c,d,e,f\}$ with edges
+$\{a,b\}$, $\{a,d\}$, $\{a,e\}$, $\{b,c\}$, $\{b,e\}$, $\{b,f\}$, $\{c,e\}$, $\{c,f\}$,
+$\{d,e\}$, $\{e,f\}$.
+\begin{itemize}
+  \item $d$--$a$--$b$--$c$--$f$ is a simple path of length $4$.
+  \item $d$--$e$--$c$--$b$--$a$--$d$ is a circuit of length $5$.
+  \item $a$--$b$, $e$--$f$ is \emph{not} a path because $\{b,e\}$ may not connect them
+    consecutively without traversing edge $\{b,e\}$.
+  \item $d$--$a$--$b$--$c$--$f$--$b$--$a$--$e$ is a path but \emph{not} simple because the
+    edge $\{a,b\}$ is used twice.
+\end{itemize}
+\end{example}
+
+\subsection{Connectivity}
+\label{subsec:connectivity}
+
+\begin{definition}[Connected Graph]
+\label{def:connected}
+A graph $G = (V,E)$ (simple or multigraph) is \textbf{connected} if for every pair of
+distinct vertices $u, v \in V$, there is a path between $u$ and $v$. It is called
+\textbf{disconnected} otherwise.
+
+A disconnected graph can be partitioned into several maximal connected subgraphs called
+\textbf{connected components}.
+\end{definition}
+
+\begin{theorem}
+\label{thm:simple-path-connected}
+There is a simple path between every pair of distinct vertices of a connected graph.
+\end{theorem}
+
+\begin{proof}
+Let $u, v$ be distinct vertices in a connected graph $G$. Since $G$ is connected, at least one
+path from $u$ to $v$ exists. Let $P$ be a path from $u$ to $v$ of minimum length.
+
+Suppose $P$ is not simple. Then some edge $e = \{x,y\}$ appears at least twice, so either $x$
+or $y$ (or both) is visited at least twice. Between the two occurrences of the repeated vertex
+we can delete the intermediate sub-path, yielding a shorter path from $u$ to $v$. This
+contradicts the minimality of $P$, so $P$ must be simple.
+\end{proof}
+
+\subsection{Strong and Weak Connectivity}
+\label{subsec:strong-weak}
+
+In a directed graph it is possible that a path exists from $u$ to $v$ but not from $v$ to $u$
+(for example, in any directed path graph).
+
+\begin{definition}[Strongly and Weakly Connected]
+\label{def:strongly-weakly}
+A directed graph $G = (V,E)$ is \textbf{strongly connected} if for every pair of vertices
+$u, v \in V$ there is a directed path from $u$ to $v$ \emph{and} a directed path from $v$
+to $u$.
+
+A directed graph $G$ is \textbf{weakly connected} if its \textbf{underlying undirected graph}
+(obtained by ignoring the directions of all edges) is connected.
+\end{definition}
+
+Every strongly connected graph is also weakly connected, but the converse does not hold.
+
+\begin{example}
+\label{ex:strong-weak}
+A directed cycle on $n$ vertices is strongly connected: from any vertex one can reach any
+other by following the cycle. A directed path on $n \ge 2$ vertices is weakly connected but
+not strongly connected, since one cannot travel from the terminal vertex back to the initial
+vertex.
+\end{example}
+
+%% ----------------------------------------------------------------
+\section{Euler Circuits and Euler Paths}
+\label{sec:euler}
+
+\subsection{The K\"{o}nigsberg Bridges Problem}
+\label{subsec:konigsberg}
+
+In 1735 Euler asked whether one could walk through the city of K\"{o}nigsberg crossing each
+of its seven bridges exactly once. Modelling the four land masses as vertices and the bridges
+as edges produces a multigraph; the question becomes: \emph{does there exist a simple path
+that uses every edge?} Euler's negative answer was the first result in graph theory.
+
+\subsection{Definitions}
+\label{subsec:euler-def}
+
+\begin{definition}[Euler Circuit and Euler Path]
+\label{def:euler}
+Let $G$ be a connected graph.
+\begin{itemize}
+  \item An \textbf{Euler circuit} in $G$ is a simple circuit containing every edge of $G$.
+  \item An \textbf{Euler path} in $G$ is a simple path containing every edge of $G$.
+\end{itemize}
+\end{definition}
+
+Recall that ``simple'' here means no edge is repeated. An Euler circuit is necessarily also a
+circuit (starts and ends at the same vertex), while an Euler path need not return to its
+starting vertex.
+
+\subsection{Euler Circuit Characterisation}
+\label{subsec:euler-circuit}
+
+\begin{theorem}[Euler Circuit Theorem]
+\label{thm:euler-circuit}
+A connected graph $G$ with at least two vertices has an Euler circuit if and only if every
+vertex of $G$ has even degree.
+\end{theorem}
+
+\begin{proof}
+\textbf{($\Rightarrow$) Only-if direction.}
+Suppose $G$ has an Euler circuit $C = (v_1, v_2, \dots, v_m)$ with $v_m = v_1$. For the
+starting/ending vertex $v_1$, the first edge $(v_1, v_2)$ and the last edge $(v_{m-1}, v_m)$
+each contribute $1$ to $\deg(v_1)$, giving an even contribution of $2$. For any intermediate
+occurrence $v_i$ with $1 < i < m$, the edges $(v_{i-1}, v_i)$ and $(v_i, v_{i+1})$ each
+contribute $1$ to $\deg(v_i)$. Since $C$ is simple and uses every edge, the total degree of
+each vertex is even.
+
+\medskip
+\textbf{($\Leftarrow$) If direction.}
+Assume every vertex of $G$ has even degree. We construct an Euler circuit as follows.
+
+\emph{Step 1}: Start at an arbitrary vertex $v_1$ and greedily extend a simple path by choosing
+unused edges until no unused edge is available at the current vertex. The path must terminate
+(the graph has finitely many edges).
+
+\emph{Claim}: The resulting path is a circuit, i.e.\ it returns to $v_1$.
+
+\emph{Proof of claim}: Suppose the path ends at $v_k \ne v_1$. Removing the path's edges from
+$G$, every intermediate vertex $v_i$ ($1 < i < k$) loses an even number of incident edges
+(one in, one out per visit). But $v_k$, being the endpoint and not the start, loses an
+\emph{odd} number. Since $\deg(v_k)$ was even, $v_k$ still has at least one unused edge ---
+contradicting the assumption that the algorithm stopped. Hence $v_k = v_1$ and the path is a
+circuit $C_1$.
+
+\emph{Step 2}: If $C_1$ uses every edge we are done. Otherwise, remove all edges of $C_1$ from
+$G$; every vertex in the remaining graph still has even degree (a circuit removes an even
+number of edges at every vertex). Find a vertex $v_i$ on $C_1$ that has an unused edge and
+repeat Step~1 from $v_i$ to obtain a new circuit $C_2$ in the remaining graph.
+
+\emph{Step 3}: Splice $C_2$ into $C_1$ at $v_i$ to form a larger circuit. Repeat Steps~1--3
+until all edges are included, producing an Euler circuit.
+\end{proof}
+
+\begin{keyresult}[title={Key Result: Euler Circuit Test}]
+A connected graph has an Euler circuit $\iff$ \textbf{every vertex has even degree}.
+This is extremely easy to check and the constructive proof also yields an algorithm for
+finding the circuit.
+\end{keyresult}
+
+\subsection{Euler Path Characterisation}
+\label{subsec:euler-path}
+
+\begin{theorem}[Euler Path Theorem]
+\label{thm:euler-path}
+A connected graph $G$ has an Euler path but \emph{not} an Euler circuit if and only if $G$
+has exactly two vertices of odd degree.
+\end{theorem}
+
+\begin{proof}
+\textbf{($\Rightarrow$) Only-if direction.}
+Suppose $G$ has an Euler path $P = (v_1, \dots, v_m)$ with $v_1 \ne v_m$ (since there is no
+Euler circuit). The path leaves $v_1$ one more time than it enters, so $\deg(v_1)$ is odd.
+Similarly $\deg(v_m)$ is odd. Every other vertex is entered and left equally often, so it has
+even degree. Hence exactly two vertices have odd degree.
+
+\medskip
+\textbf{($\Leftarrow$) If direction.}
+Suppose $G$ has exactly two vertices of odd degree, say $u$ and $v$. Add a new edge $\{u,v\}$
+to obtain $G'$. Now every vertex of $G'$ has even degree, so by Theorem~\ref{thm:euler-circuit}
+$G'$ has an Euler circuit. Removing the added edge $\{u,v\}$ from the circuit produces an
+Euler path in $G$ from $u$ to $v$.
+\end{proof}
+
+\begin{keyresult}[title={Key Result: Euler Path Test}]
+A connected graph has an Euler path (but no Euler circuit) $\iff$ it has \textbf{exactly two
+vertices of odd degree}. The Euler path must start and end at those two vertices.
+\end{keyresult}
+
+\begin{examtip}[title={Exam Tip: Applying the Euler Criteria}]
+To determine whether a connected graph has an Euler circuit, an Euler path, or neither:
+\begin{enumerate}
+  \item Count the number of odd-degree vertices.
+  \item $0$ odd-degree vertices $\Rightarrow$ Euler circuit exists.
+  \item $2$ odd-degree vertices $\Rightarrow$ Euler path (but no Euler circuit) exists.
+  \item Any other count $\Rightarrow$ neither an Euler circuit nor an Euler path exists.
+\end{enumerate}
+For the K\"{o}nigsberg graph, all four vertices have odd degree ($3, 3, 3, 5$), so neither an
+Euler circuit nor an Euler path exists.
+\end{examtip}
+
+%% ----------------------------------------------------------------
+\section{Hamilton Circuits and Hamilton Paths}
+\label{sec:hamilton}
+
+Where Euler paths visit every \emph{edge} exactly once, Hamilton paths visit every
+\emph{vertex} exactly once.
+
+\subsection{Definitions}
+\label{subsec:hamilton-def}
+
+\begin{definition}[Hamilton Path and Hamilton Circuit]
+\label{def:hamilton}
+Let $G = (V,E)$ be a graph.
+\begin{itemize}
+  \item $G$ has a \textbf{Hamilton path} if there is a path that visits every vertex of $G$
+    exactly once.
+  \item $G$ has a \textbf{Hamilton circuit} if there is a circuit that visits every vertex of $G$
+    exactly once (not counting the return to the starting vertex $x_0$).
+\end{itemize}
+That is, a simple circuit $(x_0, x_1, \dots, x_n, x_0)$ is a Hamilton circuit if the path
+$(x_0, x_1, \dots, x_n)$ is a Hamilton path.
+\end{definition}
+
+\subsection{Complexity}
+\label{subsec:hamilton-complexity}
+
+Unlike the Euler criterion, there is \emph{no} simple necessary-and-sufficient condition
+known for the existence of Hamilton paths or circuits. One can test all $n!$ permutations of
+the vertex set and check whether consecutive vertices are adjacent, but this brute-force
+approach is extremely time-consuming. It is widely believed (though not yet proven) that no
+polynomial-time algorithm exists for this problem --- the Hamilton Circuit problem is
+\textbf{NP-complete}.
+
+\begin{warning}[title={Warning: Euler $\ne$ Hamilton}]
+The two concepts are fundamentally different: Euler deals with \emph{edges}, Hamilton with
+\emph{vertices}. An easy degree-based test exists for Euler but not for Hamilton. Do not
+conflate the two.
+\end{warning}
+
+\section*{Reading Assignment (Handout 8)}
+Rosen (7th edition): Chapter~10.4 (Connectivity);
+Chapter~10.5 (Euler and Hamilton Paths).
+
+\chapter{Graph Coloring and Planar Graphs}
+\label{chap:coloring-planar}
+
+This chapter covers vertex coloring of graphs --- assigning colors to vertices so that no two adjacent vertices share the same color --- as well as bipartite graphs (the ``$2$-colorable'' graphs) and planar graphs, which can be drawn in the plane without edge crossings.
+
+\section{Graph Coloring}
+\label{sec:graph-coloring}
+
+\subsection{Vertex Coloring}
+\label{subsec:vertex-coloring}
+
+\begin{definition}[Vertex Coloring]
+\label{def:k-vertex-coloring}
+A \emph{$k$-vertex-coloring} of a graph $G = (V, E)$ is a function
+\[
+f \colon V \to \{1, \ldots, k\}
+\]
+such that for all $u, v \in V$ with $(u,v) \in E$, we have $f(u) \neq f(v)$.
+\end{definition}
+
+Intuitively, a $k$-vertex-coloring assigns one of $k$ colors to each vertex so that no two adjacent vertices receive the same color.
+
+\subsection{Chromatic Number}
+\label{subsec:chromatic-number}
+
+\begin{definition}[Chromatic Number]
+\label{def:chromatic-number}
+A graph $G$ is \emph{$k$-colorable} if a $k$-vertex-coloring of $G$ exists. The \emph{chromatic number} of $G$, denoted $\chi(G)$, is the smallest $k$ for which $G$ is $k$-colorable.
+\end{definition}
+
+\begin{example}[Chromatic Numbers of Standard Graphs]
+\label{ex:chromatic-standard}
+\leavevmode
+\begin{itemize}
+  \item $\chi(K_n) = n$: every pair of vertices is adjacent, so all $n$ vertices need distinct colors.
+  \item $\chi(C_n) = 2$ for even $n$: alternate two colors around the cycle.
+  \item $\chi(C_n) = 3$ for odd $n$: two colors almost suffice, but the last vertex is adjacent to two vertices of different colors, forcing a third.
+  \item $\chi(G) = 1$ if and only if $G$ has no edges (all vertices are isolated).
+\end{itemize}
+\end{example}
+
+\begin{warning}[title={Warning: Computing $\chi(G)$ Is Hard}]
+In general, determining the chromatic number of an arbitrary graph is an NP-hard problem. The examples above are special cases with known structure.
+\end{warning}
+
+\section{Bipartite Graphs}
+\label{sec:bipartite}
+
+\subsection{Definition and Examples}
+\label{subsec:bipartite-def}
+
+\begin{definition}[Bipartite Graph]
+\label{def:bipartite}
+A simple graph $G = (V, E)$ is \emph{bipartite} if its vertex set $V$ can be partitioned into two disjoint sets $V_L$ and $V_R$ such that every edge in $G$ connects a vertex in $V_L$ to a vertex in $V_R$. The pair $(V_L, V_R)$ is called a \emph{bipartition} of~$G$.
+\end{definition}
+
+Equivalently, no edge connects two vertices within the same partition. Bipartite graphs arise naturally in modelling relationships between two distinct classes of objects (e.g.\ students and courses, jobs and machines).
+
+\subsection{Bipartiteness and 2-Colorability}
+\label{subsec:bipartite-coloring}
+
+\begin{theorem}[Bipartite $\iff$ 2-Colorable]
+\label{thm:bipartite-coloring}
+A graph $G = (V, E)$ is bipartite if and only if $\chi(G) \leq 2$.
+\end{theorem}
+
+\begin{proof}
+$(\Leftarrow)$\; If $\chi(G) = 1$, then $G$ has no edges, so any bipartition works. If $\chi(G) = 2$, let $V_L$ be the set of vertices assigned color~1 and $V_R$ those assigned color~2. Then $V_L \cap V_R = \varnothing$ and $V = V_L \cup V_R$. Since vertices within $V_L$ share a color (and likewise within $V_R$), no edge connects two vertices in the same part, so $(V_L, V_R)$ is a valid bipartition.
+
+$(\Rightarrow)$\; Suppose $G$ is bipartite with bipartition $(V_L, V_R)$. Assign color~1 to all vertices in $V_L$ and color~2 to all vertices in $V_R$. Since every edge connects $V_L$ to $V_R$, adjacent vertices always receive different colors. If $E = \varnothing$ then $\chi(G) = 1$; otherwise $\chi(G) = 2$. In either case $\chi(G) \leq 2$.
+\end{proof}
+
+\subsection{Odd Cycle Characterisation}
+\label{subsec:odd-cycle}
+
+\begin{theorem}[Bipartite Characterisation]
+\label{thm:bipartite-odd-cycle}
+A graph $G$ is bipartite if and only if $G$ contains no odd cycle as a subgraph.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$(\Rightarrow)$\; If $G$ contains an odd cycle $C_{2k+1}$, then $\chi(C_{2k+1}) = 3$, so $C_{2k+1}$ is not $2$-colorable. Adding vertices and edges to an odd cycle cannot make the resulting graph $2$-colorable, so $G$ is not bipartite.
+
+$(\Leftarrow)$\; Suppose $G$ is not bipartite. Starting from an arbitrary vertex $v$, place all vertices reachable via even-length paths in one set and those via odd-length paths in another. Since the partition fails, some vertex is reachable by both an even-length and an odd-length path from $v$, yielding an odd cycle.
+\end{proof}
+
+\begin{keyresult}[title={Key Result: Bipartite Testing}]
+To test bipartiteness, run a BFS/DFS and attempt a $2$-coloring. The graph is bipartite if and only if no conflict arises, which is equivalent to having no odd cycle.
+\end{keyresult}
+
+\subsection{Complete Bipartite Graphs}
+\label{subsec:complete-bipartite}
+
+\begin{definition}[Complete Bipartite Graph]
+\label{def:complete-bipartite}
+The \emph{complete bipartite graph} $K_{m,n}$ has vertex set $V = V_1 \cup V_2$ with $|V_1| = m$, $|V_2| = n$, and edge set $E = V_1 \times V_2$: every vertex in $V_1$ is adjacent to every vertex in $V_2$, and there are no edges within $V_1$ or $V_2$.
+\end{definition}
+
+The graph $K_{m,n}$ has $m + n$ vertices and $mn$ edges. Familiar examples include $K_{3,3}$ (the ``utilities graph'') and $K_{2,5}$.
+
+\section{Planar Graphs}
+\label{sec:planar}
+
+\subsection{Definition}
+\label{subsec:planar-def}
+
+\begin{definition}[Planar Graph]
+\label{def:planar}
+A graph is \emph{planar} if it can be drawn in the plane so that no edges cross (except at shared endpoints). Such a crossing-free drawing is called a \emph{planar representation}.
+\end{definition}
+
+Note that planarity is a property of the graph itself, not of any particular drawing. A graph that looks like it has crossings may still be planar if an alternative crossing-free drawing exists.
+
+\begin{example}[$K_4$ Is Planar]
+\label{ex:k4-planar}
+The complete graph $K_4$ appears to have edge crossings in its standard drawing, but it admits a planar representation by moving one vertex outside the triangle formed by the other three.
+\end{example}
+
+\begin{example}[$K_{3,3}$ Is Not Planar]
+\label{ex:k33-nonplanar}
+The complete bipartite graph $K_{3,3}$ cannot be drawn without crossings, no matter how the vertices are arranged. We prove this formally below using Corollary~\ref{cor:planar-no-triangles}.
+\end{example}
+
+\subsection{Regions and Euler's Formula}
+\label{subsec:euler-formula}
+
+A planar representation divides the plane into contiguous areas called \emph{regions} (or \emph{faces}). The unbounded exterior area is called the \emph{infinite region}. The number of edges bordering a region $R$ is its \emph{degree}, denoted $\deg(R)$; an edge appearing twice on the boundary contributes~$2$.
+
+\begin{proposition}[Sum of Region Degrees]
+\label{prop:region-degree-sum}
+In any planar representation of a graph, the sum of the degrees of all regions equals twice the number of edges:
+\[
+\sum_{R} \deg(R) = 2m.
+\]
+\end{proposition}
+
+This is the ``face'' analogue of the Handshaking Lemma (Theorem~\ref{thm:handshaking}).
+
+\begin{theorem}[Euler's Formula]
+\label{thm:euler-formula}
+Let $G$ be a connected planar simple graph with $n$ vertices, $m$ edges, and $r$ regions in any planar representation. Then
+\[
+r = m - n + 2.
+\]
+\end{theorem}
+
+The proof proceeds by induction on $m$. For the base case $m = 0$, the graph is a single vertex ($n = 1$) with one region (the infinite region), giving $1 = 0 - 1 + 2$. The inductive step considers adding an edge to a connected graph: if the new edge connects to a new vertex, $n$ and $m$ each increase by~$1$ but $r$ stays the same; if it connects two existing vertices, $m$ and $r$ each increase by~$1$ but $n$ stays the same. In both cases the formula is preserved.
+
+\begin{keyresult}[title={Key Result: Euler's Formula}]
+For a connected planar simple graph: $r = m - n + 2$. This is the fundamental tool for proving edge bounds and non-planarity results.
+\end{keyresult}
+
+\subsection{Edge Bounds for Planar Graphs}
+\label{subsec:edge-bounds}
+
+\begin{corollary}[Edge Bound]
+\label{cor:planar-edge-bound}
+If $G$ is a connected planar simple graph with $n \geq 3$ vertices and $m$ edges, then
+\[
+m \leq 3n - 6.
+\]
+\end{corollary}
+
+\begin{proof}
+Every region has degree at least $3$ (since the graph is simple with $n \geq 3$), so $2m = \sum_R \deg(R) \geq 3r$, giving $r \leq \frac{2}{3}m$. Substituting into Euler's formula:
+\[
+2 = n + r - m \leq n + \tfrac{2}{3}m - m = n - \tfrac{1}{3}m,
+\]
+which rearranges to $m \leq 3n - 6$.
+\end{proof}
+
+\begin{corollary}[Edge Bound Without Triangles]
+\label{cor:planar-no-triangles}
+If $G$ is a connected planar simple graph with $n \geq 3$ vertices, $m$ edges, and no cycles of length~$3$, then
+\[
+m \leq 2n - 4.
+\]
+\end{corollary}
+
+\begin{proof}
+Without triangles, every region has degree at least $4$, so $2m \geq 4r$, giving $r \leq \frac{m}{2}$. Substituting into Euler's formula:
+\[
+2 = n + r - m \leq n + \tfrac{1}{2}m - m = n - \tfrac{1}{2}m,
+\]
+which rearranges to $m \leq 2n - 4$.
+\end{proof}
+
+\begin{examtip}[title={Exam Tip: Choosing the Right Corollary}]
+Use the $m \leq 3n - 6$ bound for general graphs, but switch to $m \leq 2n - 4$ when the graph has no triangles (e.g.\ bipartite graphs, since all cycles in bipartite graphs have even length $\geq 4$).
+\end{examtip}
+
+Both corollaries extend to disconnected graphs: if $G$ has $k$ connected components, add $k-1$ edges to connect them without introducing crossings, then apply the connected-case bound. Since $m \leq m + k - 1 \leq 3n - 6$ (or $2n - 4$), the same inequalities hold.
+
+\subsection{Non-Planarity of $K_5$ and $K_{3,3}$}
+\label{subsec:nonplanar-k5-k33}
+
+\begin{example}[$K_5$ Is Not Planar]
+\label{ex:k5-nonplanar}
+The graph $K_5$ has $n = 5$ vertices and $m = \binom{5}{2} = 10$ edges. By Corollary~\ref{cor:planar-edge-bound}, planarity requires $m \leq 3(5) - 6 = 9$. Since $10 > 9$, $K_5$ is not planar.
+\end{example}
+
+\begin{example}[$K_{3,3}$ Is Not Planar]
+\label{ex:k33-nonplanar-proof}
+The graph $K_{3,3}$ has $n = 6$ vertices and $m = 9$ edges. Being bipartite, $K_{3,3}$ contains no triangles (odd cycles). By Corollary~\ref{cor:planar-no-triangles}, planarity requires $m \leq 2(6) - 4 = 8$. Since $9 > 8$, $K_{3,3}$ is not planar.
+
+Note that Corollary~\ref{cor:planar-edge-bound} alone would give $9 \leq 3(6) - 6 = 12$, which is satisfied --- so the triangle-free bound is essential here.
+\end{example}
+
+\begin{warning}[title={Warning: Edge Bounds Are Necessary, Not Sufficient}]
+Satisfying $m \leq 3n - 6$ does \emph{not} guarantee planarity. The corollaries provide necessary conditions only: violating them proves non-planarity, but satisfying them does not prove planarity.
+\end{warning}
+
+\subsection{Kuratowski's Theorem (Optional)}
+\label{subsec:kuratowski}
+
+An \emph{elementary subdivision} of a graph replaces an edge $\{u,v\}$ with a new vertex $w$ and two edges $\{u,w\}$, $\{w,v\}$. Two graphs are \emph{homeomorphic} if they can be obtained from the same graph by sequences of elementary subdivisions.
+
+\begin{theorem}[Kuratowski's Theorem]
+\label{thm:kuratowski}
+A graph is non-planar if and only if it contains a subgraph homeomorphic to $K_5$ or $K_{3,3}$.
+\end{theorem}
+
+Equivalently, $G$ is non-planar if and only if one can find vertices of $G$ corresponding to the vertices of $K_5$ or $K_{3,3}$, connected by internally vertex-disjoint paths of $G$ corresponding to the edges.
+
+\section{Map Coloring and the Four-Color Theorem}
+\label{sec:four-color}
+
+The classical map coloring problem asks: given a map divided into contiguous regions, how many colors are needed to color the regions so that no two adjacent regions (sharing a boundary segment, not just a point) receive the same color? This reduces directly to coloring the dual planar graph, where each region becomes a vertex and edges connect adjacent regions.
+
+\begin{theorem}[Four-Color Theorem]
+\label{thm:four-color}
+Every simple planar graph is $4$-colorable.
+\end{theorem}
+
+The problem was posed in 1852. The first accepted proof, by Appel and Haken in 1976, relied on computer-assisted case analysis checking hundreds of unavoidable configurations. Subsequent proofs by Robertson et al.\ (1997) and a formal verification by Gonthier (2005) confirmed the result with smaller case sets and machine-checked logic, respectively.
+
+\begin{keyresult}[title={Key Result: Four-Color Theorem}]
+$\chi(G) \leq 4$ for every planar graph $G$. This is tight: some planar graphs (e.g.\ $K_4$) require exactly $4$ colors.
+\end{keyresult}
+
+\section*{Reading Assignment (Handout 9)}
+Rosen (7th edition): Chapter~10.7 (Planarity); Chapter~10.8 (Coloring).
+
+\chapter{Trees and Spanning Trees}
+\label{chap:trees}
+
+\section{Trees}
+\label{sec:trees}
+
+\subsection{Definition and Basic Properties}
+\label{subsec:tree-def}
+
+\begin{definition}[Tree and Forest]
+\label{def:tree}
+A \textbf{tree} is a connected graph that does not have a cycle as a subgraph.
+A \textbf{forest} is a graph that consists of several trees.
+\end{definition}
+
+Forests need not be connected; the connected components of a forest are precisely the individual trees that comprise it.
+
+\begin{definition}[Leaf]
+\label{def:leaf}
+In a tree $T$, a vertex with degree one is called a \textbf{leaf}.
+\end{definition}
+
+Trees and forests enjoy a number of useful structural properties.
+
+\begin{proposition}[Tree Properties]
+\label{prop:tree-properties}
+Let $T$ be a tree (or forest). Then:
+\begin{enumerate}[label=(\roman*)]
+  \item $T$ is planar, and its planar representation has exactly one region.
+  \item $T$ is bipartite.
+  \item If $T$ has $n \geq 2$ vertices, then $T$ has at least two leaves.
+  \item Removing a leaf $v$ and the edge incident with $v$ from $T$ still yields a tree.
+\end{enumerate}
+\end{proposition}
+
+Property~(i) follows immediately from Euler's formula (Theorem~\ref{thm:euler-formula}): a tree with $n$ vertices has $n-1$ edges, so $r = m - n + 2 = (n-1) - n + 2 = 1$. Property~(ii) follows because trees contain no odd cycles (in fact, no cycles at all), which by Theorem~\ref{thm:bipartite-odd-cycle} makes them bipartite.
+
+\subsection{Edges in a Tree}
+\label{subsec:tree-edges}
+
+\begin{theorem}[Edge Count]
+\label{thm:tree-edges}
+A tree with $n$ vertices has exactly $n - 1$ edges.
+\end{theorem}
+
+\begin{proof}
+We proceed by induction on the number of vertices~$n$.
+
+\textbf{Base case.} When $n = 1$, the tree is a single isolated vertex with $0 = 1 - 1$ edges.
+
+\textbf{Inductive hypothesis.} Assume every tree with $k$ vertices has $k - 1$ edges.
+
+\textbf{Inductive step.} Consider a tree $T$ with $k + 1$ vertices. Since $k + 1 \geq 2$, the tree has at least two leaves; let $v$ be one of them, and let $e$ be the unique edge incident with~$v$. By Proposition~\ref{prop:tree-properties}(iv), $T - \{v\}$ is a tree with $k$ vertices, and by the hypothesis it has $k - 1$ edges. Adding $v$ and $e$ back gives $T$ with $(k - 1) + 1 = k$ edges, completing the induction.
+\end{proof}
+
+\begin{keyresult}[title={Alternative Definition of a Tree}]
+A connected graph with $n$ vertices and $n - 1$ edges is a tree.
+\end{keyresult}
+
+\section{Rooted Trees}
+\label{sec:rooted-trees}
+
+\subsection{Definitions and Terminology}
+\label{subsec:rooted-tree-def}
+
+\begin{definition}[Rooted Tree]
+\label{def:rooted-tree}
+A \textbf{rooted tree} is a tree in which one vertex is designated as the \textbf{root} and every edge is directed away from the root.
+\end{definition}
+
+In a rooted tree, a vertex that is not the root and has degree one is called a \textbf{leaf}. Vertices that have children are called \textbf{internal vertices}. Note that the root itself may or may not be an internal vertex---if the tree consists of a single vertex, the root has no children and is not internal.
+
+\begin{definition}[Level and Height]
+\label{def:level-height}
+The \textbf{level} of a vertex $u$ in a rooted tree is the length of the unique path from the root to $u$. The level of the root is defined to be zero. The \textbf{height} of a rooted tree is the maximum level among all its vertices.
+\end{definition}
+
+\begin{definition}[Parent, Child, Ancestor, Descendant]
+\label{def:parent-child}
+Given a rooted tree $T$ and a vertex $v$ other than the root:
+\begin{itemize}
+  \item The \textbf{parent} of $v$ is the vertex adjacent to $v$ that is one level closer to the root.
+  \item The \textbf{children} of $v$ are those vertices adjacent to $v$ that are one level farther from the root.
+  \item The \textbf{ancestors} of $v$ are all vertices on the path from the root to $v$, excluding $v$ itself.
+  \item The \textbf{descendants} of $v$ are those vertices that have $v$ as an ancestor.
+\end{itemize}
+The root has no parent, and every non-root vertex has a unique parent.
+\end{definition}
+
+\begin{definition}[Subtree]
+\label{def:subtree}
+If $u$ is a vertex of a rooted tree, the \textbf{subtree rooted at $u$} is the subgraph consisting of $u$, all its descendants, and all edges incident to these descendants.
+\end{definition}
+
+\begin{example}[Rooted Tree Terminology]
+\label{ex:rooted-tree}
+Consider a rooted tree with root $r$, children $\{a, b, c\}$ of $r$, children $\{d, e\}$ of $a$, child $\{f\}$ of $b$, and children $\{g, h\}$ of $c$. Then:
+\begin{itemize}
+  \item $\mathrm{Parent}(a) = r$, \; $\mathrm{Parent}(d) = a$, \; $r$ has no parent.
+  \item $\mathrm{Children}(r) = \{a, b, c\}$, \; $\mathrm{Children}(a) = \{d, e\}$, \; $d$ has no children.
+  \item $\mathrm{Ancestor}(c) = \{r\}$, \; $\mathrm{Ancestor}(h) = \{r, c\}$, \; $r$ has no ancestors.
+  \item $\mathrm{Descendant}(r) = \{a, b, c, d, e, f, g, h\}$, \; $\mathrm{Descendant}(c) = \{g, h\}$.
+\end{itemize}
+The leaves are $\{d, e, f, g, h\}$, the internal vertices are $\{r, a, b, c\}$, and the height is~$2$.
+\end{example}
+
+\subsection{Binary Trees}
+\label{subsec:binary-trees}
+
+\begin{definition}[Binary Tree, Full Binary Tree, Balanced Binary Tree]
+\label{def:binary-tree}
+\leavevmode
+\begin{itemize}
+  \item A rooted tree is a \textbf{binary tree} if every vertex has at most two children.
+  \item A binary tree is a \textbf{full binary tree} if every internal vertex has exactly two children.
+  \item A binary tree of height $h$ is a \textbf{balanced binary tree} if all its leaves are at level $h$ or $h - 1$.
+\end{itemize}
+\end{definition}
+
+\begin{theorem}[Maximum Leaves in a Binary Tree]
+\label{thm:binary-tree-leaves}
+There are at most $2^h$ leaves in a binary tree $T$ of height $h$.
+\end{theorem}
+
+\begin{proof}
+We induct on the height $h$.
+
+\textbf{Base case.} When $h = 1$, the root has at most $2 = 2^1$ children, which are all leaves.
+
+\textbf{Inductive hypothesis.} Assume the claim holds for all binary trees of height at most $k$.
+
+\textbf{Inductive step.} Consider a binary tree $T$ of height $h = k + 1$. The root has at most two children $u$ and $v$; let $T_1$ and $T_2$ be the subtrees rooted at $u$ and $v$, respectively. Each subtree has height at most $k$, so by the hypothesis each contains at most $2^k$ leaves. Since every leaf of $T$ belongs to either $T_1$ or $T_2$, the total number of leaves in $T$ is at most $2^k + 2^k = 2^{k+1}$.
+\end{proof}
+
+\subsection{Quick-Fire Properties (True or False)}
+\label{subsec:tree-tf}
+
+The following true/false questions help test understanding of tree definitions:
+\begin{enumerate}[label=(\alph*)]
+  \item A tree with $n$ edges has $n + 1$ vertices. \hfill \textbf{True}
+  \item A forest with $n$ vertices must have $n - 1$ edges. \hfill \textbf{False} (a forest with multiple components has fewer)
+  \item The chromatic number of a tree is always two or less. \hfill \textbf{True} (trees are bipartite)
+  \item An undirected simple graph with $n$ vertices and $n - 1$ edges is always connected. \hfill \textbf{False} (e.g.\ an isolated vertex plus a triangle)
+  \item Removing any vertex $v$ from a tree $T$ always leaves a tree. \hfill \textbf{False} (removing an internal vertex disconnects)
+  \item A rooted tree with $n$ vertices has $n - 1$ edges. \hfill \textbf{True}
+  \item In a rooted tree, the root is always an internal vertex. \hfill \textbf{False} (a single-vertex tree has the root as a leaf)
+  \item Leaves of a rooted tree have no children. \hfill \textbf{True}
+  \item A rooted tree of height $h$ having $2^h$ vertices is a full binary tree. \hfill \textbf{False}
+  \item If $v$ has degree~$2$ in a rooted tree $T$, then $T$ has at least two leaves. \hfill \textbf{False} ($v$ could be the root with one child, the other edge going to its parent---e.g.\ a path on three vertices rooted at the middle vertex has $v$ as root with degree~2 but this is fine; however, a path $r$--$a$--$b$ rooted at $r$ gives $v = a$ with degree~$2$ yet only leaf $b$)
+\end{enumerate}
+
+\section{Spanning Trees}
+\label{sec:spanning-trees}
+
+\subsection{Definition}
+\label{subsec:spanning-tree-def}
+
+\begin{definition}[Spanning Tree]
+\label{def:spanning-tree}
+Let $G$ be a connected simple graph. A \textbf{spanning tree} of $G$ is a subgraph of $G$ that is a tree containing all vertices of $G$.
+\end{definition}
+
+A spanning tree of a graph with $n$ vertices therefore has exactly $n - 1$ edges (by Theorem~\ref{thm:tree-edges}). A connected graph may have many different spanning trees; the task of finding one with desirable properties motivates much of the next handout.
+
+\subsection{Edge-Weighted Graphs}
+\label{subsec:edge-weighted}
+
+\begin{definition}[Edge-Weighted Graph]
+\label{def:edge-weighted}
+An \textbf{edge-weighted graph} is a triple $G = (V, E, W)$, where $V$ is the vertex set, $E$ is the edge set (so $(V, E)$ is a graph), and
+$W \colon E \to \mathbb{R}$ is a function assigning a \textbf{weight} to each edge.
+\end{definition}
+
+Edge weights can represent many quantities: distance or travel time between vertices, cost of using or maintaining a connection, capacity (e.g.\ pipe flow), failure probability, and so on. Many fundamental graph problems---including the minimum spanning tree and shortest path problems---are formulated on edge-weighted graphs.
+
+\subsection{Minimum Spanning Trees}
+\label{subsec:mst}
+
+\begin{definition}[Minimum Spanning Tree]
+\label{def:mst}
+Given an edge-weighted graph $G$, a \textbf{minimum spanning tree} (MST) of $G$ is a spanning tree whose total edge weight $\sum_{e \in T} W(e)$ is as small as possible among all spanning trees of $G$.
+\end{definition}
+
+\begin{example}[Finding an MST by Enumeration]
+\label{ex:mst-enumerate}
+Consider a graph on six vertices with edges weighted as follows: $W(a,d)=4$, $W(a,c)=2$, $W(d,c)=1$, $W(d,f)=7$, $W(c,e)=8$, $W(f,e)=2$, $W(f,b)=3$, $W(e,b)=6$, $W(c,f)=10$. Among all spanning trees, one can verify by enumeration that the MST uses edges $\{(d,c), (a,c), (f,e), (f,b), (a,d)\}$ (or an equivalent set) with minimum total weight. Algorithmic methods (Kruskal's and Prim's algorithms) for efficiently finding MSTs will be covered in the next handout.
+\end{example}
+
+\begin{examtip}[title={Exam Tip: MST vs.\ Spanning Tree}]
+A spanning tree must include \emph{all} vertices but uses only $n-1$ edges. The MST additionally minimises total weight. When asked to ``find a spanning tree,'' any acyclic connected subgraph on all vertices suffices; when asked for an MST, you must justify minimality.
+\end{examtip}
+
+\section*{Reading Assignment (Handout 10)}
+
+Rosen (7th edition):
+\begin{itemize}
+  \item Chapter 11.1: Introduction to Trees
+  \item Chapter 11.4: Spanning Trees
+\end{itemize}
+
+\chapter{Minimum Spanning Trees and Shortest Paths}
+\label{chap:mst-shortest}
+
+This chapter covers algorithmic methods for finding minimum spanning trees (building on the definitions in Section~\ref{subsec:mst}) and shortest paths in weighted graphs.
+
+\section{Algorithms for Minimum Spanning Trees}
+\label{sec:mst-algorithms}
+
+\subsection{Greedy Approach}
+\label{subsec:greedy-mst}
+
+Recall from Definition~\ref{def:mst} that a minimum spanning tree of an edge-weighted graph $G$ is a spanning tree with the smallest total sum of edge weights. The general template for MST algorithms follows a \emph{greedy} strategy: initialise $T = \emptyset$, and repeatedly select an edge $e \in E$ satisfying some local optimality condition, adding $e$ to $T$ until $T$ is a spanning tree.
+
+A greedy algorithm makes the locally optimal choice at each step (``I want the best thing \emph{right now}''), in contrast to non-greedy (strategic) approaches that may sacrifice short-term gains for a globally optimal solution. Remarkably, for the MST problem, greedy algorithms are provably correct.
+
+\subsection{Kruskal's Algorithm}
+\label{subsec:kruskal}
+
+\begin{definition}[Kruskal's Algorithm]
+\label{def:kruskal}
+Process edges in increasing order of cost (breaking ties arbitrarily), and add each edge to $T$ provided it does not create a cycle.
+\end{definition}
+
+The formal pseudocode is as follows.
+
+\begin{algorithm}[H]
+\caption{Kruskal's Algorithm}
+\label{alg:kruskal}
+\begin{algorithmic}[1]
+\Require Edge-weighted connected graph $G = (V, E)$
+\Ensure Minimum spanning tree $T$
+\State $T \gets \emptyset$
+\While{$T$ is not a spanning tree of $G$}
+  \State Choose $e \in E$ of minimum cost
+  \State Remove $e$ from $E$
+  \If{$T \cup \{e\}$ does not contain a cycle}
+    \State $T \gets T \cup \{e\}$
+  \EndIf
+\EndWhile
+\State \Return $T$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{example}[Kruskal's Algorithm Trace]
+\label{ex:kruskal-trace}
+Consider a graph on vertices $\{a, b, c, d, e, f, g\}$ with edge weights: $w(a,d)=5$, $w(c,e)=5$, $w(d,f)=6$, $w(a,b)=7$, $w(b,e)=7$, $w(b,c)=8$, $w(e,f)=8$, $w(d,b)=9$, $w(e,g)=9$, $w(d,e)=15$, $w(f,g)=11$.
+
+Sorting edges by weight: $\{a,d\}(5)$, $\{c,e\}(5)$, $\{d,f\}(6)$, $\{a,b\}(7)$, $\{b,e\}(7)$, $\{b,c\}(8)$, $\{e,f\}(8)$, $\{d,b\}(9)$, $\{e,g\}(9)$, $\{d,e\}(15)$, $\{f,g\}(11)$.
+
+Kruskal's algorithm adds edges in the following order:
+\begin{enumerate}
+  \item $\{a,d\}$ (weight 5) --- no cycle formed.
+  \item $\{c,e\}$ (weight 5) --- no cycle formed.
+  \item $\{d,f\}$ (weight 6) --- no cycle formed.
+  \item $\{a,b\}$ (weight 7) --- no cycle formed.
+  \item $\{b,e\}$ (weight 7) --- no cycle: connects the $\{a,b,d,f\}$ and $\{c,e\}$ components.
+  \item $\{b,c\}$ (weight 8) --- \emph{skipped}: would create cycle $b$--$e$--$c$--$b$.
+  \item $\{e,g\}$ (weight 9) --- no cycle; all 7 vertices now connected.
+\end{enumerate}
+The MST has total weight $5+5+6+7+7+9 = 39$ and uses 6 edges ($= |V|-1$).
+\end{example}
+
+\subsection{Prim's Algorithm}
+\label{subsec:prim}
+
+\begin{definition}[Prim's Algorithm]
+\label{def:prim}
+Starting from a single vertex, the set $T$ maintained by the algorithm is always a tree. In each iteration, pick the edge with the least cost that connects a vertex in $T$ to a vertex not yet in $T$.
+\end{definition}
+
+\begin{algorithm}[H]
+\caption{Prim's Algorithm}
+\label{alg:prim}
+\begin{algorithmic}[1]
+\Require Edge-weighted connected graph $G = (V, E)$
+\Ensure Minimum spanning tree $T$
+\State $T \gets \emptyset$
+\State $S \gets \{v_0\}$ for some starting vertex $v_0$
+\While{$T$ is not a spanning tree of $G$}
+  \State Choose $e = (u,v) \in E$ of minimum cost with $u \in S$, $v \in V \setminus S$
+  \State $T \gets T \cup \{e\}$
+  \State $S \gets S \cup \{v\}$
+\EndWhile
+\State \Return $T$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{example}[Prim's Algorithm Trace]
+\label{ex:prim-trace}
+Using the same graph as Example~\ref{ex:kruskal-trace}, starting from vertex $a$:
+\begin{enumerate}
+  \item $S = \{a\}$: cheapest edge leaving $S$ is $\{a,d\}$ (weight 5). Add it; $S = \{a,d\}$.
+  \item $S = \{a,d\}$: cheapest crossing edge is $\{d,f\}$ (weight 6). Add it; $S = \{a,d,f\}$.
+  \item $S = \{a,d,f\}$: cheapest crossing edge is $\{a,b\}$ (weight 7). Add it; $S = \{a,d,f,b\}$.
+  \item $S = \{a,d,f,b\}$: cheapest crossing edge is $\{b,e\}$ (weight 7). Add it; $S = \{a,d,f,b,e\}$.
+  \item $S = \{a,d,f,b,e\}$: cheapest crossing edge is $\{c,e\}$ (weight 5). Add it; $S = \{a,d,f,b,e,c\}$.
+  \item $S = \{a,d,f,b,e,c\}$: cheapest crossing edge is $\{e,g\}$ (weight 9). Add it; $S = V$.
+\end{enumerate}
+The MST edges are $\{a,d\}, \{d,f\}, \{a,b\}, \{b,e\}, \{c,e\}, \{e,g\}$ with total weight 39, the same MST found by Kruskal's algorithm (the edge insertion order differs).
+\end{example}
+
+\begin{remark}
+\label{rem:mst-uniqueness}
+When all edge weights are distinct, the MST is unique. When some weights coincide, there may be multiple MSTs, but all have the same total weight. Different tie-breaking choices in Kruskal's or Prim's algorithms may yield different MSTs in this case.
+\end{remark}
+
+\section{Correctness of MST Algorithms}
+\label{sec:mst-correctness}
+
+Both Kruskal's and Prim's algorithms are provably correct. Their correctness rests on the \emph{cut property} of minimum spanning trees. For simplicity, we assume all edge costs are distinct (so the MST is unique).
+
+\subsection{Cuts and Safe Edges}
+\label{subsec:cuts-safe}
+
+\begin{definition}[Cut]
+\label{def:cut}
+Given a graph $G = (V, E)$, a \emph{cut} is a partition of the vertex set into two disjoint non-empty subsets $(S, V \setminus S)$. The \emph{edges of the cut} are those with one endpoint in $S$ and the other in $V \setminus S$; such edges are said to \emph{cross} the cut.
+\end{definition}
+
+\begin{definition}[Safe Edge]
+\label{def:safe-edge}
+An edge $e$ is a \emph{safe edge} if there exists a cut $(S, V \setminus S)$ such that $e$ is the unique minimum-cost edge crossing that cut.
+\end{definition}
+
+\begin{example}[Identifying Safe Edges]
+\label{ex:safe-edge}
+Consider a graph on vertices $\{a,b,c,d,e,f\}$ with edge weights $w(a,b)=4$, $w(a,c)=6$, $w(b,c)=12$, $w(b,d)=3$, $w(b,e)=7$, $w(c,d)=10$, $w(c,f)=13$, $w(d,e)=5$, $w(d,f)=8$, $w(e,f)=10$, $w(a,d)=15$.
+
+The edge $\{a,c\}$ (weight 6) is safe because for the cut $S = \{a,b,d\}$, $V \setminus S = \{c,e,f\}$, the edges crossing are $\{a,c\}(6)$, $\{b,e\}(7)$, $\{b,c\}(12)$, $\{c,d\}(10)$, $\{d,e\}(5)$... In fact, one must check: edge $\{a,c\}$ is the cheapest edge crossing the cut $S=\{a,b,d,e,f\}$, $V\setminus S=\{c\}$, since the edges crossing this cut are $\{a,c\}(6)$, $\{b,c\}(12)$, $\{c,d\}(10)$, $\{c,f\}(13)$, and $\{a,c\}$ is the cheapest.
+\end{example}
+
+\subsection{The Cut Property}
+\label{subsec:cut-property}
+
+\begin{theorem}[Cut Property]
+\label{thm:cut-property}
+Given an undirected connected graph $G$ with distinct edge costs, the set of safe edges in $G$ forms the unique MST of $G$.
+\end{theorem}
+
+The proof proceeds via two lemmas.
+
+\begin{lemma}
+\label{lem:safe-in-mst}
+If $e$ is a safe edge, then every MST contains $e$.
+\end{lemma}
+
+\begin{proof}
+Suppose for contradiction that $e = \{u,v\}$ is safe but is not in some MST $T$. Since $e$ is safe, there exists a cut $(S, V \setminus S)$ such that $e$ is the unique minimum-cost edge crossing it. Adding $e$ to $T$ creates a cycle $C$ in $T \cup \{e\}$. Since $u \in S$ and $v \in V \setminus S$, traversing $C$ from $u$ to $v$ without using $e$ must cross the cut at least once via some other edge $e' \in T$. Since $e$ is the unique minimum-cost crossing edge, $w(e) < w(e')$. Then $T' = (T \setminus \{e'\}) \cup \{e\}$ is a spanning tree with strictly lower cost than $T$, contradicting the minimality of $T$.
+\end{proof}
+
+\begin{lemma}
+\label{lem:safe-cover}
+The set of safe edges forms a connected graph that covers every vertex.
+\end{lemma}
+
+\begin{proof}
+Suppose for contradiction that the graph induced by safe edges does not cover all vertices. Let $S$ be a connected component in this graph. Then $V \setminus S \neq \emptyset$, and the minimum-cost edge $e$ crossing the cut $(S, V \setminus S)$ is safe by definition. But then $e$ is a safe edge not in the graph induced by safe edges, a contradiction.
+\end{proof}
+
+\begin{keyresult}[title={Key Result: Why Kruskal's and Prim's Work}]
+Both algorithms only add \emph{safe} edges. Kruskal's algorithm: when edge $e = \{u,v\}$ is added, letting $S$ be the connected component containing $u$, the edge $e$ is the minimum-cost edge crossing $(S, V \setminus S)$. Prim's algorithm: at each step, the chosen edge is explicitly the minimum-cost edge crossing $(S, V \setminus S)$ where $S$ is the current tree.
+\end{keyresult}
+
+\subsection{Correctness of Kruskal's Algorithm}
+\label{subsec:kruskal-correct}
+
+\begin{proof}
+It suffices to show that every edge added by Kruskal's algorithm is safe. When $e = \{u,v\}$ is added, let $S$ be the connected component containing $u$ in the current forest. Since $e$ does not form a cycle, $v \notin S$. Among all edges crossing the cut $(S, V \setminus S)$, any edge with lower cost than $e$ would have been processed earlier and either added (connecting $S$ to another component, contradicting $v \notin S$) or rejected (for forming a cycle within $S$). Hence $e$ has minimum cost among edges crossing $(S, V \setminus S)$, so $e$ is safe.
+\end{proof}
+
+\subsection{Correctness of Prim's Algorithm}
+\label{subsec:prim-correct}
+
+\begin{proof}
+At each step, let $S$ be the set of vertices connected by the edges in $T$. The algorithm explicitly selects $e$ as the minimum-cost edge crossing the cut $(S, V \setminus S)$, so $e$ is safe. Since $S$ starts as a single vertex and grows by one vertex per iteration, eventually $S = V$ and $T$ is a spanning tree consisting entirely of safe edges.
+\end{proof}
+
+\section{Shortest Path Problems}
+\label{sec:shortest-paths}
+
+\subsection{Definitions}
+\label{subsec:sp-defs}
+
+\begin{definition}[Shortest Path and Distance]
+\label{def:shortest-path}
+For an edge-weighted graph $G = (V, E, W)$ with non-negative edge weights:
+\begin{itemize}
+  \item A \emph{shortest path} between vertices $u$ and $v$ is a simple path from $u$ to $v$ whose total edge weight is minimal.
+  \item The \emph{length} of a path is the sum of its edge weights.
+  \item The \emph{distance} $d(u,v)$ between $u$ and $v$ is the length of a shortest path between them. If no path exists, $d(u,v) = \infty$.
+\end{itemize}
+\end{definition}
+
+Three variants of the shortest path problem arise:
+\begin{enumerate}
+  \item \textbf{Single-pair}: Given vertices $s$ and $t$, find a shortest path from $s$ to $t$.
+  \item \textbf{Single-source}: Given vertex $s$, find shortest paths from $s$ to all other vertices.
+  \item \textbf{All-pairs}: Find shortest paths for every pair of vertices.
+\end{enumerate}
+We focus on problems (1) and (2), using directed graphs (undirected problems reduce to directed ones by replacing each undirected edge with two directed edges).
+
+\subsection{Algorithm Ideas}
+\label{subsec:sp-ideas}
+
+The key insight is to explore vertices in increasing order of distance from the source $s$. Let $d(v)$ denote the shortest path length from $s$ to $v$.
+
+\begin{lemma}[Optimal Substructure]
+\label{lem:optimal-substructure}
+If $s = v_0 \to v_1 \to \cdots \to v_k = v$ is a shortest path from $s$ to $v$, then for any $1 \le i < k$, the sub-path $s = v_0 \to v_1 \to \cdots \to v_i$ is a shortest path from $s$ to $v_i$.
+\end{lemma}
+
+\begin{proof}
+Suppose for contradiction that there exists a shorter path $P'$ from $s$ to $v_i$. Then replacing the sub-path $s \to \cdots \to v_i$ with $P'$ and appending $v_i \to \cdots \to v_k$ yields a path from $s$ to $v_k$ with strictly smaller total weight, contradicting the optimality of the original path.
+\end{proof}
+
+At the beginning of the $i$-th iteration, the set $S$ stores the $i-1$ closest vertices to $s$.
+
+\begin{proposition}
+\label{prop:next-closest}
+Let $v$ be the $i$-th closest vertex to $s$, and let $P$ be a shortest path from $s$ to $v$. Then all intermediate vertices of $P$ belong to $S$.
+\end{proposition}
+
+\begin{proof}
+If $v'$ is an intermediate vertex on $P$, then $d(v') < d(v)$ (since edge weights are non-negative), so $v'$ is among the $i-1$ closest vertices and hence $v' \in S$.
+\end{proof}
+
+This means the next closest vertex is always adjacent to $S$. Define, for each $u \in V \setminus S$:
+\[
+  \pi(u) = \min_{a \in S} \{ d(a) + \ell(a, u) \}
+\]
+where $\ell(a,u)$ is the weight of edge $(a,u)$ (or $\infty$ if no such edge exists).
+
+\begin{lemma}
+\label{lem:pi-equals-d}
+If $u$ is the $i$-th closest vertex to $s$, then $\pi(u) = d(u)$.
+\end{lemma}
+
+The $i$-th closest vertex to $s$ is therefore $u \in V \setminus S$ minimising $\pi(u)$.
+
+\subsection{Dijkstra's Algorithm}
+\label{subsec:dijkstra}
+
+Rather than recomputing $\pi(v)$ from scratch each iteration, we maintain $d(v)$ as a running estimate that is updated incrementally: when vertex $u$ is added to $S$, for each neighbour $v$ of $u$ we set $d(v) \gets \min\{d(v),\; d(u) + \ell(u,v)\}$.
+
+\begin{algorithm}[H]
+\caption{Dijkstra's Algorithm}
+\label{alg:dijkstra}
+\begin{algorithmic}[1]
+\Require Directed weighted graph $G = (V, E)$ with non-negative edge weights, source $s$
+\Ensure Shortest distances $d(v)$ for all $v \in V$
+\State $d(v) \gets \infty$ for all $v \in V$; \quad $d(s) \gets 0$
+\State $S \gets \emptyset$
+\While{$S \neq V$}
+  \State Find $u \in V \setminus S$ with $d(u) = \min_{v \in V \setminus S} d(v)$
+  \State $S \gets S \cup \{u\}$
+  \For{each $v \in \mathrm{Adj}(u)$}
+    \State $d(v) \gets \min\{d(v),\; d(u) + \ell(u,v)\}$
+  \EndFor
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+\begin{warning}[title={Warning: Non-Negative Weights Required}]
+Dijkstra's algorithm requires all edge weights to be non-negative. If negative weights are present, the greedy selection of the minimum-distance vertex may be incorrect, and algorithms such as Bellman--Ford must be used instead.
+\end{warning}
+
+\begin{example}[Dijkstra's Algorithm Trace]
+\label{ex:dijkstra-trace}
+Consider a graph on vertices $\{a, b, c, d, e, z\}$ with edges: $\ell(a,b)=4$, $\ell(a,c)=2$, $\ell(c,b)=1$, $\ell(b,d)=5$, $\ell(c,d)=8$, $\ell(c,e)=10$, $\ell(d,e)=2$, $\ell(d,z)=6$, $\ell(e,z)=3$. Source: $s = a$.
+
+\begin{center}
+\begin{tabular}{c|cccccc|l}
+\hline
+Round & $d(a)$ & $d(b)$ & $d(c)$ & $d(d)$ & $d(e)$ & $d(z)$ & $S$ \\
+\hline
+0 & \textbf{0} & $\infty$ & $\infty$ & $\infty$ & $\infty$ & $\infty$ & $\emptyset$ \\
+1 & 0 & 4 & \textbf{2} & $\infty$ & $\infty$ & $\infty$ & $\{a\}$ \\
+2 & 0 & \textbf{3} & 2 & 10 & 12 & $\infty$ & $\{a, c\}$ \\
+3 & 0 & 3 & 2 & \textbf{8} & 12 & $\infty$ & $\{a, c, b\}$ \\
+4 & 0 & 3 & 2 & 8 & \textbf{10} & 14 & $\{a, c, b, d\}$ \\
+5 & 0 & 3 & 2 & 8 & 10 & \textbf{13} & $\{a, c, b, d, e\}$ \\
+6 & 0 & 3 & 2 & 8 & 10 & 13 & $\{a, c, b, d, e, z\}$ \\
+\hline
+\end{tabular}
+\end{center}
+
+The shortest path from $a$ to $z$ has length 13, via $a \to c \to b \to d \to e \to z$.
+\end{example}
+
+\begin{examtip}[title={Exam Tip: Dijkstra Table Method}]
+When running Dijkstra's algorithm by hand, set up a table with one column per vertex and one row per round. In each round: (1) identify the unvisited vertex with smallest $d$-value (bold it), (2) add it to $S$, (3) update $d$-values for its neighbours. The bold entries trace the order vertices are finalised.
+\end{examtip}
+
+\begin{example}[Dijkstra on an Undirected Graph]
+\label{ex:dijkstra-undirected}
+Consider an undirected graph on $\{a,b,c,d,e,f\}$ with weights:
+$w(a,b)=6$, $w(a,c)=3$, $w(b,c)=2$, $w(b,d)=6$, $w(c,d)=10$,
+$w(c,e)=4$, $w(d,e)=2$, $w(d,z)=3$, $w(e,z)=6$. Source: $s = a$.
+
+\begin{center}
+\begin{tabular}{c|cccccc|l}
+\hline
+Round & $d(a)$ & $d(b)$ & $d(c)$ & $d(d)$ & $d(e)$ & $d(z)$ & $S$ \\
+\hline
+0 & \textbf{0} & $\infty$ & $\infty$ & $\infty$ & $\infty$ & $\infty$ & $\emptyset$ \\
+1 & 0 & 6 & \textbf{3} & $\infty$ & $\infty$ & $\infty$ & $\{a\}$ \\
+2 & 0 & \textbf{5} & 3 & 13 & 7 & $\infty$ & $\{a,c\}$ \\
+3 & 0 & 5 & 3 & 11 & \textbf{7} & $\infty$ & $\{a,c,b\}$ \\
+4 & 0 & 5 & 3 & \textbf{9} & 7 & 13 & $\{a,c,b,e\}$ \\
+5 & 0 & 5 & 3 & 9 & 7 & \textbf{12} & $\{a,c,b,e,d\}$ \\
+6 & 0 & 5 & 3 & 9 & 7 & 12 & $\{a,c,b,e,d,z\}$ \\
+\hline
+\end{tabular}
+\end{center}
+\end{example}
+
+\section*{Reading Assignment (Handout 11)}
+
+Rosen (7th edition):
+\begin{itemize}
+  \item Chapter 11.5: Minimum Spanning Trees
+  \item Chapter 10.6: Shortest-Path Problems
+\end{itemize}
+
+\end{document}
